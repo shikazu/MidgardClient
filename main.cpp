@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
+#include <libconfig.h++>
 
-int main()
+using namespace libconfig;
+
+int main(int argc, char **argv)
 {
     sf::RenderWindow window(sf::VideoMode(1280, 720), "SFML works!");
 
