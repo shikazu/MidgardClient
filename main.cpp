@@ -7,6 +7,8 @@
 #include <iostream>
 #include "grf/libgrf.h"
 
+#include "views/LoginView.h"
+
 using namespace libconfig;
 
 int main(int argc, char **argv)
@@ -14,6 +16,14 @@ int main(int argc, char **argv)
     /*grf_handle myGRFHandle = grf_load("data.grf", false);
 
     std::cout << "GRF File Count: " << grf_filecount(myGRFHandle) << std::endl;
+
+    //grf_node* root_node = grf_get_file_list(myGRFHandle);
+    grf_node *all_nodes = grf_get_file_id_list(myGRFHandle);
+    for(int i = 0; i < grf_filecount(myGRFHandle); i++)
+    {
+        std::cout << "File: " << grf_file_get_filename(all_nodes[i]) << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
 
     grf_free(myGRFHandle);*/
 
@@ -24,41 +34,12 @@ int main(int argc, char **argv)
     settings.majorVersion = 3;
     settings.minorVersion = 0;
 
-    sf::Window window(sf::VideoMode(800, 600), "Midgard Client - Made by Shikazu", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Midgard Client - Made by Shikazu", sf::Style::Default, settings);
     window.setVerticalSyncEnabled(true);
 
     // the event/logic/whatever loop
-    while (window.isOpen())
-    {
-        // handle events
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                // end the program
-                window.close();
-            }
+    LoginView *loginView = new LoginView(&window);
 
-            if (event.type == sf::Event::LostFocus)
-            {
-
-            }
-
-            if (event.type == sf::Event::GainedFocus)
-            {
-
-            }
-
-            if (event.type == sf::Event::TextEntered)
-            {
-                if (event.text.unicode < 128)
-                    std::cout << "ASCII character typed: " << static_cast<char>(event.text.unicode) << std::endl;
-            }
-        }
-
-        window.display();
-    }
 
     return 0;
 }
