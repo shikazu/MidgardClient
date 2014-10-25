@@ -1,99 +1,107 @@
 #include "GSprite.h"
 
-GSprite::GSprite(const char* filename)
+GSprite::GSprite(const char* sFile)
 {
-    std::fstream *fp =  new std::fstream(filename, std::fstream::in | std::fstream::binary);
-    uint16_t signature;
-    fp->read((char*)&signature, 2);
-    if (signature == 0x5053)
+    std::fstream *pFile =  new std::fstream(sFile, std::fstream::in | std::fstream::binary);
+    uint16_t wSig;
+    pFile->read((char*)&wSig, 2);
+    if (wSig == 0x5053)
     {
-        fp->read((char*)&version, 2);//Get version
-        fp->read((char*)&imgCount, 2);//Get BMP count
-        if (imgCount > 0)
+        uint16_t wImgCount;
+        pFile->read((char*)&wVersion, 2);//Get version
+        pFile->read((char*)&wImgCount, 2);//Get BMP count
+        if (wImgCount > 0)
         {
-            this->is8bpp = true;//Contains 8bpp images - bmp
-            fp->seekg(2, fp->cur);//Skip TGA count - will be zero anyways
+            bIs8Bit = true;//Contains 8bpp images - bmp
+            pFile->seekg(2, pFile->cur);//Skip TGA count - will be zero anyways
         }
         else
         {
-            this->is8bpp = false;//Contains 32bpp images - tga
-            fp->read((char*)&imgCount, 2);//Get TGA count
+            bIs8Bit = false;//Contains 32bpp images - tga
+            pFile->read((char*)&wImgCount, 2);//Get TGA count
         }
 
-        sf::Color palette[256];
-        if (is8bpp)
+        sf::Color pPalette[256];
+        if (bIs8Bit)
         {
             //Get the Palette
-            int position = fp->tellg();//Save Current Position
-            fp->seekg(-1024, fp->end);//Skip to start of palette
+            int iPos = pFile->tellg();//Save Current Position
+            pFile->seekg(-1024, pFile->end);//Skip to start of palette
             for (uint16_t i = 0; i < 256; i++)
             {
                 uint8_t rgba[4];
-                fp->read((char*)rgba, 4);
-                palette[i].r = rgba[0];
-                palette[i].g = rgba[1];
-                palette[i].b = rgba[2];
+                pFile->read((char*)rgba, 4);
+                pPalette[i].r = rgba[0];
+                pPalette[i].g = rgba[1];
+                pPalette[i].b = rgba[2];
                 if (i == 0 || (rgba[0] == 0xFF && rgba[1] == 0x00 && rgba[2] == 0xFF))//index = 0 as well as magenta will be transparent
                 {
-                    palette[i].a = 0;
+                    pPalette[i].a = 0;
                 }
                 else
                 {
-                    palette[i].a = 255;
+                    pPalette[i].a = 255;
                 }
             }
-            fp->seekg(position, fp->beg);
+            pFile->seekg(iPos, pFile->beg);
         }
 
         //Now for the images
-        for (uint16_t i = 0; i < imgCount; i++)
+        for (uint16_t i = 0; i < wImgCount; i++)
         {
-            uint16_t width, height;
-            fp->read((char*)&width , 2);
-            fp->read((char*)&height, 2);
-            sf::Image* image = new sf::Image();
-            image->create(width, height);//, sf::Color::Transparent);
-            if (this->is8bpp)
+            uint16_t wWidth, wHeight;
+            pFile->read((char*)&wWidth , 2);
+            pFile->read((char*)&wHeight, 2);
+            sf::Image* pImage = new sf::Image();
+            pImage->create(wWidth, wHeight);//, sf::Color::Transparent);
+            if (this->bIs8Bit)
             {
-                this->fetchBmp(fp, image, palette);
+                this->fetchBmp(pFile, pImage, pPalette);
             }
             else
             {
-                this->fetchTga(fp, image);
+                this->fetchTga(pFile, pImage);
             }
-            images.push_back(image);
+            vImages.push_back(pImage);
         }
+        bValid = true;
     }
-    fp->close();
+    else
+    {
+        bValid = false;
+    }
+    pFile->close();
 }
 
 GSprite::~GSprite()
 {
-    for (uint16_t i = 0; i < imgCount; i++)
+    uint16_t wImgCount = vImages.size();
+    for (uint16_t i = 0; i < wImgCount; i++)
     {
-        delete images.at(i);
+        delete vImages.at(i);
     }
+    vImages.clear();
 }
 
-void GSprite::fetchBmp(std::fstream* fp, sf::Image* image, sf::Color* palette)
+void GSprite::fetchBmp(std::fstream* pFile, sf::Image* pImage, sf::Color* pPalette)
 {
-    uint16_t dataLength, x = 0, y = 0;
-    uint16_t width = image->getSize().x;
-    fp->read((char*)&dataLength, 2);
-    for (uint16_t i = 0;i < dataLength; i++)
+    uint16_t wDataLen, x = 0, y = 0;
+    uint16_t wWidth = pImage->getSize().x;
+    pFile->read((char*)&wDataLen, 2);
+    for (uint16_t i = 0;i < wDataLen; i++)
     {
-        uint8_t len = 1, index = fp->get();
-        if (index == 0)
+        uint8_t len = 1, index = pFile->get();
+        if (index == 0)//For index 0 RLE is followed
         {
             i++;
-            len = fp->get();
+            len = pFile->get();
         }
         for (uint8_t j = 0; j < len; j++)
         {
-            sf::Color color = palette[index];
-            image->setPixel(x, y, color);
+            sf::Color color = pPalette[index];
+            pImage->setPixel(x, y, color);
             x++;
-            if (x >= width)
+            if (x >= wWidth)
             {
                 x = 0;
                 y++;
@@ -102,23 +110,23 @@ void GSprite::fetchBmp(std::fstream* fp, sf::Image* image, sf::Color* palette)
     }
 }
 
-void GSprite::fetchTga(std::fstream* fp, sf::Image* image)
+void GSprite::fetchTga(std::fstream* pFile, sf::Image* pImage)
 {
-    uint16_t width = image->getSize().x, height = image->getSize().y;
+    uint16_t wWidth = pImage->getSize().x, wHeight = pImage->getSize().y;
     uint16_t x = 0, y = 0;
-    uint32_t dataLength =  width * height;
+    uint32_t dwDataLen =  wWidth * wHeight;
     uint8_t rgba[4];
-    for (uint32_t i = 0; i < dataLength; i++)
+    for (uint32_t i = 0; i < dwDataLen; i++)
     {
-        fp->read((char*)rgba, 4);
+        pFile->read((char*)rgba, 4);
         if (rgba[0] == 0xFF && rgba[1] == 0x00 && rgba[2] == 0xFF)
         {
             rgba[3] = 0;
         }
         sf::Color color(rgba[0], rgba[1], rgba[2], rgba[3]);
-        image->setPixel(x, y, color);
+        pImage->setPixel(x, y, color);
         x++;
-        if (x >= width)
+        if (x >= wWidth)
         {
             x = 0;
             y++;
@@ -128,10 +136,15 @@ void GSprite::fetchTga(std::fstream* fp, sf::Image* image)
 
 sf::Image* GSprite::GetImage(uint16_t index)
 {
-    return this->images.at(index);
+    return vImages.at(index);
 }
 
 uint16_t GSprite::GetImageCount()
 {
-    return this->imgCount;
+    return vImages.size();
+}
+
+bool GSprite::CheckValid()
+{
+    return bValid;
 }

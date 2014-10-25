@@ -6,19 +6,20 @@
 
 class GSprite
 {
-public:
-    GSprite(const char* filename);
-    virtual ~GSprite();
-    sf::Image* GetImage(uint16_t index);
-    uint16_t GetImageCount();
+    public:
+        GSprite(const char* sFile);
+        virtual ~GSprite();
+        bool CheckValid();
+        sf::Image* GetImage(uint16_t wIndex);
+        uint16_t GetImageCount();
 
-private:
-    bool is8bpp;
-    uint16_t version;
-    uint16_t imgCount;
-    std::vector<sf::Image*> images;
+    private:
+        bool bIs8Bit;
+        bool bValid;
+        uint16_t wVersion;
+        std::vector<sf::Image*> vImages;
 
-    void fetchBmp(std::fstream* fp, sf::Image* image, sf::Color* palette);
-    void fetchTga(std::fstream* fp, sf::Image* image);
+        void fetchBmp(std::fstream* pFile, sf::Image* pImage, sf::Color* pPalette);
+        void fetchTga(std::fstream* pFile, sf::Image* pImage);
 };
 #endif//_FORMATS_GSPRITE_H
