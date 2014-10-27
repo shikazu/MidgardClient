@@ -4,10 +4,10 @@
 #include <vector>
 #include <fstream>
 
-class GSprite
+class GSprite//Handler for SPR files
 {
     public:
-        GSprite(const char* sFile);
+        GSprite(const char* sFile, sf::Color* pPalette = 0);
         virtual ~GSprite();
         bool CheckValid();
         sf::Image* GetImage(uint16_t wIndex);

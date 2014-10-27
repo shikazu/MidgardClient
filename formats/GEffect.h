@@ -4,7 +4,7 @@
 #include <fstream>
 #include <malloc.h>
 
-class GEffect//For Handling STR files used for creating Effects
+class GEffect//Handler for STR files used for creating Effects
 {
     public:
         struct Frame //Animation KeyFrame
@@ -41,6 +41,9 @@ class GEffect//For Handling STR files used for creating Effects
 
         GEffect(const char* sFile);
         virtual ~GEffect();
+
+        Layer* GetLayer(uint32_t dwIndex);
+        uint32_t GetLayerCount();
 
     private:
         uint32_t dwVersion;

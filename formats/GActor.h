@@ -4,7 +4,7 @@
 #include <vector>
 #include <fstream>
 
-class GActor
+class GActor//Handler for ACT files
 {
     public:
         struct Layer

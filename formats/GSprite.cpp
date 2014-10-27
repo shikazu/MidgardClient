@@ -1,6 +1,6 @@
 #include "GSprite.h"
 
-GSprite::GSprite(const char* sFile)
+GSprite::GSprite(const char* sFile, sf::Color *pPalette)
 {
     std::fstream *pFile =  new std::fstream(sFile, std::fstream::in | std::fstream::binary);
     uint16_t wSig;
@@ -21,9 +21,9 @@ GSprite::GSprite(const char* sFile)
             pFile->read((char*)&wImgCount, 2);//Get TGA count
         }
 
-        sf::Color pPalette[256];
-        if (bIs8Bit)
+        if (bIs8Bit && pPalette == 0)
         {
+            pPalette = (sf::Color*)malloc(256 * sizeof(sf::Color));
             //Get the Palette
             int iPos = pFile->tellg();//Save Current Position
             pFile->seekg(-1024, pFile->end);//Skip to start of palette
@@ -47,6 +47,7 @@ GSprite::GSprite(const char* sFile)
         }
 
         //Now for the images
+        vImages.reserve(wImgCount);
         for (uint16_t i = 0; i < wImgCount; i++)
         {
             uint16_t wWidth, wHeight;

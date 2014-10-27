@@ -5,7 +5,7 @@ GActor::GActor(const char* sFile)
     std::fstream *pFile =  new std::fstream(sFile, std::fstream::in | std::fstream::binary);
     uint16_t wSig;
     pFile->read((char*)&wSig, 2);
-    if (wSig == 0x4341)
+    if (wSig == 0x4341)//AC
     {
         uint16_t wActCount;
         pFile->read((char*)&wVersion , 2);//Get version
@@ -13,6 +13,7 @@ GActor::GActor(const char* sFile)
         pFile->seekg(10, pFile->cur);//Skip 10 bytes of reserved area
 
         //Get all the action data
+        vActions.reserve(wActCount);
         for (uint16_t i = 0; i < wActCount; i++)
         {
             Action* pAction = (Action*)malloc(sizeof(Action));
@@ -25,6 +26,7 @@ GActor::GActor(const char* sFile)
         {
             uint32_t dwSoundCount;
             pFile->read((char*)&(dwSoundCount), 4);
+            vSounds.reserve(dwSoundCount);
             for (uint32_t i = 0; i < dwSoundCount; i++)
             {
                 char* sSoundFile = (char*)malloc(40);
@@ -63,6 +65,7 @@ void GActor::fetchAction(std::fstream* pFile, GActor::Action* pAction)
     uint32_t dwFrameCount;
     pFile->read((char*)&dwFrameCount, 4);
     pFile->seekg(32, pFile->cur);
+    pAction->vFrames.reserve(dwFrameCount);
     for (uint32_t i = 0; i < dwFrameCount; i++)
     {
         Frame* pFrame = (Frame*)malloc(sizeof(Frame));
@@ -81,6 +84,7 @@ void GActor::fetchFrame(std::fstream* pFile, GActor::Frame* pFrame)
     //Get the Layers
     uint32_t dwLayerCount;
     pFile->read((char*)&dwLayerCount, 4);
+    pFrame->vLayers.reserve(dwLayerCount);
     for (uint32_t i = 0; i < dwLayerCount; i++)
     {
         Layer* pLayer = (Layer*)malloc(sizeof(Layer));
@@ -101,6 +105,7 @@ void GActor::fetchFrame(std::fstream* pFile, GActor::Frame* pFrame)
     {
         uint32_t dwPosCount;
         pFile->read((char*)&dwPosCount, 4);
+        pFrame->vPositions.reserve(dwPosCount);
         for (uint32_t i = 0; i < dwPosCount; i++)
         {
             Pos* pPos = (Pos*)malloc(sizeof(Pos));
