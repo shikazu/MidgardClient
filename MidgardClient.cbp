@@ -30,15 +30,17 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-m32" />
 			<Add directory="3rdparty/libconfig-1.4.9" />
 			<Add directory="3rdparty/sfml-2.1" />
 			<Add directory="3rdparty/zlib-1.2.3" />
 		</Compiler>
 		<Linker>
-			<Add library="sfml-system" />
 			<Add library="sfml-window" />
+			<Add library="sfml-system" />
 			<Add library="sfml-graphics" />
 			<Add directory="3rdparty/sfml-2.1" />
 		</Linker>
@@ -196,6 +198,8 @@
 		<Unit filename="formats/GActor.h" />
 		<Unit filename="formats/GEffect.cpp" />
 		<Unit filename="formats/GEffect.h" />
+		<Unit filename="formats/GGrf.cpp" />
+		<Unit filename="formats/GGrf.h" />
 		<Unit filename="formats/GMapAlt.cpp" />
 		<Unit filename="formats/GMapAlt.h" />
 		<Unit filename="formats/GMapGnd.cpp" />
@@ -206,18 +210,6 @@
 		<Unit filename="formats/GMapRsm.h" />
 		<Unit filename="formats/GSprite.cpp" />
 		<Unit filename="formats/GSprite.h" />
-		<Unit filename="grf/grf.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="grf/grf.h" />
-		<Unit filename="grf/hash_tables.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="grf/hash_tables.h" />
-		<Unit filename="grf/libgrf.h" />
-		<Unit filename="grf/zlib.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="main.cpp" />
 		<Unit filename="views/LoginView.cpp" />
 		<Unit filename="views/LoginView.h" />

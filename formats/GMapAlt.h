@@ -2,6 +2,7 @@
 #define _FORMATS_GMAPALT_H
 #include <vector>
 #include <fstream>
+#include <SFML/System/InputStream.hpp>
 
 class GMapAlt//Handler for GAT files
 {
@@ -25,6 +26,7 @@ class GMapAlt//Handler for GAT files
         };
 
         GMapAlt(const char* sFile);
+        GMapAlt(std::istream &stream);
         virtual ~GMapAlt();
 
         Cell* GetCell(uint32_t dwX, uint32_t dwY);
