@@ -6,25 +6,21 @@
 
 #include <thread>
 #include <iostream>
-#include "grf/libgrf.h"
+//#include "grf/libgrf.h"
 
 #include "views/LoginView.h"
 
+#include "formats/GGrf.h"
+
 int main(int argc, char **argv)
 {
-    /*grf_handle myGRFHandle = grf_load("data.grf", false);
-
-    std::cout << "GRF File Count: " << grf_filecount(myGRFHandle) << std::endl;
-
-    //grf_node* root_node = grf_get_file_list(myGRFHandle);
-    grf_node *all_nodes = grf_get_file_id_list(myGRFHandle);
-    for(int i = 0; i < grf_filecount(myGRFHandle); i++)
+    GGrf *grf = new GGrf();
+    if(grf->open("data.grf"))
     {
-        std::cout << "File: " << grf_file_get_filename(all_nodes[i]) << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+        std::cout << "GRF opened!" << std::endl;
 
-    grf_free(myGRFHandle);*/
+        std::cout << "filecount: " << grf->getCount() << std::endl;
+    }
 
     sf::ContextSettings settings;
     settings.depthBits = 24;

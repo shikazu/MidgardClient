@@ -35,7 +35,7 @@
 	<stdio.h>
 	<sys/types.h>
 
-1314214573 source:c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\libconfig.c
+1414527182 source:c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\libconfig.c
 	"ac_config.h"
 	"libconfig.h"
 	"grammar.h"
@@ -623,15 +623,15 @@
 	"grf.h"
 	<zlib.h>
 
-1414519963 source:c:\users\rocco\documents\midgardclient\main.cpp
+1414530018 source:c:\users\rocco\documents\midgardclient\main.cpp
 	<SFML/Graphics.hpp>
 	<SFML/Window.hpp>
 	<SFML/OpenGL.hpp>
 	<libconfig.h>
 	<thread>
 	<iostream>
-	"grf/libgrf.h"
 	"views/LoginView.h"
+	"formats/GGrf.h"
 
 1367993681 c:\users\rocco\documents\midgardclient\3rdparty\sfml-2.1\sfml\opengl.hpp
 	<SFML/Config.hpp>
@@ -656,13 +656,15 @@
 	<exception>
 	<string>
 
-1414524350 source:c:\users\rocco\documents\midgardclient\formats\ggrf.cpp
+1414529926 source:c:\users\rocco\documents\midgardclient\formats\ggrf.cpp
 	"GGrf.h"
+	<fstream>
+	<sstream>
+	<zlib.h>
 
-1414524333 c:\users\rocco\documents\midgardclient\formats\ggrf.h
-	<vector>
+1414529795 c:\users\rocco\documents\midgardclient\formats\ggrf.h
 	<string>
 	<iostream>
 	<fstream>
-	<cstdint>
+	<cstring>
 
