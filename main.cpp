@@ -13,6 +13,7 @@
 
 #include "formats/GGrf.h"
 #include "formats/GMapAlt.h"
+#include "formats/GMapGnd.h"
 
 int main(int argc, char **argv)
 {
@@ -28,6 +29,24 @@ int main(int argc, char **argv)
                 GMapAlt *alt = new GMapAlt(os);
                 std::cout << "Width: " << alt->GetWidth() << std::endl;
                 std::cout << "Height: " << alt->GetHeight() << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "File doesnt exist!" << std::endl;
+        }
+
+        std::cout << std::endl;
+
+        if(grf->fileExists("data\\prontera.gnd"))
+        {
+            std::stringstream os;
+            if(grf->write("data\\prontera.gnd", os))
+            {
+                //std::cout << os.str() << std::endl;
+                GMapGnd *gnd = new GMapGnd(os);
+                std::cout << "Width: " << gnd->GetWidth() << std::endl;
+                std::cout << "Height: " << gnd->GetHeight() << std::endl;
             }
         }
         else

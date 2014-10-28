@@ -3,53 +3,67 @@
 
 GMapGnd::GMapGnd(const char* sFile)
 {
-    std::fstream *pFile = new std::fstream(sFile, std::fstream::in | std::fstream::binary);
+    std::fstream pFile(sFile, std::fstream::in | std::fstream::binary);
+    this->init(pFile);
+    pFile.close();
+}
+
+GMapGnd::GMapGnd(std::istream &stream)
+{
+    this->init(stream);
+}
+
+GMapGnd::~GMapGnd()
+{
+}
+
+void GMapGnd::init(std::istream &stream)
+{
     uint32_t wSig;
-    pFile->read((char*)&wSig, 4);
+    stream.read((char*)&wSig, 4);
     if (wSig == 0x4E475247)//GRGN
     {
-        pFile->read((char*)&wVersion, 2);
-        pFile->read((char*)&dwWidth, 4);
-        pFile->read((char*)&dwHeight, 4);
-        pFile->read((char*)&fZoom, 4);
+        stream.read((char*)&wVersion, 2);
+        stream.read((char*)&dwWidth, 4);
+        stream.read((char*)&dwHeight, 4);
+        stream.read((char*)&fZoom, 4);
 
         //Read Textures
         uint32_t dwTextureCount, dwTextureNameLen;
-        pFile->read((char*)&dwTextureCount, 4);
-        pFile->read((char*)&dwTextureNameLen, 4);
+        stream.read((char*)&dwTextureCount, 4);
+        stream.read((char*)&dwTextureNameLen, 4);
         vTextures.reserve(dwTextureCount);
         for (uint32_t i = 0; i < dwTextureCount; i++)
         {
             char* sTexture = (char*)malloc(dwTextureNameLen+1);
             sTexture[dwTextureNameLen] = 0;
-            pFile->read(sTexture, dwTextureNameLen);
+            stream.read(sTexture, dwTextureNameLen);
             vTextures.push_back(sTexture);
         }
         //Fetch/Generate Lightmaps
         uint32_t dwLightmapCount;
-        pFile->read((char*)&dwLightmapCount, 4);
+        stream.read((char*)&dwLightmapCount, 4);
         if (wVersion >= 0x0107)
         {
-            fetchLightmaps(pFile, dwLightmapCount);
+            fetchLightmaps(stream, dwLightmapCount);
         }
         else
         {
-            genLightmaps(pFile, dwLightmapCount);
+            genLightmaps(stream, dwLightmapCount);
         }
         if (!bValid)
         {
-            pFile->close();
             return;
         }
 
         //Read surfaces
         uint32_t dwSurfaceCount;
-        pFile->read((char*)&dwSurfaceCount, 4);
+        stream.read((char*)&dwSurfaceCount, 4);
         vSurfaces.reserve(dwSurfaceCount);
         for (uint32_t i = 0; i < dwSurfaceCount; i++)
         {
             Surface* pSurface = (Surface*)malloc(sizeof(Surface));
-            pFile->read((char*)pSurface, sizeof(Surface));
+            stream.read((char*)pSurface, sizeof(Surface));
             vSurfaces.push_back(pSurface);
         }
 
@@ -61,15 +75,15 @@ GMapGnd::GMapGnd(const char* sFile)
             Cell* pCell = (Cell*)malloc(sizeof(Cell));
             if (wVersion >= 0x0107)
             {
-                pFile->read((char*)pCell, sizeof(Cell));
+                stream.read((char*)pCell, sizeof(Cell));
             }
             else//Surface IDs are 16 bit
             {
                 uint16_t wTopSurface, wFrontSurface, wRightSurface;
-                pFile->read((char*)pCell->fHeight, sizeof(pCell->fHeight));
-                pFile->read((char*)&wTopSurface, 2);
-                pFile->read((char*)&wFrontSurface, 2);
-                pFile->read((char*)&wRightSurface, 2);
+                stream.read((char*)pCell->fHeight, sizeof(pCell->fHeight));
+                stream.read((char*)&wTopSurface, 2);
+                stream.read((char*)&wFrontSurface, 2);
+                stream.read((char*)&wRightSurface, 2);
 
                 pCell->lTopSurface = wTopSurface;
                 pCell->lFrontSurface = wFrontSurface;
@@ -78,19 +92,14 @@ GMapGnd::GMapGnd(const char* sFile)
             vCells.push_back(pCell);
         }
     }
-    pFile->close();
 }
 
-GMapGnd::~GMapGnd()
-{
-}
-
-void GMapGnd::fetchLightmaps(std::fstream* pFile, uint32_t dwLightmapCount)
+void GMapGnd::fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount)
 {
     uint32_t dwLMwidth, dwLMHeight, dwLMCells;//Should be 8, 8, 1
-    pFile->read((char*)&dwLMwidth, 4);
-    pFile->read((char*)&dwLMHeight, 4);
-    pFile->read((char*)&dwLMCells, 4);
+    stream.read((char*)&dwLMwidth, 4);
+    stream.read((char*)&dwLMHeight, 4);
+    stream.read((char*)&dwLMCells, 4);
     if (dwLMwidth != 8 || dwLMHeight != 8 || dwLMCells != 1)
     {
         bValid = false;
@@ -101,21 +110,21 @@ void GMapGnd::fetchLightmaps(std::fstream* pFile, uint32_t dwLightmapCount)
     for (uint32_t i = 0; i < dwLightmapCount; i++)
     {
         Lightmap* pLM = (Lightmap*)malloc(sizeof(Lightmap));
-        pFile->read((char*)pLM, sizeof(Lightmap));
+        stream.read((char*)pLM, sizeof(Lightmap));
         vLightmaps.push_back(pLM);
     }
 }
 
-void GMapGnd::genLightmaps(std::fstream* pFile, uint32_t dwLightmapCount)
+void GMapGnd::genLightmaps(std::istream &stream, uint32_t dwLightmapCount)
 {
     uint8_t pLightMapIndices[dwLightmapCount][4];
-    pFile->read((char*)pLightMapIndices, dwLightmapCount * 4);
+    stream.read((char*)pLightMapIndices, dwLightmapCount * 4);
 
     uint32_t dwColorChannels;
-    pFile->read((char*)&dwColorChannels, 4);
+    stream.read((char*)&dwColorChannels, 4);
 
     char sColorChannels[dwColorChannels][40];
-    pFile->read((char*)sColorChannels, dwColorChannels * 40);
+    stream.read((char*)sColorChannels, dwColorChannels * 40);
 
     for (uint32_t i = 0; i < dwLightmapCount; i++)
     {

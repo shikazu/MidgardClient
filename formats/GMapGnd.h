@@ -30,6 +30,7 @@ class GMapGnd//Handler for GND files - duh?
         };
 
         GMapGnd(const char* sFile);
+        GMapGnd(std::istream &stream);
         virtual ~GMapGnd();
 
         char* GetTexture(uint32_t dwIndex);
@@ -54,8 +55,9 @@ class GMapGnd//Handler for GND files - duh?
         std::vector<Surface*> vSurfaces;
         std::vector<Cell*> vCells;
 
-        void fetchLightmaps(std::fstream* pFile, uint32_t dwLightmapCount);
-        void genLightmaps(std::fstream* pFile, uint32_t dwLightmapCount);
+        void init(std::istream& stream);
+        void fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount);
+        void genLightmaps(std::istream &stream, uint32_t dwLightmapCount);
 };
 
 #endif//_FORMATS_GMAPGND_H
