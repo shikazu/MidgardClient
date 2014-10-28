@@ -1,15 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
-#include <libconfig.h++>
+
+#include <libconfig.h>
 
 #include <thread>
 #include <iostream>
 #include "grf/libgrf.h"
 
 #include "views/LoginView.h"
-
-using namespace libconfig;
 
 int main(int argc, char **argv)
 {

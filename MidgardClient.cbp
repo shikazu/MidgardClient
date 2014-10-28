@@ -15,11 +15,6 @@
 					<Add option="-g" />
 					<Add option="-DSFML_STATIC" />
 				</Compiler>
-				<Linker>
-					<Add library="sfml-graphics" />
-					<Add library="sfml-window" />
-					<Add library="sfml-system" />
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/MidgardClient" prefix_auto="1" extension_auto="1" />
@@ -37,11 +32,199 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="3rdparty/libconfig-1.4.9" />
+			<Add directory="3rdparty/sfml-2.1" />
+			<Add directory="3rdparty/zlib-1.2.3" />
 		</Compiler>
+		<Linker>
+			<Add library="sfml-system" />
+			<Add library="sfml-window" />
+			<Add library="sfml-graphics" />
+			<Add directory="3rdparty/sfml-2.1" />
+		</Linker>
+		<Unit filename="3rdparty/libconfig-1.4.9/grammar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/libconfig-1.4.9/grammar.h" />
+		<Unit filename="3rdparty/libconfig-1.4.9/libconfig.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/libconfig-1.4.9/libconfig.h" />
+		<Unit filename="3rdparty/libconfig-1.4.9/parsectx.h" />
+		<Unit filename="3rdparty/libconfig-1.4.9/scanctx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/libconfig-1.4.9/scanctx.h" />
+		<Unit filename="3rdparty/libconfig-1.4.9/scanner.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/libconfig-1.4.9/scanner.h" />
+		<Unit filename="3rdparty/libconfig-1.4.9/strbuf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/libconfig-1.4.9/strbuf.h" />
+		<Unit filename="3rdparty/libconfig-1.4.9/wincompat.h" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/Export.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/Listener.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/Music.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/Sound.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/SoundBuffer.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/SoundBufferRecorder.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/SoundRecorder.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/SoundSource.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/SoundStream.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Config.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/BlendMode.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/CircleShape.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Color.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/ConvexShape.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Drawable.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Export.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Font.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Glyph.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Image.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/PrimitiveType.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Rect.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/RectangleShape.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/RenderStates.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/RenderTarget.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/RenderTexture.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/RenderWindow.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Shader.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Shape.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Sprite.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Text.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Texture.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Transform.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Transformable.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/Vertex.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/VertexArray.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Graphics/View.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/Export.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/Ftp.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/Http.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/IpAddress.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/Packet.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/Socket.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/SocketHandle.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/SocketSelector.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/TcpListener.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/TcpSocket.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Network/UdpSocket.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/OpenGL.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Clock.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Err.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Export.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/InputStream.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Lock.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Mutex.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/NonCopyable.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Sleep.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/String.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Thread.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/ThreadLocal.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/ThreadLocalPtr.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Time.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Utf.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Vector2.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/System/Vector3.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Context.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/ContextSettings.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Event.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Export.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/GlResource.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Joystick.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Keyboard.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Mouse.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/VideoMode.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/Window.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/WindowHandle.hpp" />
+		<Unit filename="3rdparty/sfml-2.1/SFML/Window/WindowStyle.hpp" />
+		<Unit filename="3rdparty/zlib-1.2.3/adler32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/compress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/crc32.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/crc32.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/deflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/deflate.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/gzio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/infback.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/inffast.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/inffast.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/inffixed.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/inflate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/inflate.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/inftrees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/inftrees.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/trees.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/trees.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/uncompr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/zconf.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/zconf.in.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/zlib.h" />
+		<Unit filename="3rdparty/zlib-1.2.3/zutil.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/zlib-1.2.3/zutil.h" />
+		<Unit filename="formats/GActor.cpp" />
+		<Unit filename="formats/GActor.h" />
+		<Unit filename="formats/GEffect.cpp" />
+		<Unit filename="formats/GEffect.h" />
+		<Unit filename="formats/GMapAlt.cpp" />
+		<Unit filename="formats/GMapAlt.h" />
+		<Unit filename="formats/GMapGnd.cpp" />
+		<Unit filename="formats/GMapGnd.h" />
+		<Unit filename="formats/GMapRes.cpp" />
+		<Unit filename="formats/GMapRes.h" />
+		<Unit filename="formats/GMapRsm.cpp" />
+		<Unit filename="formats/GMapRsm.h" />
+		<Unit filename="formats/GSprite.cpp" />
+		<Unit filename="formats/GSprite.h" />
+		<Unit filename="grf/grf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="grf/grf.h" />
+		<Unit filename="grf/hash_tables.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="grf/hash_tables.h" />
+		<Unit filename="grf/libgrf.h" />
+		<Unit filename="grf/zlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="main.cpp" />
+		<Unit filename="views/LoginView.cpp" />
+		<Unit filename="views/LoginView.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
