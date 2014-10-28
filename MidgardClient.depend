@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1312349238 source:c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\grammar.c
+1414526073 source:c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\grammar.c
 	<string.h>
 	<stdlib.h>
 	"libconfig.h"
@@ -15,7 +15,7 @@
 	<stdlib.h>
 	<stdio.h>
 
-1414519917 c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\libconfig.h
+1414526517 c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\libconfig.h
 	<stdio.h>
 
 1284105208 c:\users\rocco\documents\midgardclient\3rdparty\libconfig-1.4.9\wincompat.h
@@ -623,11 +623,11 @@
 	"grf.h"
 	<zlib.h>
 
-1414519269 source:c:\users\rocco\documents\midgardclient\main.cpp
+1414519963 source:c:\users\rocco\documents\midgardclient\main.cpp
 	<SFML/Graphics.hpp>
 	<SFML/Window.hpp>
 	<SFML/OpenGL.hpp>
-	<libconfig.h++>
+	<libconfig.h>
 	<thread>
 	<iostream>
 	"grf/libgrf.h"
@@ -655,4 +655,14 @@
 	<stdio.h>
 	<exception>
 	<string>
+
+1414524350 source:c:\users\rocco\documents\midgardclient\formats\ggrf.cpp
+	"GGrf.h"
+
+1414524333 c:\users\rocco\documents\midgardclient\formats\ggrf.h
+	<vector>
+	<string>
+	<iostream>
+	<fstream>
+	<cstdint>
 
