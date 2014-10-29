@@ -1,10 +1,10 @@
-#ifndef _FORMATS_GMAPALT_H
-#define _FORMATS_GMAPALT_H
+#ifndef _CALTITUDE_H
+#define _CALTITUDE_H
 #include <vector>
 #include <fstream>
 #include <SFML/System/InputStream.hpp>
 
-class GMapAlt//Handler for GAT files
+class CAltitude///Handler for GAT files
 {
     public:
         enum //suffixes -> W means walkable, S means snipable
@@ -25,19 +25,22 @@ class GMapAlt//Handler for GAT files
             uint32_t dwType;
         };
 
-        GMapAlt(const char* sFile);
-        GMapAlt(std::istream &stream);
-        virtual ~GMapAlt();
+        CAltitude(const char* sFile);
+        CAltitude(std::istream &stream);
+        virtual ~CAltitude();
 
         Cell* GetCell(uint32_t dwX, uint32_t dwY);
         uint32_t GetWidth();
         uint32_t GetHeight();
+        bool IsValid();
 
     private:
+        bool bValid;
         uint16_t wVersion;
         uint32_t dwWidth;
         uint32_t dwHeight;
         std::vector<Cell*> vCells;
+        bool construct(std::istream &stream);
 };
 
-#endif//_FORMATS_GMAPALT_H
+#endif//_CALTITUDE_H

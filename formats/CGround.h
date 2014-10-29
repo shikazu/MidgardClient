@@ -1,9 +1,9 @@
-#ifndef _FORMATS_GMAPGND_H
-#define _FORMATS_GMAPGND_H
+#ifndef _CGROUND_H
+#define _CGROUND_H
 #include <vector>
 #include <fstream>
 
-class GMapGnd//Handler for GND files - duh?
+class CGround///Handler for GND files
 {
     public:
         struct Cell
@@ -29,9 +29,9 @@ class GMapGnd//Handler for GND files - duh?
             uint8_t cIntensity[8*8][3];//r,g,b
         };
 
-        GMapGnd(const char* sFile);
-        GMapGnd(std::istream &stream);
-        virtual ~GMapGnd();
+        CGround(const char* sFile);
+        CGround(std::istream &stream);
+        virtual ~CGround();
 
         char* GetTexture(uint32_t dwIndex);
         Lightmap* GetLightmap(uint32_t dwIndex);
@@ -43,6 +43,7 @@ class GMapGnd//Handler for GND files - duh?
         uint32_t GetSurfaceCount();
         uint32_t GetWidth();//Cell count is just product of width & height so not adding that
         uint32_t GetHeight();
+        bool IsValid();
 
     private:
         bool bValid;
@@ -55,9 +56,9 @@ class GMapGnd//Handler for GND files - duh?
         std::vector<Surface*> vSurfaces;
         std::vector<Cell*> vCells;
 
-        void init(std::istream& stream);
-        void fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount);
-        void genLightmaps(std::istream &stream, uint32_t dwLightmapCount);
+        bool construct(std::istream& stream);
+        bool fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount);
+        bool genLightmaps(std::istream &stream, uint32_t dwLightmapCount);
 };
 
-#endif//_FORMATS_GMAPGND_H
+#endif//_CGROUND_H

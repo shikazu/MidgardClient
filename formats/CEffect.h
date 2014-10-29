@@ -1,10 +1,10 @@
-#ifndef _FORMATS_GEFFECT_H
-#define _FORMATS_GEFFECT_H
+#ifndef _GEFFECT_H
+#define _GEFFECT_H
 #include <vector>
 #include <fstream>
 #include <malloc.h>
 
-class GEffect//Handler for STR files used for creating Effects
+class CEffect///Handler for STR files used for creating Effects
 {
     public:
         struct Frame //Animation KeyFrame
@@ -36,19 +36,24 @@ class GEffect//Handler for STR files used for creating Effects
         struct Layer
         {
             std::vector<char*> vImages;
-            std::vector<GEffect::Frame*> vFrames;
+            std::vector<CEffect::Frame*> vFrames;
         };
 
-        GEffect(const char* sFile);
-        virtual ~GEffect();
+        CEffect(const char* sFile);
+        CEffect(std::istream &stream);
+        virtual ~CEffect();
 
         Layer* GetLayer(uint32_t dwIndex);
         uint32_t GetLayerCount();
+        bool IsValid();
 
     private:
+        bool bValid;
         uint32_t dwVersion;
         std::vector<Layer*> vLayers;
-        void fetchLayer(std::fstream* pFile, GEffect::Layer* pLayer);
+
+        bool construct(std::istream &stream);
+        void fetchLayer(std::istream &stream, CEffect::Layer* pLayer);
 };
 
-#endif//_FORMATS_GEFFECT_H
+#endif//_CEFFECT_H

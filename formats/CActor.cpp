@@ -1,76 +1,74 @@
-#include "GActor.h"
+#include "CActor.h"
 
 #include <iostream>
 
-GActor::GActor(const char* sFile)
+CActor::CActor(const char* sFile)
 {
-    std::fstream pFile(sFile, std::fstream::in | std::fstream::binary);
-    this->init(pFile);
-    pFile.close();
+    std::fstream stream(sFile, std::fstream::in | std::fstream::binary);
+    bValid = construct(stream);
+    stream.close();
 }
 
-GActor::GActor(std::istream &stream)
+CActor::CActor(std::istream &stream)
 {
-    this->init(stream);
+    bValid = construct(stream);
 }
 
-void GActor::init(std::istream &stream)
+bool CActor::construct(std::istream &stream)
 {
     uint16_t wSig;
     stream.read((char*)&wSig, 2);
-    if (wSig == 0x4341)//AC
+    if (wSig != 0x4341)//AC
     {
-        uint16_t wActCount;
-        stream.read((char*)&wVersion , 2);//Get version
-        stream.read((char*)&wActCount, 2);//Get Number of Actions
-        stream.seekg(10, stream.cur);//Skip 10 bytes of reserved area
+        return false;
+    }
 
-        //Get all the action data
-        vActions.reserve(wActCount);
+    uint16_t wActCount;
+    stream.read((char*)&wVersion , 2);//Get version
+    stream.read((char*)&wActCount, 2);//Get Number of Actions
+    stream.seekg(10, stream.cur);//Skip 10 bytes of reserved area
+
+    //Get all the action data
+    vActions.reserve(wActCount);
+    for (uint16_t i = 0; i < wActCount; i++)
+    {
+        Action* pAction = new Action;
+        fetchAction(stream, pAction);
+        vActions.push_back(pAction);
+    }
+
+    //Get All the Sounds
+    if (wVersion >= 0x0201)
+    {
+        uint32_t dwSoundCount;
+        stream.read((char*)&(dwSoundCount), 4);
+        vSounds.reserve(dwSoundCount);
+        for (uint32_t i = 0; i < dwSoundCount; i++)
+        {
+            char* sSoundFile = (char*)malloc(40);
+            stream.read(sSoundFile, 40);
+            vSounds.push_back(sSoundFile);
+        }
+    }
+
+    //Get the Delay values
+    if (wVersion >= 0x0202)
+    {
+        uint16_t wActCount = vActions.size();
         for (uint16_t i = 0; i < wActCount; i++)
         {
-            Action* pAction = new Action;
-            fetchAction(stream, pAction);
-            vActions.push_back(pAction);
+            Action* pAction = vActions.at(i);
+            stream.read((char*)&(pAction->fDelay), 4);
         }
-
-        //Get All the Sounds
-        if (wVersion >= 0x0201)
-        {
-            uint32_t dwSoundCount;
-            stream.read((char*)&(dwSoundCount), 4);
-            vSounds.reserve(dwSoundCount);
-            for (uint32_t i = 0; i < dwSoundCount; i++)
-            {
-                char* sSoundFile = (char*)malloc(40);
-                stream.read(sSoundFile, 40);
-                vSounds.push_back(sSoundFile);
-            }
-        }
-
-        //Get the Delay values
-        if (wVersion >= 0x0202)
-        {
-            uint16_t wActCount = vActions.size();
-            for (uint16_t i = 0; i < wActCount; i++)
-            {
-                Action* pAction = vActions.at(i);
-                stream.read((char*)&(pAction->fDelay), 4);
-            }
-        }
-
-        bValid = true;
     }
-    else
-    {
-        bValid = false;
-    }
+    return true;
 }
 
-GActor::~GActor()
+CActor::~CActor()
 {
 }
-void GActor::fetchAction(std::istream &stream, GActor::Action* pAction)
+
+void CActor::fetchAction(std::istream &stream, CActor::Action* pAction)
 {
     //Get the Frames
     uint32_t dwFrameCount;
@@ -89,7 +87,7 @@ void GActor::fetchAction(std::istream &stream, GActor::Action* pAction)
     }
 }
 
-void GActor::fetchFrame(std::istream &stream, GActor::Frame* pFrame)
+void CActor::fetchFrame(std::istream &stream, CActor::Frame* pFrame)
 {
     stream.seekg(32, stream.cur);
     //Get the Layers
@@ -126,7 +124,7 @@ void GActor::fetchFrame(std::istream &stream, GActor::Frame* pFrame)
     }
 }
 
-void GActor::fetchLayer(std::istream &stream, GActor::Layer* pLayer)
+void CActor::fetchLayer(std::istream &stream, CActor::Layer* pLayer)
 {
     stream.read((char*)&(pLayer->dwX), 4);
     stream.read((char*)&(pLayer->dwY), 4);
@@ -174,27 +172,42 @@ void GActor::fetchLayer(std::istream &stream, GActor::Layer* pLayer)
     }
 }
 
-GActor::Action* GActor::GetAction(uint16_t wAct)
+CActor::Action* CActor::GetAction(uint16_t wAct)
 {
     return vActions.at(wAct);
 }
 
-GActor::Frame* GActor::GetFrame(uint16_t wAct, uint32_t wFrame)
+CActor::Frame* CActor::GetFrame(uint16_t wAct, uint32_t wFrame)
 {
     return GetAction(wAct)->vFrames.at(wFrame);
 }
 
-GActor::Layer* GActor::GetLayer(uint16_t wAct, uint32_t wFrame, uint32_t wLayer)
+CActor::Layer* CActor::GetLayer(uint16_t wAct, uint32_t wFrame, uint32_t wLayer)
 {
     return GetFrame(wAct, wFrame)->vLayers.at(wLayer);
 }
 
-GActor::Pos* GActor::GetPos(uint16_t wAct, uint32_t wFrame, uint32_t wPos)
+CActor::Pos* CActor::GetPos(uint16_t wAct, uint32_t wFrame, uint32_t wPos)
 {
     return GetFrame(wAct, wFrame)->vPositions.at(wPos);
 }
 
-char* GActor::GetSound(uint32_t dwSound)
+char* CActor::GetSound(uint32_t dwSound)
 {
     return vSounds.at(dwSound);
+}
+
+bool CActor::IsValid()
+{
+    return bValid;
+}
+
+uint16_t CActor::GetActionCount()
+{
+    return vActions.size();
+}
+
+uint32_t CActor::GetSoundCount()
+{
+    return vSounds.size();
 }

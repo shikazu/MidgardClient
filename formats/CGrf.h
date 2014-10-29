@@ -1,22 +1,17 @@
-#ifndef _FORMATS_GGRF_H_
-#define _FORMATS_GGRF_H_
+#ifndef _CGRF_H_
+#define _CGRF_H_
 
 #include <string>
-#include <iostream>
 #include <fstream>
-
 #include <cstring>
 
-/**
- * Reads, decompresses and decrypts the grf structure and returns readable data.
- * <b>This currently supports only GRF 2.0 version files.</b>
- *
- * \ingroup ROInterface
- */
-class GGrf {
+
+/// Reads, decompresses and decrypts the grf structure and returns readable data.
+/// This currently supports only GRF 2.0 version files
+class CGrf {
 public:
 #pragma pack(push,1)
-	/** Header common to all GRF files */
+	/// Header common to all GRF files
 	struct Header {
 		char signature[16];
 		unsigned char allowEncryption[14];
@@ -26,7 +21,7 @@ public:
 		unsigned int version;
 	};
 
-	/** Holds a sequence of compressed (and uncompressed) FileTableItem structures */
+	/// Holds a sequence of compressed (and uncompressed) FileTableItem structures
 	struct FileTableHeader {
 		unsigned int compressedLength;
 		unsigned int uncompressedLength;
@@ -49,9 +44,9 @@ public:
 
 
 		char* filename;
-		int compressedLength;
-		int compressedLengthAligned;
-		int uncompressedLength;
+		int32_t compressedLength;
+		int32_t compressedLengthAligned;
+		int32_t uncompressedLength;
 		/**
 		 * Bitmask indicating what this file is
 		 * <pre>
@@ -64,8 +59,8 @@ public:
 		 * Source: OpenKore project
 		 */
 		char flags;
-		int offset;
-		int cycle; // for DES Decoding purposes
+		int32_t offset;
+		int32_t cycle; // for DES Decoding purposes
 	};
 
 	class FileTableItem_Ver1 : public FileTableItem {
@@ -81,7 +76,7 @@ public:
 protected:
 	Header m_header;
 	bool m_opened;
-	int m_filecount;
+	int32_t m_filecount;
 	std::ifstream m_fp;
 	FileTableHeader m_filetableheader;
 
@@ -92,8 +87,8 @@ private:
 	unsigned long m_seekstart;
 
 public:
-	GGrf();
-	~GGrf();
+	CGrf();
+	~CGrf();
 
 	bool open(const std::string&);
 	void close();
@@ -115,4 +110,4 @@ public:
 	const FileTableItem& getItem(const unsigned int& i) const;
 };
 
-#endif // _FORMATS_GGRF_H_
+#endif//_CGRF_H_

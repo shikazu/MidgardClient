@@ -7,30 +7,30 @@
 #include <thread>
 #include <iostream>
 #include <sstream>
-//#include "grf/libgrf.h"
 
 #include "views/LoginView.h"
 
-#include "formats/GGrf.h"
-#include "formats/GMapAlt.h"
-#include "formats/GMapGnd.h"
-#include "formats/GActor.h"
-#include "formats/GSprite.h"
+#include "formats/CGrf.h"
+#include "formats/CAltitude.h"
+#include "formats/CGround.h"
+#include "formats/CActor.h"
+#include "formats/CSprite.h"
 
 int main(int argc, char **argv)
 {
-    GSprite *spr;
+    CSprite *spr;
 
-    GGrf *grf = new GGrf();
-    if(grf->open("data.grf"))
+    CGrf *grf = new CGrf();
+    if(grf->open("E:\\ROprojects\\Client\\ldata.grf"))
     {
+        std::cout << grf->getCount() << std::endl;
         if(grf->fileExists("data\\prontera.gat"))
         {
             std::stringstream os;
             if(grf->write("data\\prontera.gat", os))
             {
                 //std::cout << os.str() << std::endl;
-                GMapAlt *alt = new GMapAlt(os);
+                CAltitude *alt = new CAltitude(os);
                 std::cout << "Width: " << alt->GetWidth() << std::endl;
                 std::cout << "Height: " << alt->GetHeight() << std::endl;
             }
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
             if(grf->write("data\\prontera.gnd", os))
             {
                 //std::cout << os.str() << std::endl;
-                GMapGnd *gnd = new GMapGnd(os);
+                CGround *gnd = new CGround(os);
                 std::cout << "Width: " << gnd->GetWidth() << std::endl;
                 std::cout << "Height: " << gnd->GetHeight() << std::endl;
             }
@@ -58,16 +58,15 @@ int main(int argc, char **argv)
             std::cout << "File doesnt exist!" << std::endl;
         }
 
-        if(grf->fileExists("data\\sprite\\homun\\vanilmirth.act"))
+        if(grf->fileExists("data\\sprite\\몬스터\\toucan.act"))
         {
             std::stringstream os;
-            if(grf->write("data\\sprite\\homun\\vanilmirth.act", os))
+            if(grf->write("data\\sprite\\몬스터\\toucan.act", os))
             {
                 //std::cout << os.str() << std::endl;
-                GActor *act = new GActor(os);
+                CActor *act = new CActor(os);
 
-                /*std::cout << "Width: " << gnd->GetWidth() << std::endl;
-                std::cout << "Height: " << gnd->GetHeight() << std::endl;*/
+                std::cout << "Action Count: " << act->GetActionCount() << std::endl;
             }
         }
         else
@@ -75,16 +74,13 @@ int main(int argc, char **argv)
             std::cout << "File doesnt exist!" << std::endl;
         }
 
-        if(grf->fileExists("data\\sprite\\homun\\lif.spr"))
+        if(grf->fileExists("data\\sprite\\몬스터\\toucan.spr"))
         {
             std::stringstream os;
-            if(grf->write("data\\sprite\\homun\\lif.spr", os))
+            if(grf->write("data\\sprite\\몬스터\\toucan.spr", os))
             {
-                //std::cout << os.str() << std::endl;
-                spr = new GSprite(os);
-
-                /*std::cout << "Width: " << gnd->GetWidth() << std::endl;
-                std::cout << "Height: " << gnd->GetHeight() << std::endl;*/
+                spr = new CSprite(os);
+                std::cout << "Tex Count: " << spr->GetTextureCount() << std::endl;
             }
         }
         else
@@ -92,6 +88,11 @@ int main(int argc, char **argv)
             std::cout << "File doesnt exist!" << std::endl;
         }
     }
+    else
+    {
+        std::cout << "Unable to Open grf" << std::endl;
+    }
+    if (spr == nullptr ) exit(0);
 
     sf::ContextSettings settings;
     settings.depthBits = 24;
@@ -109,15 +110,6 @@ int main(int argc, char **argv)
 
 
     uint32_t counter = 0;
-    std::vector<sf::Texture*> textures;
-
-    for(uint32_t i = 0; i < spr->GetImageCount(); i++)
-    {
-        sf::Texture *texture = new sf::Texture();
-        texture->loadFromImage(*spr->GetImage(i));
-        textures.push_back(texture);
-    }
-
     while(window.isOpen())
     {
         sf::Event event;
@@ -132,7 +124,7 @@ int main(int argc, char **argv)
         window.clear(sf::Color::Black);
 
         sf::Sprite sprite;
-        sprite.setTexture(*textures.at((counter / 3) %spr->GetImageCount()), true);
+        sprite.setTexture(*spr->GetTexture((counter / 3) %spr->GetTextureCount()), true);
         sprite.scale(2.0f,2.0f);
         sprite.setPosition(50,50);
         window.draw(sprite);

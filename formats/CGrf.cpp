@@ -1,5 +1,5 @@
-#include "GGrf.h"
-
+#include "CGrf.h"
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <zlib.h>
@@ -167,17 +167,17 @@ void decodeFilename(unsigned char* buf, size_t len)
 
 } /* namespace DES */
 
-GGrf::GGrf() {
+CGrf::CGrf() {
 	m_opened = false;
 	memset((char*)&m_header, 0, sizeof(Header));
 }
 
-GGrf::~GGrf() {
+CGrf::~CGrf() {
 	if (m_opened)
 		close();
 }
 
-bool GGrf::open(const std::string& fn) {
+bool CGrf::open(const std::string& fn) {
 	if (m_opened) {
 		std::cerr << "Can't open GRF file. Object already in use. Close it first." << std::endl;
 		return(false);
@@ -250,7 +250,7 @@ bool GGrf::open(const std::string& fn) {
 	return(true);
 }
 
-void GGrf::close() {
+void CGrf::close() {
 	if (!m_opened) {
 		//_log(ROINT__ERROR, "GRF already closed");
 		return;
@@ -265,11 +265,11 @@ void GGrf::close() {
 	m_opened = false;
 }
 
-bool GGrf::isOpen() const {
+bool CGrf::isOpen() const {
 	return(m_opened);
 }
 
-bool GGrf::write(const std::string& s, std::ostream& out) {
+bool CGrf::write(const std::string& s, std::ostream& out) {
 	if (!m_opened)
 		return(false);
 
@@ -328,7 +328,7 @@ bool GGrf::write(const std::string& s, std::ostream& out) {
 	return(false);
 }
 
-bool GGrf::save(const std::string& s, const std::string& filename) {
+bool CGrf::save(const std::string& s, const std::string& filename) {
 	if (!m_opened)
 		return(false);
 
@@ -338,7 +338,7 @@ bool GGrf::save(const std::string& s, const std::string& filename) {
 	return(r);
 }
 
-std::string GGrf::getFilename(const unsigned int& i) const {
+std::string CGrf::getFilename(const unsigned int& i) const {
 	if (!m_opened)
 		return("");
 
@@ -348,29 +348,29 @@ std::string GGrf::getFilename(const unsigned int& i) const {
 	return(m_items[i].filename);
 }
 
-unsigned int GGrf::getCount() const {
+unsigned int CGrf::getCount() const {
 	if (!m_opened)
 		return(0);
 
 	return(m_filecount);
 }
 
-bool GGrf::fileExists(const std::string& fn) const {
+bool CGrf::fileExists(const std::string& fn) const {
 	for (int i = 0; i < m_filecount; i++)
 		if (!strcmp(m_items[i].filename, fn.c_str()))
 			return(true);
 	return(false);
 }
 
-const GGrf::FileTableItem& GGrf::operator[] (const unsigned int& i) const {
+const CGrf::FileTableItem& CGrf::operator[] (const unsigned int& i) const {
 	return(m_items[i]);
 }
 
-const GGrf::FileTableItem& GGrf::getItem(const unsigned int& i) const {
+const CGrf::FileTableItem& CGrf::getItem(const unsigned int& i) const {
 	return(m_items[i]);
 }
 
-GGrf::FileTableItem::FileTableItem() {
+CGrf::FileTableItem::FileTableItem() {
 	filename = NULL;
 	compressedLength = 0;
 	compressedLengthAligned = 0;
@@ -380,7 +380,7 @@ GGrf::FileTableItem::FileTableItem() {
 	cycle = 0;
 }
 
-GGrf::FileTableItem::FileTableItem(const FileTableItem& f) {
+CGrf::FileTableItem::FileTableItem(const FileTableItem& f) {
 	if (f.filename != NULL) {
 		filename = new char[strlen(f.filename) + 1];
 		strcpy(filename, f.filename);
@@ -396,12 +396,12 @@ GGrf::FileTableItem::FileTableItem(const FileTableItem& f) {
 	cycle = f.cycle;
 }
 
-GGrf::FileTableItem::~FileTableItem() {
+CGrf::FileTableItem::~FileTableItem() {
 	if (filename != NULL)
 		delete[] filename;
 }
 
-bool GGrf::FileTableItem_Ver1::readStream(std::istream& ss) {
+bool CGrf::FileTableItem_Ver1::readStream(std::istream& ss) {
 	char buf[256];
 	int idx;
 
@@ -457,7 +457,7 @@ bool GGrf::FileTableItem_Ver1::readStream(std::istream& ss) {
 	return(true);
 }
 
-bool GGrf::FileTableItem_Ver2::readStream(std::istream& ss) {
+bool CGrf::FileTableItem_Ver2::readStream(std::istream& ss) {
 	char buf[256];
 	int idx;
 	char c;
@@ -492,7 +492,7 @@ bool GGrf::FileTableItem_Ver2::readStream(std::istream& ss) {
 	return(true);
 }
 
-GGrf::FileTableItem& GGrf::FileTableItem::operator = (const FileTableItem& f) {
+CGrf::FileTableItem& CGrf::FileTableItem::operator = (const FileTableItem& f) {
 	if (filename != NULL)
 		delete[] filename;
 
