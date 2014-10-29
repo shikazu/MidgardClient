@@ -1,23 +1,36 @@
 #include "GActor.h"
 
+#include <iostream>
+
 GActor::GActor(const char* sFile)
 {
-    std::fstream *pFile =  new std::fstream(sFile, std::fstream::in | std::fstream::binary);
+    std::fstream pFile(sFile, std::fstream::in | std::fstream::binary);
+    this->init(pFile);
+    pFile.close();
+}
+
+GActor::GActor(std::istream &stream)
+{
+    this->init(stream);
+}
+
+void GActor::init(std::istream &stream)
+{
     uint16_t wSig;
-    pFile->read((char*)&wSig, 2);
+    stream.read((char*)&wSig, 2);
     if (wSig == 0x4341)//AC
     {
         uint16_t wActCount;
-        pFile->read((char*)&wVersion , 2);//Get version
-        pFile->read((char*)&wActCount, 2);//Get Number of Actions
-        pFile->seekg(10, pFile->cur);//Skip 10 bytes of reserved area
+        stream.read((char*)&wVersion , 2);//Get version
+        stream.read((char*)&wActCount, 2);//Get Number of Actions
+        stream.seekg(10, stream.cur);//Skip 10 bytes of reserved area
 
         //Get all the action data
         vActions.reserve(wActCount);
         for (uint16_t i = 0; i < wActCount; i++)
         {
-            Action* pAction = (Action*)malloc(sizeof(Action));
-            fetchAction(pFile, pAction);
+            Action* pAction = new Action;
+            fetchAction(stream, pAction);
             vActions.push_back(pAction);
         }
 
@@ -25,12 +38,12 @@ GActor::GActor(const char* sFile)
         if (wVersion >= 0x0201)
         {
             uint32_t dwSoundCount;
-            pFile->read((char*)&(dwSoundCount), 4);
+            stream.read((char*)&(dwSoundCount), 4);
             vSounds.reserve(dwSoundCount);
             for (uint32_t i = 0; i < dwSoundCount; i++)
             {
                 char* sSoundFile = (char*)malloc(40);
-                pFile->read(sSoundFile, 40);
+                stream.read(sSoundFile, 40);
                 vSounds.push_back(sSoundFile);
             }
         }
@@ -42,7 +55,7 @@ GActor::GActor(const char* sFile)
             for (uint16_t i = 0; i < wActCount; i++)
             {
                 Action* pAction = vActions.at(i);
-                pFile->read((char*)&(pAction->fDelay), 4);
+                stream.read((char*)&(pAction->fDelay), 4);
             }
         }
 
@@ -52,24 +65,21 @@ GActor::GActor(const char* sFile)
     {
         bValid = false;
     }
-    pFile->close();
 }
 
 GActor::~GActor()
 {
 }
-
-void GActor::fetchAction(std::fstream* pFile, GActor::Action* pAction)
+void GActor::fetchAction(std::istream &stream, GActor::Action* pAction)
 {
     //Get the Frames
     uint32_t dwFrameCount;
-    pFile->read((char*)&dwFrameCount, 4);
-    pFile->seekg(32, pFile->cur);
+    stream.read((char*)&dwFrameCount, 4);
     pAction->vFrames.reserve(dwFrameCount);
     for (uint32_t i = 0; i < dwFrameCount; i++)
     {
-        Frame* pFrame = (Frame*)malloc(sizeof(Frame));
-        fetchFrame(pFile, pFrame);
+        Frame* pFrame = new Frame;
+        fetchFrame(stream, pFrame);
         pAction->vFrames.push_back(pFrame);
     }
     //Set the delay for older versions
@@ -79,22 +89,23 @@ void GActor::fetchAction(std::fstream* pFile, GActor::Action* pAction)
     }
 }
 
-void GActor::fetchFrame(std::fstream* pFile, GActor::Frame* pFrame)
+void GActor::fetchFrame(std::istream &stream, GActor::Frame* pFrame)
 {
+    stream.seekg(32, stream.cur);
     //Get the Layers
     uint32_t dwLayerCount;
-    pFile->read((char*)&dwLayerCount, 4);
+    stream.read((char*)&dwLayerCount, 4);
     pFrame->vLayers.reserve(dwLayerCount);
     for (uint32_t i = 0; i < dwLayerCount; i++)
     {
-        Layer* pLayer = (Layer*)malloc(sizeof(Layer));
-        fetchLayer(pFile, pLayer);
+        Layer* pLayer = new Layer;
+        fetchLayer(stream, pLayer);
         pFrame->vLayers.push_back(pLayer);
     }
     //Get the sound index
     if (wVersion >= 0x0200)
     {
-        pFile->read((char*)&(pFrame->lSoundIndex), 4);
+        stream.read((char*)&(pFrame->lSoundIndex), 4);
     }
     else
     {
@@ -104,45 +115,46 @@ void GActor::fetchFrame(std::fstream* pFile, GActor::Frame* pFrame)
     if (wVersion >= 0x0203)
     {
         uint32_t dwPosCount;
-        pFile->read((char*)&dwPosCount, 4);
+        stream.read((char*)&dwPosCount, 4);
         pFrame->vPositions.reserve(dwPosCount);
         for (uint32_t i = 0; i < dwPosCount; i++)
         {
-            Pos* pPos = (Pos*)malloc(sizeof(Pos));
-            pFile->read((char*)pPos, sizeof(Pos));
+            Pos* pPos = new Pos;
+            stream.read((char*)pPos, sizeof(Pos));
+            pFrame->vPositions.push_back(pPos);
         }
     }
 }
 
-void GActor::fetchLayer(std::fstream* pFile, GActor::Layer* pLayer)
+void GActor::fetchLayer(std::istream &stream, GActor::Layer* pLayer)
 {
-    pFile->read((char*)&(pLayer->dwX), 4);
-    pFile->read((char*)&(pLayer->dwY), 4);
-    pFile->read((char*)&(pLayer->dwSprNum), 4);
-    pFile->read((char*)&(pLayer->dwMirror), 4);
+    stream.read((char*)&(pLayer->dwX), 4);
+    stream.read((char*)&(pLayer->dwY), 4);
+    stream.read((char*)&(pLayer->dwSprNum), 4);
+    stream.read((char*)&(pLayer->dwMirror), 4);
     if (wVersion >= 0x0200)
     {
         uint8_t rgba[4];
-        pFile->read((char*)rgba, 4);
+        stream.read((char*)rgba, 4);
         pLayer->color.r = rgba[0];
         pLayer->color.g = rgba[1];
         pLayer->color.b = rgba[2];
         pLayer->color.a = rgba[3];
-        pFile->read((char*)&(pLayer->fScaleX), 4);
+        stream.read((char*)&(pLayer->fScaleX), 4);
         if (wVersion >= 0x0204)
         {
-            pFile->read((char*)&(pLayer->fScaleY), 4);
+            stream.read((char*)&(pLayer->fScaleY), 4);
         }
         else
         {
             pLayer->fScaleY = pLayer->fScaleX;
         }
-        pFile->read((char*)&(pLayer->dwAngle), 4);
-        pFile->read((char*)&(pLayer->dwSprType), 4);
+        stream.read((char*)&(pLayer->dwAngle), 4);
+        stream.read((char*)&(pLayer->dwSprType), 4);
         if (wVersion >= 0x0205)
         {
-            pFile->read((char*)&(pLayer->dwWidth), 4);
-            pFile->read((char*)&(pLayer->dwHeight), 4);
+            stream.read((char*)&(pLayer->dwWidth), 4);
+            stream.read((char*)&(pLayer->dwHeight), 4);
         }
         else
         {

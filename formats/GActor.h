@@ -41,6 +41,7 @@ class GActor//Handler for ACT files
         };
 
         GActor(const char* sFile);
+        GActor(std::istream &stream);
         virtual ~GActor();
         bool CheckValid();
         GActor::Pos*    GetPos(uint16_t wAct, uint32_t wFrame, uint32_t wPos);
@@ -55,9 +56,11 @@ class GActor//Handler for ACT files
         std::vector<GActor::Action*> vActions;
         std::vector<char*> vSounds;
 
-        void fetchAction(std::fstream* pFile, GActor::Action* pAction);
-        void fetchFrame(std::fstream* pFile, GActor::Frame* pFrame);
-        void fetchLayer(std::fstream* pFile, GActor::Layer* pLayer);
+        void init(std::istream &stream);
+
+        void fetchAction(std::istream &stream, GActor::Action* pAction);
+        void fetchFrame(std::istream &stream, GActor::Frame* pFrame);
+        void fetchLayer(std::istream &stream, GActor::Layer* pLayer);
 };
 
 #endif//_FORMATS_GACTOR_H
