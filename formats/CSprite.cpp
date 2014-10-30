@@ -80,6 +80,7 @@ bool CSprite::construct(std::istream &stream, sf::Color *pPalette)
         }
         sf::Texture *pTexture = new sf::Texture();
         pTexture->loadFromImage(image);
+        //pTexture->setSmooth(true);
         vTextures.push_back(pTexture);
     }
     return true;
