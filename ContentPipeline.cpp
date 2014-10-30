@@ -1,5 +1,6 @@
 #include "ContentPipeline.h"
 
+#include <SFML/Network.hpp>
 std::vector<CGrf*> ContentPipeline::grf_handles;
 
 ContentPipeline::ContentPipeline(std::string dataIniPath)
@@ -68,6 +69,27 @@ bool ContentPipeline::getFileStream(std::string filePath, std::ostream& out)
         std::cout << filePath << " exists!" << std::endl;
         return true;
     }
+
+    /*
+    std::string url = "http://example.com";
+    std::string path = "/grf.php";
+
+    sf::Http::Request request;
+    request.setMethod(sf::Http::Request::Post);
+    request.setUri(path);
+    request.setHttpVersion(1, 1); // HTTP 1.1
+    request.setField("Content-Type", "application/x-www-form-urlencoded");
+    request.setBody("file=" + filePath);
+
+    sf::Http http(url);
+    sf::Http::Response response = http.sendRequest(request);
+    if (response.getStatus() == sf::Http::Response::Ok)
+    {
+        out.write(response.getBody().c_str(),response.getBody().size());
+        std::cout << filePath << " exists!" << std::endl;
+        std::cout << response.getBody() << std::endl;
+        return true;
+    }*/
 
     // Not Found!
     std::cout << filePath << " doesn't exists!" << std::endl;
