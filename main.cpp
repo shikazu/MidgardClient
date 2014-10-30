@@ -15,83 +15,49 @@
 #include "formats/CGround.h"
 #include "formats/CActor.h"
 #include "formats/CSprite.h"
+#include "ContentPipeline.h"
 
 int main(int argc, char **argv)
 {
     CSprite *spr;
+    ContentPipeline *pipeline = new ContentPipeline("data.ini");
 
-    CGrf *grf = new CGrf();
-    if(grf->open("E:\\ROprojects\\Client\\ldata.grf"))
+
+    std::stringstream os;
+    if(pipeline->getFileStream("data\\prontera.gat", os))
     {
-        std::cout << grf->getCount() << std::endl;
-        if(grf->fileExists("data\\prontera.gat"))
-        {
-            std::stringstream os;
-            if(grf->write("data\\prontera.gat", os))
-            {
-                //std::cout << os.str() << std::endl;
-                CAltitude *alt = new CAltitude(os);
-                std::cout << "Width: " << alt->GetWidth() << std::endl;
-                std::cout << "Height: " << alt->GetHeight() << std::endl;
-            }
-        }
-        else
-        {
-            std::cout << "File doesnt exist!" << std::endl;
-        }
-
-        std::cout << std::endl;
-
-        if(grf->fileExists("data\\prontera.gnd"))
-        {
-            std::stringstream os;
-            if(grf->write("data\\prontera.gnd", os))
-            {
-                //std::cout << os.str() << std::endl;
-                CGround *gnd = new CGround(os);
-                std::cout << "Width: " << gnd->GetWidth() << std::endl;
-                std::cout << "Height: " << gnd->GetHeight() << std::endl;
-            }
-        }
-        else
-        {
-            std::cout << "File doesnt exist!" << std::endl;
-        }
-
-        if(grf->fileExists("data\\sprite\\몬스터\\toucan.act"))
-        {
-            std::stringstream os;
-            if(grf->write("data\\sprite\\몬스터\\toucan.act", os))
-            {
-                //std::cout << os.str() << std::endl;
-                CActor *act = new CActor(os);
-
-                std::cout << "Action Count: " << act->GetActionCount() << std::endl;
-            }
-        }
-        else
-        {
-            std::cout << "File doesnt exist!" << std::endl;
-        }
-
-        if(grf->fileExists("data\\sprite\\몬스터\\toucan.spr"))
-        {
-            std::stringstream os;
-            if(grf->write("data\\sprite\\몬스터\\toucan.spr", os))
-            {
-                spr = new CSprite(os);
-                std::cout << "Tex Count: " << spr->GetTextureCount() << std::endl;
-            }
-        }
-        else
-        {
-            std::cout << "File doesnt exist!" << std::endl;
-        }
+        //std::cout << os.str() << std::endl;
+        CAltitude *alt = new CAltitude(os);
+        std::cout << "Width: " << alt->GetWidth() << std::endl;
+        std::cout << "Height: " << alt->GetHeight() << std::endl;
     }
-    else
+    os.clear();
+
+    if(pipeline->getFileStream("data\\prontera.gnd", os))
     {
-        std::cout << "Unable to Open grf" << std::endl;
+        //std::cout << os.str() << std::endl;
+        CGround *gnd = new CGround(os);
+        std::cout << "Width: " << gnd->GetWidth() << std::endl;
+        std::cout << "Height: " << gnd->GetHeight() << std::endl;
     }
+    os.clear();
+
+    if(pipeline->getFileStream("data\\sprite\\몬스터\\toucan.act", os))
+    {
+        //std::cout << os.str() << std::endl;
+        CActor *act = new CActor(os);
+
+        std::cout << "Action Count: " << act->GetActionCount() << std::endl;
+    }
+    os.clear();
+
+    if(pipeline->getFileStream("data\\sprite\\몬스터\\toucan.spr", os))
+    {
+        spr = new CSprite(os);
+        std::cout << "Tex Count: " << spr->GetTextureCount() << std::endl;
+    }
+    os.clear();
+
     if (spr == nullptr ) exit(0);
 
     sf::ContextSettings settings;

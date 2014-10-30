@@ -7,12 +7,12 @@
 #include <fstream>
 #include <vector>
 
-#include "formats/GGrf.h"
+#include "formats/CGrf.h"
 
 class ContentPipeline
 {
 private:
-    static std::vector<GGrf*> grf_handles;
+    static std::vector<CGrf*> grf_handles;
 public:
     ContentPipeline(std::string dataIniPath);
 

@@ -623,15 +623,21 @@
 	"grf.h"
 	<zlib.h>
 
-1414530018 source:c:\users\rocco\documents\midgardclient\main.cpp
+1414690568 source:c:\users\rocco\documents\midgardclient\main.cpp
 	<SFML/Graphics.hpp>
 	<SFML/Window.hpp>
 	<SFML/OpenGL.hpp>
 	<libconfig.h>
 	<thread>
 	<iostream>
+	<sstream>
 	"views/LoginView.h"
-	"formats/GGrf.h"
+	"formats/CGrf.h"
+	"formats/CAltitude.h"
+	"formats/CGround.h"
+	"formats/CActor.h"
+	"formats/CSprite.h"
+	"ContentPipeline.h"
 
 1367993681 c:\users\rocco\documents\midgardclient\3rdparty\sfml-2.1\sfml\opengl.hpp
 	<SFML/Config.hpp>
@@ -1281,4 +1287,83 @@
 	<GL/glu.h>
 	<OpenGL/gl.h>
 	<OpenGL/glu.h>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\cactor.cpp
+	"CActor.h"
+	<iostream>
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\cactor.h
+	<SFML/Graphics.hpp>
+	<vector>
+	<fstream>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\caltitude.cpp
+	"CAltitude.h"
+	<malloc.h>
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\caltitude.h
+	<vector>
+	<fstream>
+	<SFML/System/InputStream.hpp>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\ceffect.cpp
+	"CEffect.h"
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\ceffect.h
+	<vector>
+	<fstream>
+	<malloc.h>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\cgrf.cpp
+	"CGrf.h"
+	<iostream>
+	<fstream>
+	<sstream>
+	<zlib.h>
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\cgrf.h
+	<string>
+	<fstream>
+	<cstring>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\cground.cpp
+	"CGround.h"
+	<malloc.h>
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\cground.h
+	<vector>
+	<fstream>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\cmodel.cpp
+	"CModel.h"
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\cmodel.h
+	<vector>
+	<fstream>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\csprite.cpp
+	"CSprite.h"
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\csprite.h
+	<SFML/Graphics.hpp>
+	<vector>
+	<fstream>
+
+1414690197 source:c:\users\rocco\documents\midgardclient\formats\cworld.cpp
+	"CWorld.h"
+
+1414690197 c:\users\rocco\documents\midgardclient\formats\cworld.h
+	<vector>
+	<fstream>
+
+1414690423 source:c:\users\rocco\documents\midgardclient\contentpipeline.cpp
+	"ContentPipeline.h"
+
+1414690404 c:\users\rocco\documents\midgardclient\contentpipeline.h
+	<string>
+	<sstream>
+	<iostream>
+	<fstream>
+	<vector>
+	"formats/CGrf.h"
 

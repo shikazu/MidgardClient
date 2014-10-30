@@ -1,6 +1,6 @@
 #include "ContentPipeline.h"
 
-std::vector<GGrf*> ContentPipeline::grf_handles;
+std::vector<CGrf*> ContentPipeline::grf_handles;
 
 ContentPipeline::ContentPipeline(std::string dataIniPath)
 {
@@ -24,7 +24,7 @@ ContentPipeline::ContentPipeline(std::string dataIniPath)
 
                 std::cout << "Reading GRF File: " << value << std::endl;
 
-                GGrf *grf = new GGrf();
+                CGrf *grf = new CGrf();
                 if(grf->open(value))
                 {
                     std::cout << "Reading GRF finished." << std::endl;
