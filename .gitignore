@@ -3,5 +3,8 @@ obj/
 *.exe
 *.INI
 *.exe
+<<<<<<< HEAD
 *.exe
 *.depend
+=======
+>>>>>>> origin/master

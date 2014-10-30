@@ -194,25 +194,29 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="3rdparty/zlib-1.2.3/zutil.h" />
-		<Unit filename="formats/GActor.cpp" />
-		<Unit filename="formats/GActor.h" />
-		<Unit filename="formats/GEffect.cpp" />
-		<Unit filename="formats/GEffect.h" />
-		<Unit filename="formats/GGrf.cpp" />
-		<Unit filename="formats/GGrf.h" />
-		<Unit filename="formats/GMapAlt.cpp" />
-		<Unit filename="formats/GMapAlt.h" />
-		<Unit filename="formats/GMapGnd.cpp" />
-		<Unit filename="formats/GMapGnd.h" />
-		<Unit filename="formats/GMapRes.cpp" />
-		<Unit filename="formats/GMapRes.h" />
-		<Unit filename="formats/GMapRsm.cpp" />
-		<Unit filename="formats/GMapRsm.h" />
-		<Unit filename="formats/GSprite.cpp" />
-		<Unit filename="formats/GSprite.h" />
+		<Unit filename="formats/CActor.cpp" />
+		<Unit filename="formats/CActor.h" />
+		<Unit filename="formats/CAltitude.cpp" />
+		<Unit filename="formats/CAltitude.h" />
+		<Unit filename="formats/CEffect.cpp" />
+		<Unit filename="formats/CEffect.h" />
+		<Unit filename="formats/CGrf.cpp" />
+		<Unit filename="formats/CGrf.h" />
+		<Unit filename="formats/CGround.cpp" />
+		<Unit filename="formats/CGround.h" />
+		<Unit filename="formats/CModel.cpp" />
+		<Unit filename="formats/CModel.h" />
+		<Unit filename="formats/CSprite.cpp" />
+		<Unit filename="formats/CSprite.h" />
+		<Unit filename="formats/CWorld.cpp" />
+		<Unit filename="formats/CWorld.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="views/LoginView.cpp" />
 		<Unit filename="views/LoginView.h" />
+		<Unit filename="widgets/UIButton.cpp" />
+		<Unit filename="widgets/UIButton.h" />
+		<Unit filename="widgets/UIWidget.cpp" />
+		<Unit filename="widgets/UIWidget.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
