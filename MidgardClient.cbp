@@ -194,6 +194,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="3rdparty/zlib-1.2.3/zutil.h" />
+		<Unit filename="ContentPipeline.cpp" />
+		<Unit filename="ContentPipeline.h" />
 		<Unit filename="formats/CActor.cpp" />
 		<Unit filename="formats/CActor.h" />
 		<Unit filename="formats/CAltitude.cpp" />

@@ -8,3 +8,6 @@ obj/
 *.depend
 =======
 >>>>>>> origin/master
+*.layout
+*.exe
+*.layout
