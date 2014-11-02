@@ -3,62 +3,57 @@
 #include <SFML/OpenGL.hpp>
 
 #include <libconfig.h>
-
 #include <thread>
 #include <iostream>
 #include <sstream>
+#include <exception>
 
 #include "views/LoginView.h"
 
-#include "formats/CGrf.h"
 #include "formats/CAltitude.h"
 #include "formats/CGround.h"
 #include "formats/CActor.h"
 #include "formats/CSprite.h"
-#include "ContentPipeline.h"
+#include "common/ContentPipeline.h"
+#include "common/FileStream.h"
+#include "widgets/UIManager.h"
+#include "widgets/UIButton.h"
+
+CSprite *spr;
+ContentPipeline *pipeline;
+void Displayer(UIManager *pManager, sf::RenderWindow& window);
+void BtnCallback(UIWidget* pParent, UIButton* pButton);
 
 int main(int argc, char **argv)
 {
-    CSprite *spr;
-    ContentPipeline *pipeline = new ContentPipeline("data.ini");
-
-
-    std::stringstream os;
-    if(pipeline->getFileStream("data\\prontera.gat", os))
+    pipeline = new ContentPipeline("data.ini");
+    FileStream flstream;
+    if(pipeline->getFileStream("data\\prontera.gat", flstream, true))
     {
-        //std::cout << os.str() << std::endl;
-        CAltitude *alt = new CAltitude(os);
-        std::cout << "Width: " << alt->GetWidth() << std::endl;
-        std::cout << "Height: " << alt->GetHeight() << std::endl;
+        CAltitude *alt = new CAltitude(flstream);
+        std::cout << "Alt Width: " << alt->GetWidth() << std::endl;
+        std::cout << "Alt Height: " << alt->GetHeight() << std::endl;
     }
-    os.clear();
 
-    if(pipeline->getFileStream("data\\prontera.gnd", os))
+    if(pipeline->getFileStream("data\\prontera.gnd", flstream, true))
     {
-        //std::cout << os.str() << std::endl;
-        CGround *gnd = new CGround(os);
-        std::cout << "Width: " << gnd->GetWidth() << std::endl;
-        std::cout << "Height: " << gnd->GetHeight() << std::endl;
+        CGround *gnd = new CGround(flstream);
+        std::cout << "Gnd Width: " << gnd->GetWidth() << std::endl;
+        std::cout << "Gnd Height: " << gnd->GetHeight() << std::endl;
     }
-    os.clear();
 
-    if(pipeline->getFileStream("data\\sprite\\몬스터\\toucan.act", os))
+    if(pipeline->getFileStream("data\\sprite\\몬스터\\toucan.act", flstream, true))
     {
-        //std::cout << os.str() << std::endl;
-        CActor *act = new CActor(os);
-
+        CActor *act = new CActor(flstream);
         std::cout << "Action Count: " << act->GetActionCount() << std::endl;
     }
-    os.clear();
 
-    if(pipeline->getFileStream("data\\sprite\\몬스터\\toucan.spr", os))
+    if(pipeline->getFileStream("data\\sprite\\몬스터\\toucan.spr", flstream, true))
     {
-        spr = new CSprite(os);
-        std::cout << "Tex Count: " << spr->GetTextureCount() << std::endl;
+        spr = new CSprite(flstream);
     }
-    os.clear();
 
-    if (spr == nullptr ) exit(0);
+    if (spr == nullptr) exit(0);
 
     sf::ContextSettings settings;
     settings.depthBits = 24;
@@ -71,32 +66,42 @@ int main(int argc, char **argv)
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(30);
 
-    // the event/logic/whatever loop
+    UIManager *manager = new UIManager();
+    UIButton *pButton = new UIButton(50, 100);
+    FileStream flstream2;
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_ok.bmp", flstream2);
+    pButton->SetTexture(flstream2, pButton->INACTIVE);
+
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_ok_a.bmp", flstream2);
+    pButton->SetTexture(flstream2, pButton->ACTIVE);
+
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_ok_b.bmp", flstream2);
+    pButton->SetTexture(flstream2, pButton->PRESSED);
+    pButton->SetCallback(BtnCallback);
+    manager->AddWidget(pButton);
+    //the event/logic/whatever loop
     //LoginView *loginView = new LoginView(&window);
+    manager->SetManagerAddon(Displayer, manager->BEFORE_DRAW);
+    manager->EventLoop(window);
+    return 0;
+}
 
-
-    uint32_t counter = 0;
-    while(window.isOpen())
+void Displayer(UIManager *pManager, sf::RenderWindow& window)
+{
+    static int counter = 0;
+    if (spr != nullptr && spr->IsValid())
     {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-            {
-                // end the program
-                window.close();
-            }
-        }
-        window.clear(sf::Color::Black);
-
         sf::Sprite sprite;
         sprite.setTexture(*spr->GetTexture((counter / 3) %spr->GetTextureCount()), true);
         sprite.scale(2.0f,2.0f);
         sprite.setPosition(50,50);
         window.draw(sprite);
-        window.display();
-        counter++;
     }
+    counter++;
+}
 
-    return 0;
+void BtnCallback(UIWidget* pParent, UIButton* pButton)
+{
+    std::cout << "Callback received.. Now Ending sequence" << std::endl;
+    exit(0);
 }

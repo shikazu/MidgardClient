@@ -1,39 +1,26 @@
 #include "CActor.h"
 
-#include <iostream>
-
-CActor::CActor(const char* sFile)
-{
-    std::fstream stream(sFile, std::fstream::in | std::fstream::binary);
-    bValid = construct(stream);
-    stream.close();
-}
-
-CActor::CActor(std::istream &stream)
-{
-    bValid = construct(stream);
-}
-
-bool CActor::construct(std::istream &stream)
+CActor::CActor(FileStream &flstream)
 {
     uint16_t wSig;
-    stream.read((char*)&wSig, 2);
+    flstream.read(&wSig, 2);
     if (wSig != 0x4341)//AC
     {
-        return false;
+        bValid = false;
+        return;
     }
 
     uint16_t wActCount;
-    stream.read((char*)&wVersion , 2);//Get version
-    stream.read((char*)&wActCount, 2);//Get Number of Actions
-    stream.seekg(10, stream.cur);//Skip 10 bytes of reserved area
+    flstream.read(&wVersion , 2);//Get version
+    flstream.read(&wActCount, 2);//Get Number of Actions
+    flstream.seek(10, flstream.CUR);//Skip 10 bytes of reserved area
 
     //Get all the action data
     vActions.reserve(wActCount);
     for (uint16_t i = 0; i < wActCount; i++)
     {
         Action* pAction = new Action;
-        fetchAction(stream, pAction);
+        fetchAction(flstream, pAction);
         vActions.push_back(pAction);
     }
 
@@ -41,12 +28,12 @@ bool CActor::construct(std::istream &stream)
     if (wVersion >= 0x0201)
     {
         uint32_t dwSoundCount;
-        stream.read((char*)&(dwSoundCount), 4);
+        flstream.read(&dwSoundCount, 4);
         vSounds.reserve(dwSoundCount);
         for (uint32_t i = 0; i < dwSoundCount; i++)
         {
-            char* sSoundFile = (char*)malloc(40);
-            stream.read(sSoundFile, 40);
+            char* sSoundFile = new char[40];
+            flstream.read(sSoundFile, 40);
             vSounds.push_back(sSoundFile);
         }
     }
@@ -58,26 +45,50 @@ bool CActor::construct(std::istream &stream)
         for (uint16_t i = 0; i < wActCount; i++)
         {
             Action* pAction = vActions.at(i);
-            stream.read((char*)&(pAction->fDelay), 4);
+            flstream.read(&(pAction->fDelay), 4);
         }
     }
-    return true;
+    bValid = true;
 }
 
 CActor::~CActor()
 {
+    for (uint32_t i = 0; i < vActions.size(); i++)
+    {
+        Action* pAction = vActions.at(i);
+        for (uint32_t j = 0; j < pAction->vFrames.size(); j++)
+        {
+            Frame* pFrame = pAction->vFrames.at(j);
+            for (uint32_t k = 0; k < pFrame->vLayers.size(); k++)
+            {
+                Layer* pLayer = pFrame->vLayers.at(k);
+                delete[] pLayer;
+            }
+            for (uint32_t k = 0; k < pFrame->vPositions.size(); k++)
+            {
+                Pos* pPosition = pFrame->vPositions.at(k);
+                delete[] pPosition;
+            }
+            delete[] pFrame;
+        }
+        delete[] pAction;
+    }
+    for (uint32_t i = 0; i < vSounds.size(); i++)
+    {
+        delete[] vSounds.at(i);
+    }
 }
 
-void CActor::fetchAction(std::istream &stream, CActor::Action* pAction)
+void CActor::fetchAction(FileStream &flstream, CActor::Action* pAction)
 {
     //Get the Frames
     uint32_t dwFrameCount;
-    stream.read((char*)&dwFrameCount, 4);
+    flstream.read(&dwFrameCount, 4);
     pAction->vFrames.reserve(dwFrameCount);
     for (uint32_t i = 0; i < dwFrameCount; i++)
     {
         Frame* pFrame = new Frame;
-        fetchFrame(stream, pFrame);
+        fetchFrame(flstream, pFrame);
         pAction->vFrames.push_back(pFrame);
     }
     //Set the delay for older versions
@@ -87,23 +98,23 @@ void CActor::fetchAction(std::istream &stream, CActor::Action* pAction)
     }
 }
 
-void CActor::fetchFrame(std::istream &stream, CActor::Frame* pFrame)
+void CActor::fetchFrame(FileStream &flstream, CActor::Frame* pFrame)
 {
-    stream.seekg(32, stream.cur);
+    flstream.seek(32, flstream.CUR);
     //Get the Layers
     uint32_t dwLayerCount;
-    stream.read((char*)&dwLayerCount, 4);
+    flstream.read(&dwLayerCount, 4);
     pFrame->vLayers.reserve(dwLayerCount);
     for (uint32_t i = 0; i < dwLayerCount; i++)
     {
         Layer* pLayer = new Layer;
-        fetchLayer(stream, pLayer);
+        fetchLayer(flstream, pLayer);
         pFrame->vLayers.push_back(pLayer);
     }
     //Get the sound index
     if (wVersion >= 0x0200)
     {
-        stream.read((char*)&(pFrame->lSoundIndex), 4);
+        flstream.read(&(pFrame->lSoundIndex), 4);
     }
     else
     {
@@ -113,46 +124,46 @@ void CActor::fetchFrame(std::istream &stream, CActor::Frame* pFrame)
     if (wVersion >= 0x0203)
     {
         uint32_t dwPosCount;
-        stream.read((char*)&dwPosCount, 4);
+        flstream.read(&dwPosCount, 4);
         pFrame->vPositions.reserve(dwPosCount);
         for (uint32_t i = 0; i < dwPosCount; i++)
         {
             Pos* pPos = new Pos;
-            stream.read((char*)pPos, sizeof(Pos));
+            flstream.read(pPos, sizeof(Pos));
             pFrame->vPositions.push_back(pPos);
         }
     }
 }
 
-void CActor::fetchLayer(std::istream &stream, CActor::Layer* pLayer)
+void CActor::fetchLayer(FileStream &flstream, CActor::Layer* pLayer)
 {
-    stream.read((char*)&(pLayer->dwX), 4);
-    stream.read((char*)&(pLayer->dwY), 4);
-    stream.read((char*)&(pLayer->dwSprNum), 4);
-    stream.read((char*)&(pLayer->dwMirror), 4);
+    flstream.read(&(pLayer->dwX), 4);
+    flstream.read(&(pLayer->dwY), 4);
+    flstream.read(&(pLayer->dwSprNum), 4);
+    flstream.read(&(pLayer->dwMirror), 4);
     if (wVersion >= 0x0200)
     {
         uint8_t rgba[4];
-        stream.read((char*)rgba, 4);
+        flstream.read(rgba, 4);
         pLayer->color.r = rgba[0];
         pLayer->color.g = rgba[1];
         pLayer->color.b = rgba[2];
         pLayer->color.a = rgba[3];
-        stream.read((char*)&(pLayer->fScaleX), 4);
+        flstream.read(&(pLayer->fScaleX), 4);
         if (wVersion >= 0x0204)
         {
-            stream.read((char*)&(pLayer->fScaleY), 4);
+            flstream.read(&(pLayer->fScaleY), 4);
         }
         else
         {
             pLayer->fScaleY = pLayer->fScaleX;
         }
-        stream.read((char*)&(pLayer->dwAngle), 4);
-        stream.read((char*)&(pLayer->dwSprType), 4);
+        flstream.read(&(pLayer->dwAngle), 4);
+        flstream.read(&(pLayer->dwSprType), 4);
         if (wVersion >= 0x0205)
         {
-            stream.read((char*)&(pLayer->dwWidth), 4);
-            stream.read((char*)&(pLayer->dwHeight), 4);
+            flstream.read(&(pLayer->dwWidth), 4);
+            flstream.read(&(pLayer->dwHeight), 4);
         }
         else
         {

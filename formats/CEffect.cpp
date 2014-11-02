@@ -1,64 +1,68 @@
 #include "CEffect.h"
 
-CEffect::CEffect(const char* sFile)
-{
-    std::fstream stream(sFile, std::fstream::in | std::fstream::binary);
-    bValid = construct(stream);
-    stream.close();
-}
-
-CEffect::CEffect(std::istream &stream)
-{
-    bValid = construct(stream);
-}
-
-bool CEffect::construct(std::istream &stream)
+CEffect::CEffect(FileStream &flstream)
 {
     uint32_t wSig;
-    stream.read((char*)&wSig, 4);
+    flstream.read(&wSig, 4);
     if (wSig != 0x4D525453)//STRM
     {
-        return false;
+        bValid = false;
+        return;
     }
 
     uint32_t dwFrameCount, dwFPS, dwLayerCount;//not sure what this frame count is for
-    stream.read((char*)&dwFrameCount, 4);
-    stream.read((char*)&dwFPS, 4);
-    stream.read((char*)&dwLayerCount, 4);
-    stream.seekg(16, stream.cur);
+    flstream.read(&dwFrameCount, 4);
+    flstream.read(&dwFPS, 4);
+    flstream.read(&dwLayerCount, 4);
     vLayers.reserve(dwLayerCount);
+
+    flstream.seek(16, flstream.CUR);
     for (uint32_t i = 0; i < dwLayerCount; i++)
     {
-        Layer* pLayer = (Layer*)malloc(sizeof(Layer));
-        fetchLayer(stream, pLayer);
+        Layer* pLayer = new Layer;
+        fetchLayer(flstream, pLayer);
         vLayers.push_back(pLayer);
     }
-    return true;
+    bValid = true;
 }
 
 CEffect::~CEffect()
 {
+    for (uint32_t i = 0; i < vLayers.size(); i++)
+    {
+        Layer* pLayer = vLayers.at(i);
+        for (uint32_t j = 0; j < pLayer->vFrames.size(); j++)
+        {
+            Frame* pFrame = pLayer->vFrames.at(j);
+            delete[] pFrame;
+        }
+        for (uint32_t j = 0; j < pLayer->vImages.size(); j++)
+        {
+            delete[] pLayer->vImages.at(j);
+        }
+        delete[] pLayer;
+    }
 }
 
-void CEffect::fetchLayer(std::istream &stream, CEffect::Layer* pLayer)
+void CEffect::fetchLayer(FileStream &flstream, CEffect::Layer* pLayer)
 {
     uint32_t dwImageCount;//Texture count
-    stream.read((char*)&dwImageCount, 4);
+    flstream.read(&dwImageCount, 4);
     pLayer->vImages.reserve(dwImageCount);
     for (uint32_t i = 0; i < dwImageCount; i++)
     {
-        char* sFile = (char*)malloc(256);
-        stream.read(sFile, 256);
+        char* sFile = new char[256];
+        flstream.read(sFile, 256);
         pLayer->vImages.push_back(sFile);
     }
 
     uint32_t dwFrameCount;//KeyFrame Count
-    stream.read((char*)&dwFrameCount, 4);
+    flstream.read(&dwFrameCount, 4);
     pLayer->vFrames.reserve(dwFrameCount);
     for (uint32_t i = 0; i < dwFrameCount; i++)
     {
-        Frame* pFrame = (Frame*)malloc(sizeof(Frame));
-        stream.read((char*)pFrame, sizeof(Frame));
+        Frame* pFrame = new Frame;
+        flstream.read(pFrame, sizeof(Frame));
         pLayer->vFrames.push_back(pFrame);
     }
 }

@@ -2,13 +2,12 @@
 #define _CSPRITE_H
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <fstream>
+#include "../common/FileStream.h"
 
 class CSprite///Handler for SPR files
 {
     public:
-        CSprite(const char* sFile, sf::Color* pPalette = 0);
-        CSprite(std::istream &stream, sf::Color* pPalette = 0);
+        CSprite(FileStream &stream, sf::Color* pPalette = 0);
         virtual ~CSprite();
 
         sf::Texture* GetTexture(uint16_t wIndex);
@@ -20,8 +19,7 @@ class CSprite///Handler for SPR files
         uint16_t wVersion;
         std::vector<sf::Texture*> vTextures;
 
-        bool construct(std::istream &stream, sf::Color* pPalette = 0);
-        void fetchBmp(std::istream &stream, sf::Image* pImage, sf::Color* pPalette);
-        void fetchTga(std::istream &stream, sf::Image* pImage);
+        void fetchBmp(FileStream &flstream, sf::Image* pImage, sf::Color* pPalette);
+        void fetchTga(FileStream &flstream, sf::Image* pImage);
 };
 #endif//_CSPRITE_H

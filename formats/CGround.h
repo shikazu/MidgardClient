@@ -1,7 +1,7 @@
 #ifndef _CGROUND_H
 #define _CGROUND_H
 #include <vector>
-#include <fstream>
+#include "../common/FileStream.h"
 
 class CGround///Handler for GND files
 {
@@ -29,8 +29,7 @@ class CGround///Handler for GND files
             uint8_t cIntensity[8*8][3];//r,g,b
         };
 
-        CGround(const char* sFile);
-        CGround(std::istream &stream);
+        CGround(FileStream &flstream);
         virtual ~CGround();
 
         char* GetTexture(uint32_t dwIndex);
@@ -56,9 +55,8 @@ class CGround///Handler for GND files
         std::vector<Surface*> vSurfaces;
         std::vector<Cell*> vCells;
 
-        bool construct(std::istream& stream);
-        bool fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount);
-        bool genLightmaps(std::istream &stream, uint32_t dwLightmapCount);
+        bool fetchLightmaps(FileStream &flstream, uint32_t dwLightmapCount);
+        bool genLightmaps(FileStream &flstream, uint32_t dwLightmapCount);
 };
 
 #endif//_CGROUND_H

@@ -1,20 +1,18 @@
 #ifndef _CMODEL_H
 #define _CMODEL_H
 #include <vector>
-#include <fstream>
+#include "../common/FileStream.h"
 
 class CModel///Handler for RSM files
 {
     public:
-        CModel(const char* sFile);
-        CModel(std::istream &stream);
+        CModel(FileStream &flstream);
         virtual ~CModel();
 
         bool IsValid();
 
     private:
         bool bValid;
-        bool construct(std::istream &stream);
 };
 
 #endif//_CMODEL_H

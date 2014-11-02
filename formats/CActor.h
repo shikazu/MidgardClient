@@ -2,7 +2,7 @@
 #define _CACTOR_H
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <fstream>
+#include "../common/FileStream.h"
 
 class CActor ///Handler for ACT files
 {
@@ -40,8 +40,7 @@ class CActor ///Handler for ACT files
             float fDelay;
         };
 
-        CActor(const char* sFile);
-        CActor(std::istream &stream);
+        CActor(FileStream &flstream);
         virtual ~CActor();
 
         CActor::Pos*    GetPos(uint16_t wAct, uint32_t wFrame, uint32_t wPos);
@@ -60,11 +59,9 @@ class CActor ///Handler for ACT files
         std::vector<CActor::Action*> vActions;
         std::vector<char*> vSounds;
 
-        bool construct(std::istream &stream);
-
-        void fetchAction(std::istream &stream, CActor::Action* pAction);
-        void fetchFrame(std::istream &stream, CActor::Frame* pFrame);
-        void fetchLayer(std::istream &stream, CActor::Layer* pLayer);
+        void fetchAction(FileStream &flstream, CActor::Action* pAction);
+        void fetchFrame(FileStream &flstream, CActor::Frame* pFrame);
+        void fetchLayer(FileStream &flstream, CActor::Layer* pLayer);
 };
 
 #endif//_CACTOR_H

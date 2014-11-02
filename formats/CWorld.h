@@ -1,20 +1,18 @@
 #ifndef _CWORLD_H
 #define _CWORLD_H
 #include <vector>
-#include <fstream>
+#include "../common/FileStream.h"
 
 class CWorld///Handler for RSW files
 {
     public:
-        CWorld(const char* sFile);
-        CWorld(std::istream &stream);
+        CWorld(FileStream &flstream);
         virtual ~CWorld();
 
         bool IsValid();
 
     private:
         bool bValid;
-        bool construct(std::istream &stream);
 };
 
 #endif//_CWORLD_H

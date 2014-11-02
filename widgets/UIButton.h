@@ -1,7 +1,7 @@
-#ifndef _CBUTTON_H
-#define _CBUTTON_H
+#ifndef _UIBUTTON_H
+#define _UIBUTTON_H
 #include "UIWidget.h"
-#include <fstream>
+#include "../common/FileStream.h"
 
 class UIButton : public UIWidget
 {
@@ -17,20 +17,20 @@ class UIButton : public UIWidget
 
         UIButton(uint32_t x=0, uint32_t y=0, UIWidget* parent = NULL);
         virtual ~UIButton();
-        void SetTexture(const char* sFile, uint8_t uState);
-        void SetTexture(std::istream &stream, uint8_t uState);
+        void SetTexture(FileStream &strm, uint8_t uState);
         void SetCallback(UIButton::CallBack pFunc);
         void Paint(sf::RenderWindow &window);
 
     private:
         uint8_t uCurState;
         sf::Texture pTextures[3];
-        void MouseClicked(sf::Mouse::Button button);
-        void MousePressed(sf::Mouse::Button button);
-        void MouseReleased(sf::Mouse::Button button);
-        void MouseEntered();
-        void MouseLeft();
+        void MousePressed(sf::Event::MouseButtonEvent btnEvent);
+        void MouseReleased(sf::Event::MouseButtonEvent btnEvent);
+        void MouseClicked(sf::Event::MouseButtonEvent btnEvent);
+        void MouseEntered(sf::Event::MouseMoveEvent movEvent);
+        void MouseLeft(sf::Event::MouseMoveEvent movEvent);
         UIButton::CallBack pCbkFunc;
+        sf::Mouse::Button btnPressed;
 };
 
-#endif//_CBUTTON_H
+#endif//_UIBUTTON_H

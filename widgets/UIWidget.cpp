@@ -1,5 +1,5 @@
 #include "UIWidget.h"
-#include <iostream>
+#include "UIManager.h"
 
 UIWidget::UIWidget(uint32_t x, uint32_t y, uint32_t w, uint32_t h, UIWidget *parent)
 {
@@ -12,8 +12,8 @@ UIWidget::UIWidget(uint32_t x, uint32_t y, uint32_t w, uint32_t h, UIWidget *par
     pColors[BackColor] = sf::Color::Transparent;
     pColors[BorderColor] = sf::Color::Black;
     fBorder = 1.0;
-    bMousePressed = false;
-    bCursorInside = false;
+    bClickable = true;//Disabled for widgets that dont respond to any mouse press/release actions
+    bHasFocus = false;//Enabled for only 1 widget at a time for Keyboard/Text Entry focus
 }
 
 UIWidget::~UIWidget()
@@ -40,8 +40,13 @@ sf::Color UIWidget::Color(uint8_t uType)
     return pColors[uType];
 }
 
-void UIWidget::BDWidth(float bd) {fBorder = bd;}
-float UIWidget::BDWidth() {return fBorder;}
+void UIWidget::BorderWidth(float bd) {fBorder = bd;}
+float UIWidget::BorderWidth() {return fBorder;}
+
+void UIWidget::SetFocus() {bHasFocus = true;}
+void UIWidget::KillFocus() {bHasFocus = false;}
+bool UIWidget::IsClickable() {return bClickable;}
+
 
 void UIWidget::Paint(sf::RenderWindow &window)
 {
@@ -53,96 +58,20 @@ void UIWidget::Paint(sf::RenderWindow &window)
     window.draw(shape);
 }
 
-void UIWidget::HandleEvent(sf::Event event)
+bool UIWidget::IsPointInside(uint32_t x, uint32_t y)
 {
-    //Bounding Rectangle
     sf::IntRect rect(vPos.x, vPos.y, vSize.x, vSize.y);
-
-    //Mouse Entry/Exit - both are obtained from Mouse Move event
-    if (event.type == event.MouseMoved)
-    {
-        uint32_t dwMX = event.mouseMove.x;
-        uint32_t dwMY = event.mouseMove.y;
-        //Entry
-        if (!bCursorInside && rect.contains(dwMX, dwMY))
-        {
-            bCursorInside = true;
-            this->MouseEntered();
-            return;
-        }
-        //Exit
-        if (bCursorInside && !rect.contains(dwMX, dwMY))
-        {
-            bCursorInside = false;
-            this->MouseLeft();
-            return;
-        }
-    }
-
-    //Mouse Press
-    if (event.type == event.MouseButtonPressed)
-    {
-        if (bCursorInside)
-        {
-            if (!bMousePressed)//Catch only the first pressed one.
-            {
-                caughtButton = event.mouseButton.button;
-            }
-            bMousePressed = true;
-            this->MousePressed(event.mouseButton.button);
-            return;
-        }
-    }
-
-    //Mouse Release - also the same as a click
-    if (event.type == event.MouseButtonReleased)
-    {
-        if (bMousePressed && caughtButton == event.mouseButton.button)
-        {
-            this->MouseReleased(caughtButton);
-            if (bCursorInside)//Only consider click if the release was inside the widget
-            {
-                this->MouseClicked(caughtButton);
-            }
-            bMousePressed = false;
-            return;
-        }
-
-        if (bCursorInside)
-        {
-            this->MouseReleased(event.mouseButton.button);
-            return;
-        }
-    }
-
-    //Text Entered
-    if (event.type == event.TextEntered)
-    {
-        this->TextEntered(event.text);
-        return;
-    }
-
-    //Key Press
-    if (event.type == event.KeyPressed)
-    {
-        this->KeyPressed(event.key);
-        return;
-    }
-
-    //Key Release
-    if (event.type == event.KeyReleased)
-    {
-        this->KeyReleased(event.key);
-        return;
-    }
+    return rect.contains(x, y);
 }
 
-void UIWidget::MousePressed(sf::Mouse::Button button){}
-void UIWidget::MouseReleased(sf::Mouse::Button button){}
-void UIWidget::MouseClicked(sf::Mouse::Button button){}
-void UIWidget::MouseEntered(){}
-void UIWidget::MouseLeft(){}
+void UIWidget::MousePressed(sf::Event::MouseButtonEvent btnEvent) {}
+void UIWidget::MouseReleased(sf::Event::MouseButtonEvent btnEvent) {}
+void UIWidget::MouseClicked(sf::Event::MouseButtonEvent btnEvent) {}
 
-void UIWidget::KeyPressed(sf::Event::KeyEvent keyEvent){}
-void UIWidget::KeyReleased(sf::Event::KeyEvent keyEvent){}
-void UIWidget::TextEntered(sf::Event::TextEvent textEvent){}
+void UIWidget::MouseEntered(sf::Event::MouseMoveEvent movEvent) {}
+void UIWidget::MouseLeft(sf::Event::MouseMoveEvent movEvent) {}
+void UIWidget::MouseMoved(sf::Event::MouseMoveEvent movEvent) {}
+
+void UIWidget::KeyPressed(sf::Event::KeyEvent keyEvent) {}
+void UIWidget::KeyReleased(sf::Event::KeyEvent keyEvent) {}
+void UIWidget::TextEntered(sf::Event::TextEvent textEvent) {}

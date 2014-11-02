@@ -1,8 +1,8 @@
 #ifndef _CALTITUDE_H
 #define _CALTITUDE_H
 #include <vector>
-#include <fstream>
 #include <SFML/System/InputStream.hpp>
+#include "../common/FileStream.h"
 
 class CAltitude///Handler for GAT files
 {
@@ -25,8 +25,7 @@ class CAltitude///Handler for GAT files
             uint32_t dwType;
         };
 
-        CAltitude(const char* sFile);
-        CAltitude(std::istream &stream);
+        CAltitude(FileStream &flstream);
         virtual ~CAltitude();
 
         Cell* GetCell(uint32_t dwX, uint32_t dwY);
@@ -40,7 +39,6 @@ class CAltitude///Handler for GAT files
         uint32_t dwWidth;
         uint32_t dwHeight;
         std::vector<Cell*> vCells;
-        bool construct(std::istream &stream);
 };
 
 #endif//_CALTITUDE_H

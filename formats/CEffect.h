@@ -1,8 +1,7 @@
 #ifndef _GEFFECT_H
 #define _GEFFECT_H
 #include <vector>
-#include <fstream>
-#include <malloc.h>
+#include "../common/FileStream.h"
 
 class CEffect///Handler for STR files used for creating Effects
 {
@@ -39,8 +38,7 @@ class CEffect///Handler for STR files used for creating Effects
             std::vector<CEffect::Frame*> vFrames;
         };
 
-        CEffect(const char* sFile);
-        CEffect(std::istream &stream);
+        CEffect(FileStream &flstream);
         virtual ~CEffect();
 
         Layer* GetLayer(uint32_t dwIndex);
@@ -52,8 +50,7 @@ class CEffect///Handler for STR files used for creating Effects
         uint32_t dwVersion;
         std::vector<Layer*> vLayers;
 
-        bool construct(std::istream &stream);
-        void fetchLayer(std::istream &stream, CEffect::Layer* pLayer);
+        void fetchLayer(FileStream &flstream, CEffect::Layer* pLayer);
 };
 
 #endif//_CEFFECT_H

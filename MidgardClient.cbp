@@ -14,6 +14,8 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DSFML_STATIC" />
+					<Add directory="widgets" />
+					<Add directory="common" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -23,6 +25,8 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="widgets" />
+					<Add directory="common" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -194,6 +198,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="3rdparty/zlib-1.2.3/zutil.h" />
+		<Unit filename="common/ContentPipeline.cpp" />
+		<Unit filename="common/ContentPipeline.h" />
+		<Unit filename="common/FileStream.cpp" />
+		<Unit filename="common/FileStream.h" />
 		<Unit filename="formats/CActor.cpp" />
 		<Unit filename="formats/CActor.h" />
 		<Unit filename="formats/CAltitude.cpp" />
@@ -215,6 +223,10 @@
 		<Unit filename="views/LoginView.h" />
 		<Unit filename="widgets/UIButton.cpp" />
 		<Unit filename="widgets/UIButton.h" />
+		<Unit filename="widgets/UIManager.cpp" />
+		<Unit filename="widgets/UIManager.h" />
+		<Unit filename="widgets/UITextBox.cpp" />
+		<Unit filename="widgets/UITextBox.h" />
 		<Unit filename="widgets/UIWidget.cpp" />
 		<Unit filename="widgets/UIWidget.h" />
 		<Extensions>

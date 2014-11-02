@@ -1,6 +1,5 @@
 #include "UIButton.h"
 #include <SFML/Graphics/Rect.hpp>
-#include <iostream>
 
 UIButton::UIButton(uint32_t x, uint32_t y, UIWidget *parent):UIWidget(x, y, 0, 0, parent)
 {
@@ -10,12 +9,11 @@ UIButton::~UIButton()
 {
 }
 
-void UIButton::SetTexture(const char* sFile, uint8_t state)
+void UIButton::SetTexture(FileStream &strm, uint8_t state)
 {
     if (state >= INVALID) {return;}//invalid state
-    std::string fname(sFile);
     sf::Image image;
-    image.loadFromFile(fname);
+    image.loadFromStream(strm);
     image.createMaskFromColor(sf::Color::Magenta);
     if (vSize.x == 0 || vSize.y == 0)
     {
@@ -25,30 +23,11 @@ void UIButton::SetTexture(const char* sFile, uint8_t state)
     pTextures[state].loadFromImage(image, rect);
 }
 
-void UIButton::SetTexture(std::istream &stream, uint8_t state)
-{
-    if (state >= INVALID) {return;}//invalid state
-    stream.seekg(0, stream.end);
-    uint32_t dwLength = stream.tellg();
-    stream.seekg(0, stream.beg);
-
-    char* sBuffer = new char[dwLength];
-    stream.read(sBuffer, dwLength);
-    sf::IntRect rect(0, 0, vSize.x, vSize.y);
-    pTextures[state].loadFromMemory(sBuffer, dwLength, rect);
-    delete sBuffer;
-}
-
 void UIButton::Paint(sf::RenderWindow &window)
 {
-    sf::RectangleShape shape(sf::Vector2f(vSize.x, vSize.y));
-    shape.setFillColor(pColors[BackColor]);
-
     sf::Sprite sprite;
     sprite.setTexture(pTextures[uCurState]);
     sprite.setPosition(vPos.x, vPos.y);
-
-    window.draw(shape);
     window.draw(sprite);
 }
 
@@ -57,38 +36,36 @@ void UIButton::SetCallback(UIButton::CallBack pFunc)
     pCbkFunc = pFunc;
 }
 
-void UIButton::MouseClicked(sf::Mouse::Button button)
+void UIButton::MouseClicked(sf::Event::MouseButtonEvent btnEvent)
 {
-    if (button == sf::Mouse::Left)
+    if (btnEvent.button == sf::Mouse::Left && pCbkFunc != nullptr)
     {
-        if (pCbkFunc != nullptr)
-        {
-            pCbkFunc(pParent, this);
-        }
+        pCbkFunc(pParent, this);
     }
 }
 
-void UIButton::MouseEntered()
+void UIButton::MouseEntered(sf::Event::MouseMoveEvent movEvent)
 {
-    if (bMousePressed) return;
+    if (uCurState == PRESSED) return;
     uCurState = ACTIVE;
 }
 
-void UIButton::MouseLeft()
+void UIButton::MouseLeft(sf::Event::MouseMoveEvent movEvent)
 {
-    if (bMousePressed) return;
+    if (uCurState == PRESSED) return;
     uCurState = INACTIVE;
 }
 
-void UIButton::MousePressed(sf::Mouse::Button button)
+void UIButton::MousePressed(sf::Event::MouseButtonEvent btnEvent)
 {
     uCurState = PRESSED;
+    btnPressed = btnEvent.button;
 }
 
-void UIButton::MouseReleased(sf::Mouse::Button button)
+void UIButton::MouseReleased(sf::Event::MouseButtonEvent btnEvent)
 {
-    if (button != caughtButton) return;
-    if (bCursorInside)
+    if (btnEvent.button != btnPressed) return;
+    if (IsPointInside(btnEvent.x, btnEvent.y))
     {
         uCurState = ACTIVE;
     }

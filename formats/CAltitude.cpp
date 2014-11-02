@@ -1,44 +1,35 @@
 #include "CAltitude.h"
-#include <malloc.h>
 
-CAltitude::CAltitude(const char* sFile)
-{
-
-    std::fstream stream(sFile, std::fstream::in | std::fstream::binary);
-    bValid = construct(stream);
-    stream.close();
-}
-
-CAltitude::CAltitude(std::istream &stream)
-{
-    bValid = construct(stream);
-}
-
-bool CAltitude::construct(std::istream &stream)
+CAltitude::CAltitude(FileStream &flstream)
 {
     uint32_t wSig;
-    stream.read((char*)&wSig, 4);
+    flstream.read(&wSig, 4);
     if (wSig != 0x54415247)//GRAT
     {
-        return false;
+        bValid = false;
+        return;
     }
 
-    stream.read((char*)&wVersion, 2);
-    stream.read((char*)&dwWidth, 4);
-    stream.read((char*)&dwHeight, 4);
+    flstream.read(&wVersion, 2);
+    flstream.read(&dwWidth, 4);
+    flstream.read(&dwHeight, 4);
     uint32_t dwCellCount = dwWidth * dwHeight;
     vCells.reserve(dwCellCount);
     for (uint32_t i = 0; i < dwCellCount; i++)
     {
-        Cell* pCell = (Cell*)malloc(sizeof(Cell));
-        stream.read((char*)pCell, sizeof(Cell));
+        Cell* pCell = new Cell;
+        flstream.read(pCell, sizeof(Cell));
         vCells.push_back(pCell);
     }
-    return true;
+    bValid = true;
 }
 
 CAltitude::~CAltitude()
 {
+    for (uint32_t i = 0; i < vCells.size(); i++)
+    {
+        delete[] vCells.at(i);
+    }
 }
 
 CAltitude::Cell* CAltitude::GetCell(uint32_t dwX, uint32_t dwY)
@@ -54,4 +45,9 @@ uint32_t CAltitude::GetWidth()
 uint32_t CAltitude::GetHeight()
 {
     return dwHeight;
+}
+
+bool CAltitude::IsValid()
+{
+    return bValid;
 }

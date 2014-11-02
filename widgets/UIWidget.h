@@ -1,5 +1,5 @@
-#ifndef _CWIDGET_H
-#define _CWIDGET_H
+#ifndef _UIWIDGET_H
+#define _UIWIDGET_H
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Event.hpp>
 
@@ -28,34 +28,38 @@ class UIWidget
         void Color(sf::Color c, uint8_t uType);
         sf::Color Color(uint8_t uType);
 
-        void BDWidth(float bd);
-        float BDWidth();
+        void BorderWidth(float bd);
+        float BorderWidth();
 
         UIWidget* Parent();//No setter you can't set parent afterwards thats absurd
 
-        void HandleEvent(sf::Event event);
-
-    protected:
         virtual void Paint(sf::RenderWindow &window);
 
-        virtual void MousePressed(sf::Mouse::Button button);
-        virtual void MouseReleased(sf::Mouse::Button button);
-        virtual void MouseClicked(sf::Mouse::Button button);
-        virtual void MouseEntered();
-        virtual void MouseLeft();
+        virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent);
+        virtual void MouseReleased(sf::Event::MouseButtonEvent btnEvent);
+        virtual void MouseClicked(sf::Event::MouseButtonEvent btnEvent);
+
+        virtual void MouseEntered(sf::Event::MouseMoveEvent movEvent);
+        virtual void MouseLeft(sf::Event::MouseMoveEvent movEvent);
+        virtual void MouseMoved(sf::Event::MouseMoveEvent movEvent);
 
         virtual void KeyPressed(sf::Event::KeyEvent keyEvent);
         virtual void KeyReleased(sf::Event::KeyEvent keyEvent);
         virtual void TextEntered(sf::Event::TextEvent textEvent);
 
-        bool bMousePressed;//Enabled when mouse is pressed on top of widget, disabled when released anywhere.
-        bool bCursorInside;//Enabled when cursor moves inside widget area, disabled when moving out.
-        sf::Mouse::Button caughtButton;//First Mouse Button pressed.
+        void SetFocus();
+        void KillFocus();
+        bool IsClickable();
+        bool IsPointInside(uint32_t x, uint32_t y);
+
+    protected:
         sf::Vector2u vPos;
         sf::Vector2u vSize;
         sf::Color pColors[3];
         float fBorder;
         UIWidget* pParent;
+        bool bHasFocus;
+        bool bClickable;
 };
 
-#endif//_CWIDGET_H
+#endif//_UIWIDGET_H

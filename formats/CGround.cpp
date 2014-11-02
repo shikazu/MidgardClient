@@ -1,75 +1,58 @@
 #include "CGround.h"
-#include <malloc.h>
 
-CGround::CGround(const char* sFile)
-{
-    std::fstream stream(sFile, std::fstream::in | std::fstream::binary);
-    bValid = construct(stream);
-    stream.close();
-}
-
-CGround::CGround(std::istream &stream)
-{
-    bValid = construct(stream);
-}
-
-CGround::~CGround()
-{
-}
-
-bool CGround::construct(std::istream &stream)
+CGround::CGround(FileStream &flstream)
 {
     uint32_t wSig;
-    stream.read((char*)&wSig, 4);
+    flstream.read(&wSig, 4);
     if (wSig != 0x4E475247)//GRGN
     {
-        return false;
+        bValid = false;
+        return;
     }
 
-    stream.read((char*)&wVersion, 2);
-    stream.read((char*)&dwWidth, 4);
-    stream.read((char*)&dwHeight, 4);
-    stream.read((char*)&fZoom, 4);
+    flstream.read(&wVersion, 2);
+    flstream.read(&dwWidth, 4);
+    flstream.read(&dwHeight, 4);
+    flstream.read(&fZoom, 4);
 
     //Read Textures
     uint32_t dwTextureCount, dwTextureNameLen;
-    stream.read((char*)&dwTextureCount, 4);
-    stream.read((char*)&dwTextureNameLen, 4);
+    flstream.read(&dwTextureCount, 4);
+    flstream.read(&dwTextureNameLen, 4);
     vTextures.reserve(dwTextureCount);
     for (uint32_t i = 0; i < dwTextureCount; i++)
     {
-        char* sTexture = (char*)malloc(dwTextureNameLen+1);
+        char* sTexture = new char[dwTextureNameLen + 1];
         sTexture[dwTextureNameLen] = 0;
-        stream.read(sTexture, dwTextureNameLen);
+        flstream.read(sTexture, dwTextureNameLen);
         vTextures.push_back(sTexture);
     }
 
     //Fetch/Generate Lightmaps
     uint32_t dwLightmapCount;
-    stream.read((char*)&dwLightmapCount, 4);
-    bool bStatus;
+    flstream.read(&dwLightmapCount, 4);
     if (wVersion >= 0x0107)
     {
-        bStatus = fetchLightmaps(stream, dwLightmapCount);
+        bValid = fetchLightmaps(flstream, dwLightmapCount);
     }
     else
     {
-        bStatus = genLightmaps(stream, dwLightmapCount);
+        bValid = genLightmaps(flstream, dwLightmapCount);
     }
 
-    if (!bStatus)
+    if (!bValid)
     {
-        return false;
+        return;
     }
 
     //Read surfaces
     uint32_t dwSurfaceCount;
-    stream.read((char*)&dwSurfaceCount, 4);
+    flstream.read(&dwSurfaceCount, 4);
     vSurfaces.reserve(dwSurfaceCount);
     for (uint32_t i = 0; i < dwSurfaceCount; i++)
     {
-        Surface* pSurface = (Surface*)malloc(sizeof(Surface));
-        stream.read((char*)pSurface, sizeof(Surface));
+        Surface* pSurface = new Surface;
+        flstream.read(pSurface, sizeof(Surface));
         vSurfaces.push_back(pSurface);
     }
 
@@ -78,18 +61,18 @@ bool CGround::construct(std::istream &stream)
     vCells.reserve(dwCellCount);
     for (uint32_t i = 0; i < dwCellCount; i++)
     {
-        Cell* pCell = (Cell*)malloc(sizeof(Cell));
+        Cell* pCell = new Cell;
         if (wVersion >= 0x0107)
         {
-            stream.read((char*)pCell, sizeof(Cell));
+            flstream.read(pCell, sizeof(Cell));
         }
         else//Surface IDs are 16 bit
         {
             uint16_t wTopSurface, wFrontSurface, wRightSurface;
-            stream.read((char*)pCell->fHeight, sizeof(pCell->fHeight));
-            stream.read((char*)&wTopSurface, 2);
-            stream.read((char*)&wFrontSurface, 2);
-            stream.read((char*)&wRightSurface, 2);
+            flstream.read(pCell->fHeight, sizeof(pCell->fHeight));
+            flstream.read(&wTopSurface, 2);
+            flstream.read(&wFrontSurface, 2);
+            flstream.read(&wRightSurface, 2);
 
             pCell->lTopSurface = wTopSurface;
             pCell->lFrontSurface = wFrontSurface;
@@ -97,15 +80,35 @@ bool CGround::construct(std::istream &stream)
         }
         vCells.push_back(pCell);
     }
-    return true;
+    //bValid should already be true from earlier Lightmap creation
 }
 
-bool CGround::fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount)
+CGround::~CGround()
+{
+    for (uint32_t i = 0; i < vTextures.size(); i++)
+    {
+        delete[] vTextures.at(i);
+    }
+    for (uint32_t i = 0; i < vLightmaps.size(); i++)
+    {
+        delete[] vLightmaps.at(i);
+    }
+    for (uint32_t i = 0; i < vSurfaces.size(); i++)
+    {
+        delete[] vSurfaces.at(i);
+    }
+    for (uint32_t i = 0; i < vCells.size(); i++)
+    {
+        delete[] vCells.at(i);
+    }
+}
+
+bool CGround::fetchLightmaps(FileStream &flstream, uint32_t dwLightmapCount)
 {
     uint32_t dwLMwidth, dwLMHeight, dwLMCells;//Should be 8, 8, 1
-    stream.read((char*)&dwLMwidth, 4);
-    stream.read((char*)&dwLMHeight, 4);
-    stream.read((char*)&dwLMCells, 4);
+    flstream.read(&dwLMwidth, 4);
+    flstream.read(&dwLMHeight, 4);
+    flstream.read(&dwLMCells, 4);
     if (dwLMwidth != 8 || dwLMHeight != 8 || dwLMCells != 1)
     {
         return false;
@@ -114,23 +117,23 @@ bool CGround::fetchLightmaps(std::istream &stream, uint32_t dwLightmapCount)
     vLightmaps.reserve(dwLightmapCount);
     for (uint32_t i = 0; i < dwLightmapCount; i++)
     {
-        Lightmap* pLM = (Lightmap*)malloc(sizeof(Lightmap));
-        stream.read((char*)pLM, sizeof(Lightmap));
+        Lightmap* pLM = new Lightmap;
+        flstream.read(pLM, sizeof(Lightmap));
         vLightmaps.push_back(pLM);
     }
     return true;
 }
 
-bool CGround::genLightmaps(std::istream &stream, uint32_t dwLightmapCount)
+bool CGround::genLightmaps(FileStream &flstream, uint32_t dwLightmapCount)
 {
     uint8_t pLightMapIndices[dwLightmapCount][4];
-    stream.read((char*)pLightMapIndices, dwLightmapCount * 4);
+    flstream.read(pLightMapIndices, dwLightmapCount * 4);
 
     uint32_t dwColorChannels;
-    stream.read((char*)&dwColorChannels, 4);
+    flstream.read(&dwColorChannels, 4);
 
     char sColorChannels[dwColorChannels][40];
-    stream.read((char*)sColorChannels, dwColorChannels * 40);
+    flstream.read(sColorChannels, dwColorChannels * 40);
 
     for (uint32_t i = 0; i < dwLightmapCount; i++)
     {
@@ -141,7 +144,7 @@ bool CGround::genLightmaps(std::istream &stream, uint32_t dwLightmapCount)
         }
         char *sChannel_a = sColorChannels[pLMIndex[0]], *sChannel_r = sColorChannels[pLMIndex[1]];
         char *sChannel_g = sColorChannels[pLMIndex[2]], *sChannel_b = sColorChannels[pLMIndex[3]];
-        Lightmap* pLM = (Lightmap*)malloc(sizeof(Lightmap));
+        Lightmap* pLM = new Lightmap;
         uint32_t aux = 0;
         for (uint32_t j = 0;  j < 64; j++, aux+=5)
         {
