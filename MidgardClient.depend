@@ -178,7 +178,7 @@
 1414692822 source:e:\roprojects\midgardclient\3rdparty\zlib-1.2.3\zutil.c
 	"zutil.h"
 
-1414889912 source:e:\roprojects\midgardclient\common\filestream.cpp
+1415052664 source:e:\roprojects\midgardclient\common\filestream.cpp
 	"FileStream.h"
 	<fstream>
 
@@ -659,7 +659,7 @@
 	<vector>
 	"../common/FileStream.h"
 
-1414891646 source:e:\roprojects\midgardclient\main.cpp
+1414920766 source:e:\roprojects\midgardclient\main.cpp
 	<SFML/Graphics.hpp>
 	<SFML/Window.hpp>
 	<SFML/OpenGL.hpp>
@@ -677,6 +677,7 @@
 	"common/FileStream.h"
 	"widgets/UIManager.h"
 	"widgets/UIButton.h"
+	"widgets/UITextBox.h"
 
 1414692820 e:\roprojects\midgardclient\3rdparty\sfml-2.1\sfml\opengl.hpp
 	<SFML/Config.hpp>
@@ -705,25 +706,27 @@
 	"UIButton.h"
 	<SFML/Graphics/Rect.hpp>
 
-1414873720 e:\roprojects\midgardclient\widgets\uibutton.h
+1414914864 e:\roprojects\midgardclient\widgets\uibutton.h
 	"UIWidget.h"
 	"../common/FileStream.h"
 
-1414783418 e:\roprojects\midgardclient\widgets\uiwidget.h
+1414914324 e:\roprojects\midgardclient\widgets\uiwidget.h
 	<SFML/Graphics.hpp>
 	<SFML/Window/Event.hpp>
 
-1414892212 source:e:\roprojects\midgardclient\widgets\uimanager.cpp
+1414921104 source:e:\roprojects\midgardclient\widgets\uimanager.cpp
 	"UIManager.h"
+	<iostream>
 
 1414891950 e:\roprojects\midgardclient\widgets\uimanager.h
 	"UIWidget.h"
 	<list>
 
-1414824184 source:e:\roprojects\midgardclient\widgets\uitextbox.cpp
+1414920180 source:e:\roprojects\midgardclient\widgets\uitextbox.cpp
 	"UITextBox.h"
+	<iostream>
 
-1414701626 e:\roprojects\midgardclient\widgets\uitextbox.h
+1414918674 e:\roprojects\midgardclient\widgets\uitextbox.h
 	<SFML/Graphics/Font.hpp>
 	<SFML/Graphics/Text.hpp>
 	"UIWidget.h"
@@ -749,4 +752,26 @@
 
 1414851646 e:\roprojects\midgardclient\common\des.h
 	<cstring>
+
+1415140192 source:e:\roprojects\midgardclient\ui\button.cpp
+	"Button.h"
+
+1415140590 e:\roprojects\midgardclient\ui\button.h
+	"../common/FileStream.h"
+	"Widget.h"
+	"Manager.h"
+
+1415140160 e:\roprojects\midgardclient\ui\widget.h
+	<SFML/Graphics.hpp>
+	<list>
+
+1415140216 e:\roprojects\midgardclient\ui\manager.h
+	"Widget.h"
+
+1415139850 source:e:\roprojects\midgardclient\ui\manager.cpp
+	"Manager.h"
+
+1415139656 source:e:\roprojects\midgardclient\ui\widget.cpp
+	"Widget.h"
+	"Manager.h"
 

@@ -74,6 +74,7 @@ bool FileStream::load(std::string sFile)
 
     char sBuffer[dwLength];
     flstream.read(sBuffer, dwLength);//Read from file
+		clear();//Free up the stream
     pStream->write(sBuffer, dwLength);//and Fill into stream
     flstream.close();
 
@@ -82,7 +83,7 @@ bool FileStream::load(std::string sFile)
 
 void FileStream::load(char* data, uint32_t dwLength)
 {
-    clear();
+    clear();//free up the stream
     pStream->write(data, dwLength);
 }
 

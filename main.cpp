@@ -16,17 +16,17 @@
 #include "formats/CSprite.h"
 #include "common/ContentPipeline.h"
 #include "common/FileStream.h"
-#include "widgets/UIManager.h"
-#include "widgets/UIButton.h"
+#include "UI/Manager.h"
+#include "UI/Button.h"
 
-CSprite *spr;
-ContentPipeline *pipeline;
-void Displayer(UIManager *pManager, sf::RenderWindow& window);
-void BtnCallback(UIWidget* pParent, UIButton* pButton);
+//sf::Font font;
+
+void BtnCallback(UI::Button* pButton, UI::Manager* pManager);
 
 int main(int argc, char **argv)
 {
-    pipeline = new ContentPipeline("data.ini");
+    CSprite *spr;
+    ContentPipeline *pipeline = new ContentPipeline("data.ini");
     FileStream flstream;
     if(pipeline->getFileStream("data\\prontera.gat", flstream, true))
     {
@@ -66,41 +66,50 @@ int main(int argc, char **argv)
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(30);
 
-    UIManager *manager = new UIManager();
-    UIButton *pButton = new UIButton(50, 100);
-    FileStream flstream2;
-    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_ok.bmp", flstream2);
-    pButton->SetTexture(flstream2, pButton->INACTIVE);
+    UI::Manager manager(window);
+    UI::Button *pButton = new UI::Button(100, 200);
 
-    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_ok_a.bmp", flstream2);
-    pButton->SetTexture(flstream2, pButton->ACTIVE);
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_close.bmp", flstream);
+    pButton->SetTexture(flstream, pButton->INACTIVE);
 
-    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_ok_b.bmp", flstream2);
-    pButton->SetTexture(flstream2, pButton->PRESSED);
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_close_a.bmp", flstream);
+    pButton->SetTexture(flstream, pButton->ACTIVE);
+
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_close_b.bmp", flstream);
+    pButton->SetTexture(flstream, pButton->PRESSED);
     pButton->SetCallback(BtnCallback);
-    manager->AddWidget(pButton);
-    //the event/logic/whatever loop
-    //LoginView *loginView = new LoginView(&window);
-    manager->SetManagerAddon(Displayer, manager->BEFORE_DRAW);
-    manager->EventLoop(window);
+
+    manager.AddChild(pButton);
+
+    int counter = 0;
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == event.Closed)
+            {
+                window.close();
+            }
+            manager.ParseEvent(event);
+        }
+        window.clear();
+        window.draw(manager);
+        if (spr != nullptr && spr->IsValid())
+        {
+            sf::Sprite sprite;
+            sprite.setTexture(*spr->GetTexture((counter / 3) %spr->GetTextureCount()), true);
+            sprite.scale(2.0f,2.0f);
+            sprite.setPosition(50,50);
+            window.draw(sprite);
+            counter++;
+        }
+        window.display();
+    }
     return 0;
 }
 
-void Displayer(UIManager *pManager, sf::RenderWindow& window)
-{
-    static int counter = 0;
-    if (spr != nullptr && spr->IsValid())
-    {
-        sf::Sprite sprite;
-        sprite.setTexture(*spr->GetTexture((counter / 3) %spr->GetTextureCount()), true);
-        sprite.scale(2.0f,2.0f);
-        sprite.setPosition(50,50);
-        window.draw(sprite);
-    }
-    counter++;
-}
-
-void BtnCallback(UIWidget* pParent, UIButton* pButton)
+void BtnCallback(UI::Button* pButton, UI::Manager* pManager)
 {
     std::cout << "Callback received.. Now Ending sequence" << std::endl;
     exit(0);
