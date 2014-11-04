@@ -198,6 +198,12 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="3rdparty/zlib-1.2.3/zutil.h" />
+		<Unit filename="UI/Button.cpp" />
+		<Unit filename="UI/Button.h" />
+		<Unit filename="UI/Manager.cpp" />
+		<Unit filename="UI/Manager.h" />
+		<Unit filename="UI/Widget.cpp" />
+		<Unit filename="UI/Widget.h" />
 		<Unit filename="common/ContentPipeline.cpp" />
 		<Unit filename="common/ContentPipeline.h" />
 		<Unit filename="common/FileStream.cpp" />
@@ -221,14 +227,6 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="views/LoginView.cpp" />
 		<Unit filename="views/LoginView.h" />
-		<Unit filename="widgets/UIButton.cpp" />
-		<Unit filename="widgets/UIButton.h" />
-		<Unit filename="widgets/UIManager.cpp" />
-		<Unit filename="widgets/UIManager.h" />
-		<Unit filename="widgets/UITextBox.cpp" />
-		<Unit filename="widgets/UITextBox.h" />
-		<Unit filename="widgets/UIWidget.cpp" />
-		<Unit filename="widgets/UIWidget.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
