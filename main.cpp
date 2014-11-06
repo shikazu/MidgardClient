@@ -18,6 +18,7 @@
 #include "common/FileStream.h"
 #include "UI/Manager.h"
 #include "UI/Button.h"
+#include "UI/TextBox.h"
 
 //sf::Font font;
 
@@ -81,6 +82,28 @@ int main(int argc, char **argv)
 
     manager.AddChild(pButton);
 
+    sf::Font font;
+    font.loadFromFile("SFTechnodelightNS.TTF");
+    UI::TextBox *pBox = new UI::TextBox(200, 200, 500, 30);
+    UI::TextBox *pBox2 = new UI::TextBox(200, 250, 500, 30);
+    sf::Color color = sf::Color::White;
+
+    pBox->SetText("DDDD");
+    pBox->SetFont(font);
+    pBox->SetCharSize(14);
+    pBox->SetPassChar('o');
+    pBox->SetColor(color, UI::FOREGROUND);
+
+    pBox2->SetText("DDDD");
+    pBox2->SetFont(font);
+    pBox2->SetCharSize(14);
+    pBox->SetColor(color, UI::FOREGROUND);
+
+    manager.AddChild(pBox);
+    manager.AddFocus(pBox);
+    manager.AddChild(pBox2);
+    manager.AddFocus(pBox2);
+
     int counter = 0;
     while (window.isOpen())
     {
@@ -94,7 +117,6 @@ int main(int argc, char **argv)
             manager.ParseEvent(event);
         }
         window.clear();
-        window.draw(manager);
         if (spr != nullptr && spr->IsValid())
         {
             sf::Sprite sprite;
@@ -104,6 +126,7 @@ int main(int argc, char **argv)
             window.draw(sprite);
             counter++;
         }
+        window.draw(manager);
         window.display();
     }
     return 0;

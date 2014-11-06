@@ -202,6 +202,8 @@
 		<Unit filename="UI/Button.h" />
 		<Unit filename="UI/Manager.cpp" />
 		<Unit filename="UI/Manager.h" />
+		<Unit filename="UI/TextBox.cpp" />
+		<Unit filename="UI/TextBox.h" />
 		<Unit filename="UI/Widget.cpp" />
 		<Unit filename="UI/Widget.h" />
 		<Unit filename="common/ContentPipeline.cpp" />

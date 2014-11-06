@@ -287,7 +287,10 @@ namespace UI
             {
                 pManager->SetPressed(this, event.mouseButton.button);
             }
-            if (IsFocusable()) {pManager->SwitchFocus(this);}
+            if (IsFocusable())
+            {
+                pManager->SwitchFocus(this);
+            }
             bFlag = true;
         }
         if (event.type == event.MouseButtonReleased && IsPointInside(event.mouseButton.x, event.mouseButton.y))

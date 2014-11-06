@@ -4,7 +4,7 @@ namespace UI {
 
     Manager::Manager(sf::RenderTarget& target):Widget(0, 0, target.getSize().x, target.getSize().y)
     {
-        iFocused = lstChildren.begin();
+        iFocused = lstFocusable.end();
         pWidgetHovered = NULL;
         pWidgetPressed = NULL;
     }
@@ -15,11 +15,11 @@ namespace UI {
 
     void Manager::SwitchFocus(Widget* pWidget)
     {
-        for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
+        for (WidgetList::iterator iter = lstFocusable.begin(); iter != lstFocusable.end(); iter++)
         {
             if (*iter == pWidget)
             {
-                (*iFocused)->SetFocus(false);
+                if (iFocused != lstFocusable.end()) { (*iFocused)->SetFocus(false); }
                 iFocused = iter;
                 (*iFocused)->SetFocus(true);
                 break;
@@ -29,14 +29,19 @@ namespace UI {
 
     void Manager::SwitchFocus(bool bForward)
     {
+        if (iFocused == lstFocusable.end())
+        {
+            iFocused = lstFocusable.begin();
+            return;
+        }
         (*iFocused)->SetFocus(false);
         if (bForward)
         {
-            iFocused = (++iFocused == lstChildren.end()) ? lstChildren.begin() : iFocused;
+            iFocused = (++iFocused == lstFocusable.end()) ? lstFocusable.begin() : iFocused;
         }
         else
         {
-            iFocused = (iFocused == lstChildren.begin()) ? lstChildren.end() : iFocused;
+            iFocused = (iFocused == lstFocusable.begin()) ? lstFocusable.end() : iFocused;
             iFocused--;
         }
         (*iFocused)->SetFocus(true);
@@ -47,19 +52,19 @@ namespace UI {
         if (!pWidget->IsFocusable()) return;
         if (pBefore == NULL && pAfter == NULL)
         {
-            lstChildren.push_back(pBefore);
+            lstFocusable.push_back(pWidget);
             return;
         }
-        for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
+        for (WidgetList::iterator iter = lstFocusable.begin(); iter != lstFocusable.end(); iter++)
         {
             if (*iter == pBefore)
             {
-                lstChildren.insert(++iter, pWidget);
+                lstFocusable.insert(++iter, pWidget);
                 break;
             }
             if (*iter == pAfter)
             {
-                lstChildren.insert(iter, pWidget);
+                lstFocusable.insert(iter, pWidget);
                 break;
             }
         }
@@ -69,7 +74,7 @@ namespace UI {
     {
         if (event.type == event.KeyPressed || event.type == event.KeyReleased || event.type == event.TextEntered)
         {
-            if (*iFocused != NULL)
+            if (iFocused != lstFocusable.end())
             {
                 return ((*iFocused)->ParseEvent(event, this));
             }
@@ -80,7 +85,13 @@ namespace UI {
         }
         else
         {
-            return SpreadEvent(event, this);
+            bool bReturn = SpreadEvent(event, this);
+            if (!bReturn && event.type == event.MouseButtonPressed)
+            {
+                (*iFocused)->SetFocus(false);
+                iFocused = lstFocusable.end();
+            }
+            return bReturn;
         }
     }
 

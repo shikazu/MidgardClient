@@ -47,8 +47,6 @@ namespace UI
 
     void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
-        //if (pTextures[uCurrent].is == nullptr) return;
-        //std::cout << "Inside Button Drawing\n";
         const sf::FloatRect& bBox = GetBBox();
         sf::VertexArray boundary(sf::TrianglesStrip, 4);
         boundary[0] = sf::Vertex(sf::Vector2f(bBox.left             , bBox.top              ), sf::Color::White, sf::Vector2f(0, 0));
@@ -57,9 +55,6 @@ namespace UI
         boundary[3] = sf::Vertex(sf::Vector2f(bBox.left + bBox.width, bBox.top + bBox.height), sf::Color::White, sf::Vector2f(bBox.width, bBox.height));
         states.texture = &pTextures[uCurrent];
         states.blendMode = sf::BlendMode::BlendAlpha;
-        //sf::Sprite sprite(pTextures[uCurrent]);
-        //sprite.setPosition(GetPosition());
-        //target.draw(sprite, states);
         target.draw(boundary, states);
     }
 

@@ -2,6 +2,7 @@
 #define _WIDGET_H
 #include <SFML/Graphics.hpp>
 #include <list>
+//#include <iostream>//cout
 
 namespace UI
 {
@@ -114,16 +115,16 @@ namespace UI
 
         protected:
             virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-            virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager) {};
-            virtual void MouseReleased(sf::Event::MouseButtonEvent btnEvent, Manager* pManager) {};
-            virtual void MouseClicked(sf::Event::MouseButtonEvent btnEvent, Manager* pManager) {};
-            virtual void MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {};
-            virtual void MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {};
-            virtual void MouseMoved(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {};
+            virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager) {}
+            virtual void MouseReleased(sf::Event::MouseButtonEvent btnEvent, Manager* pManager) {}
+            virtual void MouseClicked(sf::Event::MouseButtonEvent btnEvent, Manager* pManager) {}
+            virtual void MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {}
+            virtual void MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {}
+            virtual void MouseMoved(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {}
 
-            virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager) {};
-            virtual void KeyReleased(sf::Event::KeyEvent keyEvent, Manager* pManager) {};
-            virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager) {};
+            virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager) {}
+            virtual void KeyReleased(sf::Event::KeyEvent keyEvent, Manager* pManager) {}
+            virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager) {}
 
             bool SpreadEvent(sf::Event event, Manager* pManager);
             WidgetList lstChildren;
