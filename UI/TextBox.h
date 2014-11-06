@@ -26,7 +26,7 @@ namespace UI
             const sf::String GetText() const;
             void SetCharSize(uint32_t dwSize);
             const uint32_t GetCharSize() const;
-//
+
         protected:
             virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
             virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager);
@@ -34,10 +34,10 @@ namespace UI
             virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager);
 
         private:
-            sf::String sText;
+            mutable sf::String sText;
             char cPass;
             sf::Font* pFont;
-            uint32_t dwCursorC, dwCursorX;//C is wrt character and X is wrt pixels
+            mutable uint32_t dwCursorC, dwCursorX;//C is wrt character and X is wrt pixels
             uint32_t dwCharSize;
             Style uStyle;
 

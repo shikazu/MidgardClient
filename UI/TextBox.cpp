@@ -1,5 +1,4 @@
 #include "TextBox.h"
-#define XALIGN 2
 namespace UI
 {
     TextBox::TextBox(sf::Vector2f vPos, sf::Vector2f vSize):Widget(ENABLED|VISIBLE|FOCUSABLE|EDITABLE, vPos, vSize)
@@ -7,7 +6,7 @@ namespace UI
         sText = "";
         cPass = 0;
         dwCursorC = 0;
-        dwCursorX = GetPosition().x + XALIGN;
+        dwCursorX = GetPosition().x + GetCornerRadius();
         vaChars = sf::VertexArray(sf::Triangles);
         bUpdateNeeded = true;
         pFont = NULL;
@@ -18,7 +17,7 @@ namespace UI
         sText = "";
         cPass = 0;
         dwCursorC = 0;
-        dwCursorX = x + XALIGN;
+        dwCursorX = x + GetCornerRadius();
         vaChars = sf::VertexArray(sf::Triangles);
         bUpdateNeeded = true;
         pFont = NULL;
@@ -32,7 +31,7 @@ namespace UI
     {
         pFont = &f;
         bUpdateNeeded = true;
-        //updateCursorLocation();//can change since its a different font
+        updateCursorLocation();//can change since its a different font
     }
     void TextBox::SetPassChar(char c)
     {
@@ -67,7 +66,7 @@ namespace UI
             states.texture = &(pFont->getTexture(dwCharSize));
             target.draw(vaChars, states);
         }
-        if (HasFocus())
+        if (HasFocus() && IsEditable())
         {
             sf::Vertex vaCursor[] =
             {
@@ -75,6 +74,10 @@ namespace UI
                 sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y + GetHeight()), GetColor(FOREGROUND))
             };
             target.draw(vaCursor, 2, sf::Lines);
+        }
+        if (GetBorderWidth() > 0)
+        {
+            DrawBorder(target, states);
         }
     }
 
@@ -84,6 +87,7 @@ namespace UI
     }
     void TextBox::KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager)
     {
+        if (!IsEditable()) return;
         switch(keyEvent.code)
         {
             case sf::Keyboard::BackSpace:
@@ -125,7 +129,7 @@ namespace UI
     }
     void TextBox::TextEntered(sf::Event::TextEvent textEvent, Manager* pManager)
     {
-        if (textEvent.unicode >= 0x20)
+        if (IsEditable() && textEvent.unicode >= 0x20)
         {
             sText.insert(dwCursorC, textEvent.unicode);
             bUpdateNeeded = true;
@@ -138,8 +142,8 @@ namespace UI
     {
         if (pFont == NULL) return;
         bool bIsBold = ((uStyle & BOLD) != 0); //Flag needed in glyph function
-        dwCursorX = GetPosition().x + XALIGN;//an offset
-        uint32_t dwRight = dwCursorX + GetWidth() - XALIGN;
+        dwCursorX = GetPosition().x + GetCornerRadius();//an offset
+        uint32_t dwRight = dwCursorX + GetWidth() - 2*GetCornerRadius();
         if (xSnap >= 0)//meaning its called from the mouse click
         {
             dwCursorC = sText.getSize();
@@ -183,13 +187,15 @@ namespace UI
         bool bIsBold = (uStyle & BOLD) != 0;
         float fItalic = (uStyle & ITALIC) ? 0.208f : 0.f;//12 degree tilt
         float fHspace = static_cast<float>(pFont->getGlyph(L' ', dwCharSize, bIsBold).advance);//For skipping blankspaces
-        float x = GetPosition().x + XALIGN;
+        float x = GetPosition().x + GetCornerRadius();
+        float xMax = x + GetWidth() - 2*GetCornerRadius();
         float y = static_cast<float>(GetPosition().y  + (GetHeight() + dwCharSize)/2);
 
         //Create One quad per character
         sf::Uint32 cPrev = 0;
         sf::Color color = GetColor(FOREGROUND);
-        for (std::size_t i = 0; i < sText.getSize(); i++)
+        std::size_t i = 0;
+        for (; i < sText.getSize(); i++)
         {
             sf::Uint32 cNow;
             if (cPass == '\0')
@@ -205,11 +211,15 @@ namespace UI
             x += static_cast<float>(pFont->getKerning(cPrev, cNow, dwCharSize));
             cPrev = cNow;
 
-            if (cNow == ' ') { x += fHspace; continue;}//Skip Blankspace
+            if (cNow == ' ') { x += fHspace; continue;}//Skip BlankSpace
 
             //Now get the Glyph details
             const sf::Glyph& glyph = pFont->getGlyph(cNow, dwCharSize, bIsBold);
-            if ((x+glyph.advance) >= (GetPosition().x + GetWidth())) break;// Precaution for overflowing chars
+            if (x+glyph.advance >= xMax)
+            {
+                x -= static_cast<float>(pFont->getKerning(cPrev, cNow, dwCharSize));
+                break;// Precaution for overflowing chars
+            }
 
             float left   = glyph.bounds.left;
             float top    = glyph.bounds.top;

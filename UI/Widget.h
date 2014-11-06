@@ -65,7 +65,7 @@ namespace UI
             void Detach();
             void AddChild(Widget* pWidget, Widget* pBefore = NULL, Widget* pAfter = NULL);
             void DelChild(Widget* pWidget, bool bCleanup = false);
-            Widget* GetParent() const;
+            const Widget* GetParent() const;
             //WidgetList& GetChildren();
 
             const sf::Vector2f& GetPosition(bool bReal = false) const;//The real coordinates or relative coordinates
@@ -77,32 +77,33 @@ namespace UI
             void Resize(sf::Vector2f vSize);
             void Resize(float w, float h);
             void SetWidth(float w);
-            float GetWidth() const;
+            const float GetWidth() const;
             void SetHeight(float h);
-            float GetHeight() const;
+            const float GetHeight() const;
 
-            HAlign GetHAlignment() const;
+            const HAlign GetHAlignment() const;
             void SetHAlignment(HAlign h);
 
-            VAlign GetVAlignment() const;
+            const VAlign GetVAlignment() const;
             void SetVAlignment(VAlign v);
             void SetAlignment(HAlign h, VAlign v);
 
             const sf::Color& GetColor(ColorID id) const;
             void SetColor(sf::Color& color, ColorID id);
-            uint32_t GetBorderWidth() const;
+            const uint32_t GetBorderWidth() const;
             void SetBorderWidth(uint32_t dwBorder);
-
+            const float GetCornerRadius() const;
+            void SetCornerRadius(float fCorner);
 
             //Widget* GetSibling(ZIndex z);
             //void ChangeZIndex(ZIndex z);//change the order of appearance
 
-            bool IsEnabled() const;
-            bool IsVisible() const;
-            bool IsEditable() const;
-            bool HasFocus() const;
-            bool IsClickable() const;
-            bool IsFocusable() const;
+            const bool IsEnabled() const;
+            const bool IsVisible() const;
+            const bool IsEditable() const;
+            const bool HasFocus() const;
+            const bool IsClickable() const;
+            const bool IsFocusable() const;
 
             void SetEnabled(bool bStatus = true);
             void SetVisible(bool bStatus = true);
@@ -127,6 +128,7 @@ namespace UI
             virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager) {}
 
             bool SpreadEvent(sf::Event event, Manager* pManager);
+            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const;
             WidgetList lstChildren;
 
         private:
@@ -135,6 +137,7 @@ namespace UI
             sf::Vector2f vSize, vPos, vPosReal;//vPos = Relative Position & vPosReal = Actual Location in Window
             sf::Color pColors[MAXID];
             uint32_t dwBorderWidth;
+            float fCornerRadius;
             HAlign uAlignH;
             VAlign uAlignV;
             Widget* pParent;

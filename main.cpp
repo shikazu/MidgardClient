@@ -85,23 +85,28 @@ int main(int argc, char **argv)
 
     sf::Font font;
     font.loadFromFile("SFTechnodelightNS.TTF");
-    UI::TextBox *pBox = new UI::TextBox(200, 200, 500, 30);
-    UI::TextBox *pBox2 = new UI::TextBox(200, 250, 500, 30);
+    UI::TextBox *pBox = new UI::TextBox(200, 200, 100, 20);
+    UI::TextBox *pBox2 = new UI::TextBox(200, 250, 100, 20);
     sf::Color color = sf::Color::White;
 
     pBox->SetText("DDDD");
     pBox->SetFont(font);
-    pBox->SetCharSize(14);
-    pBox->SetPassChar('o');
+    pBox->SetCharSize(10);
+    pBox->SetPassChar('*');
     pBox->SetColor(color, UI::FOREGROUND);
+    pBox->SetEditable(false);
+    sf::Color bdcolor = sf::Color::Red;
+    pBox2->SetColor(bdcolor, UI::OUTLINE);
+    pBox2->SetBorderWidth(2);
+    pBox2->SetCornerRadius(6);
 
     pBox2->SetText("DDDD");
     pBox2->SetFont(font);
-    pBox2->SetCharSize(14);
+    pBox2->SetCharSize(10);
     pBox->SetColor(color, UI::FOREGROUND);
 
     manager.AddChild(pBox);
-    manager.AddFocus(pBox);
+    //manager.AddFocus(pBox);
     manager.AddChild(pBox2);
     manager.AddFocus(pBox2);
 

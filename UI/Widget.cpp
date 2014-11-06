@@ -13,6 +13,7 @@ namespace UI
         uAlignH = LEFT;
         uAlignV = TOP;
         dwBorderWidth = 1;
+        fCornerRadius = 5;
         pColors[FOREGROUND] = sf::Color::White;
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
@@ -28,6 +29,7 @@ namespace UI
         uAlignH = LEFT;
         uAlignV = TOP;
         dwBorderWidth = 1;
+        fCornerRadius = 5;
         pColors[FOREGROUND] = sf::Color::White;
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
@@ -100,7 +102,7 @@ namespace UI
             }
         }
     }
-    Widget* Widget::GetParent() const
+    const Widget* Widget::GetParent() const
     {
         return pParent;
     }
@@ -141,15 +143,15 @@ namespace UI
         vPosReal = vPos;
         switch(uAlignH)
         {
-            case LEFT:   { vPosReal.x += pParent->GetPosition(true).x; break; }
-            case MIDDLE: { vPosReal.x  = pParent->GetWidth()/2 - GetWidth()/2 + vPosReal.x; break; }
-            case RIGHT:  { vPosReal.x  = pParent->GetWidth()   - GetWidth()   + vPosReal.x; break; }//x should be negative in this case else its stupid
+            case LEFT:   { vPosReal.x += pParent->GetPosition().x; break; }
+            case MIDDLE: { vPosReal.x  = pParent->GetWidth()/2 - vSize.x/2 + vPosReal.x; break; }
+            case RIGHT:  { vPosReal.x  = pParent->GetWidth()   - vSize.x   + vPosReal.x; break; }//x should be negative in this case else its stupid
         }
         switch(uAlignV)
         {
             case TOP:    { vPosReal.y += pParent->GetPosition(true).y; break; }
-            case CENTER: { vPosReal.x  = pParent->GetHeight()/2 - GetHeight()/2 + vPosReal.y; break; }
-            case BOTTOM: { vPosReal.x  = pParent->GetHeight()   - GetHeight()   + vPosReal.y; break; }//y should be negative in this case else its stupid
+            case CENTER: { vPosReal.x  = pParent->GetHeight()/2 - vSize.y/2 + vPosReal.y; break; }
+            case BOTTOM: { vPosReal.x  = pParent->GetHeight()   - vSize.y   + vPosReal.y; break; }//y should be negative in this case else its stupid
         }
     }
 
@@ -173,7 +175,7 @@ namespace UI
         vSize.x = w;
         UpdateLocation();
     }
-    float Widget::GetWidth() const
+    const float Widget::GetWidth() const
     {
         return vSize.x;
     }
@@ -182,12 +184,12 @@ namespace UI
         vSize.y = h;
         UpdateLocation();
     }
-    float Widget::GetHeight() const
+    const float Widget::GetHeight() const
     {
         return vSize.y;
     }
 
-    HAlign Widget::GetHAlignment() const
+    const HAlign Widget::GetHAlignment() const
     {
         return uAlignH;
     }
@@ -197,7 +199,7 @@ namespace UI
         UpdateLocation();
     }
 
-    VAlign Widget::GetVAlignment() const
+    const VAlign Widget::GetVAlignment() const
     {
         return uAlignV;
     }
@@ -223,7 +225,7 @@ namespace UI
         if (id >= MAXID) {return;}
         pColors[id] = color;
     }
-    uint32_t Widget::GetBorderWidth() const
+    const uint32_t Widget::GetBorderWidth() const
     {
         return dwBorderWidth;
     }
@@ -231,17 +233,24 @@ namespace UI
     {
         dwBorderWidth = dwBorder;
     }
-
+    const float Widget::GetCornerRadius() const
+    {
+        return fCornerRadius;
+    }
+    void Widget::SetCornerRadius(float fCorner)
+    {
+        fCornerRadius = fCorner;
+    }
     //void ChangeZIndex(ZIndex z)//Not doing now - lets see
     //{
     //}
 
-    bool Widget::IsEnabled()   const { return isFlagSet(ENABLED); }
-    bool Widget::IsVisible()   const { return isFlagSet(VISIBLE); }
-    bool Widget::IsEditable()  const { return isFlagSet(EDITABLE); }
-    bool Widget::HasFocus()    const { return isFlagSet(INFOCUS); }
-    bool Widget::IsClickable() const { return isFlagSet(CLICKABLE); }
-    bool Widget::IsFocusable() const { return isFlagSet(FOCUSABLE); }
+    const bool Widget::IsEnabled()   const { return isFlagSet(ENABLED); }
+    const bool Widget::IsVisible()   const { return isFlagSet(VISIBLE); }
+    const bool Widget::IsEditable()  const { return isFlagSet(EDITABLE); }
+    const bool Widget::HasFocus()    const { return isFlagSet(INFOCUS); }
+    const bool Widget::IsClickable() const { return isFlagSet(CLICKABLE); }
+    const bool Widget::IsFocusable() const { return isFlagSet(FOCUSABLE); }
 
     void Widget::SetEnabled(  bool bStatus) { setFlag(ENABLED,  bStatus); }
     void Widget::SetVisible(  bool bStatus) { setFlag(VISIBLE,  bStatus); }
@@ -376,6 +385,42 @@ namespace UI
         return bFlag;
     }
 
+    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        static const uint32_t dwCount = 20;
+        static const float fDeltaAngle = 90.0f/(dwCount-1);
+        static const float fPI = 3.141592654f;
+        static float fCenterX, fCenterY;
+
+        sf::VertexArray vaBorder(sf::TrianglesStrip, dwCount*4*2 + 2);
+        for (uint32_t i = 0; i < dwCount*4*2; i+=2)
+        {
+            uint32_t dwIndex = i/2;
+            uint32_t dwCenterIndex = dwIndex/dwCount;
+            switch (dwCenterIndex)
+            {
+                case 0: {fCenterX = vSize.x - fCornerRadius; fCenterY = fCornerRadius - vSize.y; break;}
+                case 1: {fCenterX = fCornerRadius;           fCenterY = fCornerRadius - vSize.y; break;}
+                case 2: {fCenterX = fCornerRadius;           fCenterY = 0 - fCornerRadius;       break;}
+                case 3: {fCenterX = vSize.x - fCornerRadius; fCenterY = 0 - fCornerRadius;       break;}
+            }
+            vaBorder[i] = sf::Vertex(
+                            sf::Vector2f(
+                                vPos.x + fCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
+                                vPos.y + fCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                            GetColor(OUTLINE)
+                        );
+            vaBorder[i+1] = sf::Vertex(
+                            sf::Vector2f(
+                                vPos.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
+                                vPos.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                            GetColor(OUTLINE)
+                        );
+        }
+        vaBorder[dwCount*4*2] = vaBorder[0];
+        vaBorder[dwCount*4*2+1] = vaBorder[1];
+        target.draw(vaBorder, states);
+    }
 
     bool Widget::isFlagSet(WidgetMask mask) const
     {

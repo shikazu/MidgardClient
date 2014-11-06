@@ -670,7 +670,7 @@
 	<vector>
 	"../common/FileStream.h"
 
-1415244470 source:h:\midgardclient\main.cpp
+1415288936 source:h:\midgardclient\main.cpp
 	<SFML/Graphics.hpp>
 	<SFML/Window.hpp>
 	<SFML/OpenGL.hpp>
@@ -709,7 +709,7 @@
 1415140216 h:\midgardclient\ui\manager.h
 	"Widget.h"
 
-1415236758 h:\midgardclient\ui\widget.h
+1415285808 h:\midgardclient\ui\widget.h
 	<SFML/Graphics.hpp>
 	<list>
 
@@ -718,24 +718,24 @@
 	"Widget.h"
 	"Manager.h"
 
-1415236130 h:\midgardclient\ui\textbox.h
+1415288430 h:\midgardclient\ui\textbox.h
 	"Widget.h"
 	"Manager.h"
 
-1415243616 source:h:\midgardclient\ui\button.cpp
+1415244588 source:h:\midgardclient\ui\button.cpp
 	"Button.h"
 
 1415237596 source:h:\midgardclient\ui\manager.cpp
 	"Manager.h"
 
-1415236772 source:h:\midgardclient\ui\widget.cpp
+1415286368 source:h:\midgardclient\ui\widget.cpp
 	"Widget.h"
 	"Manager.h"
 
 1414692826 source:h:\midgardclient\views\loginview.cpp
 	"LoginView.h"
 
-1415237186 source:h:\midgardclient\ui\textbox.cpp
+1415288450 source:h:\midgardclient\ui\textbox.cpp
 	"TextBox.h"
 
 1415243854 source:h:\midgardclient\ui\checkbutton.cpp
