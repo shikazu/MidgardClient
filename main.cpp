@@ -21,13 +21,51 @@
 #include "UI/CheckButton.h"
 #include "UI/TextBox.h"
 
+#include "views/MapView.h"
+
 //sf::Font font;
 
-void BtnCallback(UI::Button* pButton, UI::Manager* pManager);
+//void BtnCallback(UI::Button* pButton, UI::Manager* pManager);
 
 int main(int argc, char **argv)
 {
-    CSprite *spr;
+    sf::ContextSettings settings;
+    settings.depthBits = 24;
+    settings.stencilBits = 8;
+    settings.antialiasingLevel = 4;
+    settings.majorVersion = 3;
+    settings.minorVersion = 0;
+
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Midgard Client - Made by Shikazu", sf::Style::Default, settings);
+    window.setVerticalSyncEnabled(true);
+    window.setFramerateLimit(30);
+
+    ContentPipeline pipeline("data.ini");
+
+    MapView mapView(window, pipeline, "prontera");
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == event.Closed)
+            {
+                window.close();
+            }
+        }
+        window.clear();
+        mapView.draw();
+        window.display();
+    }
+
+
+
+
+    //FileStream flstream;
+
+
+    /*CSprite *spr;
     ContentPipeline *pipeline = new ContentPipeline("data.ini");
     FileStream flstream;
     if(pipeline->getFileStream("data\\prontera.gat", flstream, true))
@@ -57,16 +95,6 @@ int main(int argc, char **argv)
 
     if (spr == nullptr) exit(0);
 
-    sf::ContextSettings settings;
-    settings.depthBits = 24;
-    settings.stencilBits = 8;
-    settings.antialiasingLevel = 4;
-    settings.majorVersion = 3;
-    settings.minorVersion = 0;
-
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Midgard Client - Made by Shikazu", sf::Style::Default, settings);
-    window.setVerticalSyncEnabled(true);
-    window.setFramerateLimit(30);
 
     UI::Manager manager(window);
     UI::Button *pButton = new UI::Button(1, 100, 200);
@@ -142,12 +170,15 @@ int main(int argc, char **argv)
         }
         window.draw(manager);
         window.display();
-    }
+    }*/
+
     return 0;
 }
 
+/*
 void BtnCallback(UI::Button* pButton, UI::Manager* pManager)
 {
     std::cout << "Callback received.. Now Ending sequence" << std::endl;
     exit(0);
 }
+*/
