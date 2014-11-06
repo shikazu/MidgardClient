@@ -35,7 +35,6 @@ namespace UI
             virtual void MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager);
             virtual void MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager);
 
-        private:
             State uCurrent;
             sf::Texture pTextures[INVALID];//because INVALID is last index + 1
             Callback pCallback;

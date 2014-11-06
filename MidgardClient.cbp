@@ -16,6 +16,7 @@
 					<Add option="-DSFML_STATIC" />
 					<Add directory="widgets" />
 					<Add directory="common" />
+					<Add directory="UI" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -27,6 +28,7 @@
 					<Add option="-O2" />
 					<Add directory="widgets" />
 					<Add directory="common" />
+					<Add directory="UI" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -200,6 +202,8 @@
 		<Unit filename="3rdparty/zlib-1.2.3/zutil.h" />
 		<Unit filename="UI/Button.cpp" />
 		<Unit filename="UI/Button.h" />
+		<Unit filename="UI/CheckButton.cpp" />
+		<Unit filename="UI/CheckButton.h" />
 		<Unit filename="UI/Manager.cpp" />
 		<Unit filename="UI/Manager.h" />
 		<Unit filename="UI/TextBox.cpp" />

@@ -18,6 +18,7 @@
 #include "common/FileStream.h"
 #include "UI/Manager.h"
 #include "UI/Button.h"
+#include "UI/CheckButton.h"
 #include "UI/TextBox.h"
 
 //sf::Font font;
@@ -103,6 +104,14 @@ int main(int argc, char **argv)
     manager.AddFocus(pBox);
     manager.AddChild(pBox2);
     manager.AddFocus(pBox2);
+
+    UI::CheckButton *pCButton = new UI::CheckButton(100, 400);
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\login_interface\\chk_saveon.bmp", flstream);
+    pCButton->SetTexture(flstream, pCButton->ACTIVE);
+    pipeline->getFileStream("data\\texture\\유저인터페이스\\login_interface\\chk_saveoff.bmp", flstream);
+    pCButton->SetTexture(flstream, pCButton->INACTIVE);
+
+    manager.AddChild(pCButton);
 
     int counter = 0;
     while (window.isOpen())

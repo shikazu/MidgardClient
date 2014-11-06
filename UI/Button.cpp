@@ -2,13 +2,13 @@
 
 namespace UI
 {
-    Button::Button(sf::Vector2f vPos):Widget(ENABLED|VISIBLE|CLICKABLE, vPos)
+    Button::Button(sf::Vector2f vPos):Widget(ENABLED|VISIBLE|CLICKABLE, vPos, sf::Vector2f(0,0))
     {
         uCurrent = INACTIVE;
         pCallback = nullptr;
     }
 
-    Button::Button(float x, float y):Widget(ENABLED|VISIBLE|CLICKABLE, x, y)
+    Button::Button(float x, float y):Widget(ENABLED|VISIBLE|CLICKABLE, x, y, 0, 0)
     {
         uCurrent = INACTIVE;
         pCallback = nullptr;
