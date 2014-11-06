@@ -2,7 +2,7 @@
 
 namespace UI {
 
-    Manager::Manager(sf::RenderTarget& target):Widget(0, 0, target.getSize().x, target.getSize().y)
+    Manager::Manager(sf::RenderTarget& target):Widget(0, 0, 0, target.getSize().x, target.getSize().y)
     {
         iFocused = lstFocusable.end();
         pWidgetHovered = NULL;

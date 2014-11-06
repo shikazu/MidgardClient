@@ -2,11 +2,11 @@
 
 namespace UI
 {
-    CheckButton::CheckButton(sf::Vector2f vPos):Button(vPos)
+    CheckButton::CheckButton(uint32_t dwIdent, sf::Vector2f vPos):Button(dwIdent, vPos)
     {
     }
 
-    CheckButton::CheckButton(float x, float y):Button(x, y)
+    CheckButton::CheckButton(uint32_t dwIdent, float x, float y):Button(dwIdent, x, y)
     {
     }
 

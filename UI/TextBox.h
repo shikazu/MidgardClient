@@ -16,8 +16,8 @@ namespace UI
                 BOLD = 0x1,
                 ITALIC = 0x2
             };
-            TextBox(sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(50,20));
-            TextBox(float x = 0, float y = 0, float w = 50, float h = 20);
+            TextBox(uint32_t dwIdent, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(50,20));
+            TextBox(uint32_t dwIdent, float x = 0, float y = 0, float w = 50, float h = 20);
             virtual ~TextBox();
 
             void SetFont(sf::Font& f);

@@ -670,7 +670,7 @@
 	<vector>
 	"../common/FileStream.h"
 
-1415288936 source:h:\midgardclient\main.cpp
+1415289944 source:h:\midgardclient\main.cpp
 	<SFML/Graphics.hpp>
 	<SFML/Window.hpp>
 	<SFML/OpenGL.hpp>
@@ -709,39 +709,39 @@
 1415140216 h:\midgardclient\ui\manager.h
 	"Widget.h"
 
-1415285808 h:\midgardclient\ui\widget.h
+1415293838 h:\midgardclient\ui\widget.h
 	<SFML/Graphics.hpp>
 	<list>
 
-1415243770 h:\midgardclient\ui\button.h
+1415293502 h:\midgardclient\ui\button.h
 	"../common/FileStream.h"
 	"Widget.h"
 	"Manager.h"
 
-1415288430 h:\midgardclient\ui\textbox.h
+1415293482 h:\midgardclient\ui\textbox.h
 	"Widget.h"
 	"Manager.h"
 
-1415244588 source:h:\midgardclient\ui\button.cpp
+1415293896 source:h:\midgardclient\ui\button.cpp
 	"Button.h"
 
-1415237596 source:h:\midgardclient\ui\manager.cpp
+1415293608 source:h:\midgardclient\ui\manager.cpp
 	"Manager.h"
 
-1415286368 source:h:\midgardclient\ui\widget.cpp
+1415294458 source:h:\midgardclient\ui\widget.cpp
 	"Widget.h"
 	"Manager.h"
 
 1414692826 source:h:\midgardclient\views\loginview.cpp
 	"LoginView.h"
 
-1415288450 source:h:\midgardclient\ui\textbox.cpp
+1415294424 source:h:\midgardclient\ui\textbox.cpp
 	"TextBox.h"
 
-1415243854 source:h:\midgardclient\ui\checkbutton.cpp
+1415294394 source:h:\midgardclient\ui\checkbutton.cpp
 	"CheckButton.h"
 
-1415243854 h:\midgardclient\ui\checkbutton.h
+1415293494 h:\midgardclient\ui\checkbutton.h
 	"Button.h"
 	"../common/FileStream.h"
 

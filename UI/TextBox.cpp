@@ -1,7 +1,7 @@
 #include "TextBox.h"
 namespace UI
 {
-    TextBox::TextBox(sf::Vector2f vPos, sf::Vector2f vSize):Widget(ENABLED|VISIBLE|FOCUSABLE|EDITABLE, vPos, vSize)
+    TextBox::TextBox(uint32_t dwIdent, sf::Vector2f vPos, sf::Vector2f vSize):Widget(dwIdent, ENABLED|VISIBLE|FOCUSABLE|EDITABLE, vPos, vSize)
     {
         sText = "";
         cPass = 0;
@@ -12,7 +12,7 @@ namespace UI
         pFont = NULL;
     }
 
-    TextBox::TextBox(float x, float y, float w, float h):Widget(ENABLED|VISIBLE|FOCUSABLE|EDITABLE, x, y, w, h)
+    TextBox::TextBox(uint32_t dwIdent, float x, float y, float w, float h):Widget(dwIdent, ENABLED|VISIBLE|FOCUSABLE|EDITABLE, x, y, w, h)
     {
         sText = "";
         cPass = 0;
@@ -125,6 +125,8 @@ namespace UI
                 updateCursorLocation();
                 break;
             }
+            default:{}
+
         }
     }
     void TextBox::TextEntered(sf::Event::TextEvent textEvent, Manager* pManager)

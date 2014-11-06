@@ -57,8 +57,8 @@ namespace UI
     class Widget : public sf::Drawable
     {
         public:
-            Widget(uint8_t uFlagMod = ENABLED|VISIBLE, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(20,20));
-            Widget(uint8_t uFlagMod = ENABLED|VISIBLE, float x = 0, float y = 0, float w = 20,  float h = 20);
+            Widget( uint32_t dwIdent, uint8_t uFlagMod = ENABLED|VISIBLE, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(20,20));
+            Widget( uint32_t dwIdent, uint8_t uFlagMod = ENABLED|VISIBLE, float x = 0, float y = 0, float w = 20,  float h = 20);
             virtual ~Widget();
 
             bool AttachTo(Widget* pWidget);
@@ -66,7 +66,8 @@ namespace UI
             void AddChild(Widget* pWidget, Widget* pBefore = NULL, Widget* pAfter = NULL);
             void DelChild(Widget* pWidget, bool bCleanup = false);
             const Widget* GetParent() const;
-            //WidgetList& GetChildren();
+            const Widget* GetChild(uint32_t dwNeeded) const;
+            const uint32_t GetID() const;
 
             const sf::Vector2f& GetPosition(bool bReal = false) const;//The real coordinates or relative coordinates
             void MoveTo(sf::Vector2f vPos);
@@ -132,7 +133,7 @@ namespace UI
             WidgetList lstChildren;
 
         private:
-
+            uint32_t dwID;
             uint8_t uFlag;
             sf::Vector2f vSize, vPos, vPosReal;//vPos = Relative Position & vPosReal = Actual Location in Window
             sf::Color pColors[MAXID];

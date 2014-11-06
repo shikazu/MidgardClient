@@ -12,8 +12,8 @@ namespace UI
         ///We will be using states ACTIVE and INACTIVE to indicate checked and unchecked state
         ///PRESSED will not be used
         public:
-            CheckButton(sf::Vector2f vPos = sf::Vector2f(0,0));
-            CheckButton(float x = 0, float y = 0);//Size is set by the textures like in Button
+            CheckButton(uint32_t dwIdent, sf::Vector2f vPos = sf::Vector2f(0,0));
+            CheckButton(uint32_t dwIdent, float x = 0, float y = 0);//Size is set by the textures like in Button
 
             const bool GetCheckStatus() const;
             virtual ~CheckButton();

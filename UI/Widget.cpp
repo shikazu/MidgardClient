@@ -3,7 +3,7 @@
 
 namespace UI
 {
-    Widget::Widget(uint8_t uFlagMod, float x, float y, float w, float h)
+    Widget::Widget(uint32_t dwIdent, uint8_t uFlagMod, float x, float y, float w, float h)
     {
         vPos.x  = x;
         vPos.y  = y;
@@ -18,10 +18,11 @@ namespace UI
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
         uFlag = uFlagMod;
+        dwID = dwIdent;
         UpdateLocation();
     }
 
-    Widget::Widget(uint8_t uFlagMod, sf::Vector2f vPos, sf::Vector2f vSize)
+    Widget::Widget(uint32_t dwIdent, uint8_t uFlagMod, sf::Vector2f vPos, sf::Vector2f vSize)
     {
         this->vPos = vPos;
         this->vSize = vSize;
@@ -34,6 +35,7 @@ namespace UI
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
         uFlag = uFlagMod;
+        dwID = dwIdent;
         UpdateLocation();
     }
 
@@ -107,10 +109,21 @@ namespace UI
         return pParent;
     }
 
-    //WidgetList& Widget::GetChildren()
-    //{
-    //    return lstChildren;
-    //}
+    const Widget* Widget::GetChild(uint32_t dwNeeded) const
+    {
+        Widget* pWidget = NULL;
+        for (WidgetList::const_iterator iter = lstChildren.cbegin(); iter != lstChildren.cend(); iter++)
+        {
+            pWidget = *iter;
+            if (pWidget->GetID() == dwNeeded) break;
+        }
+        return pWidget;
+    }
+
+    const uint32_t Widget::GetID() const
+    {
+        return dwID;
+    }
 
     const sf::Vector2f& Widget::GetPosition(bool bReal) const
     {

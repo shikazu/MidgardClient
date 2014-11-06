@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     window.setFramerateLimit(30);
 
     UI::Manager manager(window);
-    UI::Button *pButton = new UI::Button(100, 200);
+    UI::Button *pButton = new UI::Button(1, 100, 200);
 
     pipeline->getFileStream("data\\texture\\유저인터페이스\\btn_close.bmp", flstream);
     pButton->SetTexture(flstream, pButton->INACTIVE);
@@ -85,8 +85,8 @@ int main(int argc, char **argv)
 
     sf::Font font;
     font.loadFromFile("SFTechnodelightNS.TTF");
-    UI::TextBox *pBox = new UI::TextBox(200, 200, 100, 20);
-    UI::TextBox *pBox2 = new UI::TextBox(200, 250, 100, 20);
+    UI::TextBox *pBox = new UI::TextBox(2, 200, 200, 100, 20);
+    UI::TextBox *pBox2 = new UI::TextBox(3, 200, 250, 100, 20);
     sf::Color color = sf::Color::White;
 
     pBox->SetText("DDDD");
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
     manager.AddChild(pBox2);
     manager.AddFocus(pBox2);
 
-    UI::CheckButton *pCButton = new UI::CheckButton(100, 400);
+    UI::CheckButton *pCButton = new UI::CheckButton(4, 100, 400);
     pipeline->getFileStream("data\\texture\\유저인터페이스\\login_interface\\chk_saveon.bmp", flstream);
     pCButton->SetTexture(flstream, pCButton->ACTIVE);
     pipeline->getFileStream("data\\texture\\유저인터페이스\\login_interface\\chk_saveoff.bmp", flstream);

@@ -2,16 +2,16 @@
 
 namespace UI
 {
-    Button::Button(sf::Vector2f vPos):Widget(ENABLED|VISIBLE|CLICKABLE, vPos, sf::Vector2f(0,0))
+    Button::Button(uint32_t dwIdent, sf::Vector2f vPos):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE, vPos, sf::Vector2f(0,0))
     {
         uCurrent = INACTIVE;
-        pCallback = nullptr;
+        pCallback = NULL;
     }
 
-    Button::Button(float x, float y):Widget(ENABLED|VISIBLE|CLICKABLE, x, y, 0, 0)
+    Button::Button(uint32_t dwIdent, float x, float y):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE, x, y, 0, 0)
     {
         uCurrent = INACTIVE;
-        pCallback = nullptr;
+        pCallback = NULL;
     }
 
     Button::~Button()
@@ -39,7 +39,7 @@ namespace UI
 
     void Button::InvokeCallback(Manager *pManager)
     {
-        if (pCallback != nullptr)
+        if (pCallback != NULL)
         {
             pCallback(this, pManager);
         }

@@ -19,8 +19,8 @@ namespace UI
             };
             typedef void (*Callback)(Button *pButton, Manager *pManager);
 
-            Button(sf::Vector2f vPos = sf::Vector2f(0,0));
-            Button(float x = 0, float y = 0);//Size is set by the textures
+            Button(uint32_t dwIdent, sf::Vector2f vPos = sf::Vector2f(0,0));
+            Button(uint32_t dwIdent, float x = 0, float y = 0);//Size is set by the textures
             virtual ~Button();
 
             void SetTexture(FileStream &stream, State uState);
