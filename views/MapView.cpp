@@ -31,11 +31,15 @@ MapView::MapView(sf::Window &window, ContentPipeline &pipeline, std::string mapN
         {
             for(float y = 0; y < this->gnd->GetHeight(); y++)
             {
-                this->ground.push_back(sf::Vector3f(x - 0.5,y - 0.5, this->gnd->GetCell(x,y)->fHeight[0] * 0.05));
-                this->ground.push_back(sf::Vector3f(x - 0.5,y + 0.5,this->gnd->GetCell(x,y)->fHeight[1] * 0.05));
-                this->ground.push_back(sf::Vector3f(x + 0.5,y + 0.5,this->gnd->GetCell(x,y)->fHeight[2] * 0.05));
-                this->ground.push_back(sf::Vector3f(x + 0.5,y - 0.5,this->gnd->GetCell(x,y)->fHeight[3] * 0.05));
+                this->ground.push_back(sf::Vector3f(x - 0.5,y - 0.5,this->gnd->GetCell(x,y)->fHeight[0] * 0.05));
+                this->ground.push_back(sf::Vector3f(x - 0.5,y + 0.5,this->gnd->GetCell(x,y)->fHeight[2] * 0.05));
+                this->ground.push_back(sf::Vector3f(x + 0.5,y + 0.5,this->gnd->GetCell(x,y)->fHeight[3] * 0.05));
+                this->ground.push_back(sf::Vector3f(x + 0.5,y - 0.5,this->gnd->GetCell(x,y)->fHeight[1] * 0.05));
 
+                /*this->ground.push_back(sf::Vector3f(x - 0.5,y - 0.5,1)); // left-lower
+                this->ground.push_back(sf::Vector3f(x - 0.5,y + 0.5,1)); // left-upper
+                this->ground.push_back(sf::Vector3f(x + 0.5,y + 0.5,1)); // right-upper
+                this->ground.push_back(sf::Vector3f(x + 0.5,y - 0.5,1)); // right-lower*/
                 /*for(uint32_t z = 0; z < 4; z++)
                 {*/
                     /*vertices[(3*z)+0] = x;
@@ -92,10 +96,12 @@ void MapView::draw()
     {
         glBegin(GL_QUADS);
         glColor3f(1,1,1);
-        for(uint32_t x = 0; x < 4; x++)
-        {
-            glVertex3f((float)this->ground.at(i+x).x,(float)this->ground.at(i+x).y,(float)this->ground.at(i+x).z);
-        }
+
+        glVertex3f((float)this->ground.at(i+0).x,(float)this->ground.at(i+0).y,(float)this->ground.at(i+0).z);
+        glVertex3f((float)this->ground.at(i+1).x,(float)this->ground.at(i+1).y,(float)this->ground.at(i+1).z);
+        glVertex3f((float)this->ground.at(i+2).x,(float)this->ground.at(i+2).y,(float)this->ground.at(i+2).z);
+        glVertex3f((float)this->ground.at(i+3).x,(float)this->ground.at(i+3).y,(float)this->ground.at(i+3).z);
+
         glEnd();
     }
 }
