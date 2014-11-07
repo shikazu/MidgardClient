@@ -83,13 +83,13 @@ namespace UI
 
     void Button::MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
     {
-        if (pManager->IsPressed(this)) return;
+        if (!pManager->IsPressed(NULL)) return;
         uCurrent = ACTIVE;
     }
 
     void Button::MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
     {
-        if (pManager->IsPressed(this)) return;
+        if (!pManager->IsPressed(NULL)) return;
         uCurrent = INACTIVE;
     }
 }

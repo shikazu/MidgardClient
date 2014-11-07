@@ -57,9 +57,15 @@ namespace UI
     {
         return dwCharSize;
     }
+    void TextBox::SetFocus(bool bStatus)
+    {
+        Widget::SetFocus(bStatus);
+        updateCursorLocation();
+    }
 
     void TextBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
+        DrawBackground(target,states);
         if (pFont != NULL)
         {
             if (bUpdateNeeded) {updateVertices();}
@@ -70,8 +76,8 @@ namespace UI
         {
             sf::Vertex vaCursor[] =
             {
-                sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y), GetColor(FOREGROUND)),
-                sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y + GetHeight()), GetColor(FOREGROUND))
+                sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y + GetBorderWidth()), GetColor(FOREGROUND)),
+                sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y + GetHeight() - GetBorderWidth()), GetColor(FOREGROUND))
             };
             target.draw(vaCursor, 2, sf::Lines);
         }
@@ -79,6 +85,7 @@ namespace UI
         {
             DrawBorder(target, states);
         }
+
     }
 
     void TextBox::MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
@@ -139,6 +146,11 @@ namespace UI
             updateCursorLocation();
         }
     }
+    void TextBox::WinResized(Manager* pManager)
+    {
+        bUpdateNeeded = true;
+        updateCursorLocation();
+    }
 
     void TextBox::updateCursorLocation(int32_t xSnap)
     {
@@ -179,19 +191,21 @@ namespace UI
         dwCursorX = dwCursorActual;
     }
 
-    void TextBox::updateVertices() const//Only call this when there are string changes
+    void TextBox::updateVertices() const
     {
-        if (pFont == NULL)  return;
-        if (!bUpdateNeeded) return;
+        if (!bUpdateNeeded) return;//Only call this when absolutely needed
         bUpdateNeeded = false;
-        vaChars.clear();
-        if (sText.isEmpty()) return;
+        vaChars.clear();//Clear the vertices
+        if (pFont == NULL || sText.isEmpty()) return;//Check for valid font and non-empty string
+
         bool bIsBold = (uStyle & BOLD) != 0;
         float fItalic = (uStyle & ITALIC) ? 0.208f : 0.f;//12 degree tilt
         float fHspace = static_cast<float>(pFont->getGlyph(L' ', dwCharSize, bIsBold).advance);//For skipping blankspaces
-        float x = GetPosition().x + GetCornerRadius();
-        float xMax = x + GetWidth() - 2*GetCornerRadius();
-        float y = static_cast<float>(GetPosition().y  + (GetHeight() + dwCharSize)/2);
+
+        sf::FloatRect rect = GetBBox();//Get the Bounding Box;//Faster method
+        float x = GetCornerRadius();
+        float y = (rect.height + dwCharSize)/2.0;//centre aligned text
+        float xMax = rect.left+rect.width - x;
 
         //Create One quad per character
         sf::Uint32 cPrev = 0;
@@ -234,12 +248,12 @@ namespace UI
             float v2 = static_cast<float>(glyph.textureRect.top  + glyph.textureRect.height);
 
             // Add a quad for the current character
-            vaChars.append(sf::Vertex(sf::Vector2f(x + left  - fItalic * top,    y + top),    color, sf::Vector2f(u1, v1)));
-            vaChars.append(sf::Vertex(sf::Vector2f(x + right - fItalic * top,    y + top),    color, sf::Vector2f(u2, v1)));
-            vaChars.append(sf::Vertex(sf::Vector2f(x + left  - fItalic * bottom, y + bottom), color, sf::Vector2f(u1, v2)));
-            vaChars.append(sf::Vertex(sf::Vector2f(x + left  - fItalic * bottom, y + bottom), color, sf::Vector2f(u1, v2)));
-            vaChars.append(sf::Vertex(sf::Vector2f(x + right - fItalic * top,    y + top),    color, sf::Vector2f(u2, v1)));
-            vaChars.append(sf::Vertex(sf::Vector2f(x + right - fItalic * bottom, y + bottom), color, sf::Vector2f(u2, v2)));
+            vaChars.append(sf::Vertex(sf::Vector2f(rect.left + x + left  - fItalic * top   , rect.top + y + top)   , color, sf::Vector2f(u1, v1)));
+            vaChars.append(sf::Vertex(sf::Vector2f(rect.left + x + right - fItalic * top   , rect.top + y + top)   , color, sf::Vector2f(u2, v1)));
+            vaChars.append(sf::Vertex(sf::Vector2f(rect.left + x + left  - fItalic * bottom, rect.top + y + bottom), color, sf::Vector2f(u1, v2)));
+            vaChars.append(sf::Vertex(sf::Vector2f(rect.left + x + left  - fItalic * bottom, rect.top + y + bottom), color, sf::Vector2f(u1, v2)));
+            vaChars.append(sf::Vertex(sf::Vector2f(rect.left + x + right - fItalic * top   , rect.top + y + top)   , color, sf::Vector2f(u2, v1)));
+            vaChars.append(sf::Vertex(sf::Vector2f(rect.left + x + right - fItalic * bottom, rect.top + y + bottom), color, sf::Vector2f(u2, v2)));
 
             x+= glyph.advance;
         }

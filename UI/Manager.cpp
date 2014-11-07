@@ -1,8 +1,9 @@
 #include "Manager.h"
+#define MANAGERID 0
 
 namespace UI {
 
-    Manager::Manager(sf::RenderTarget& target):Widget(0, 0, 0, target.getSize().x, target.getSize().y)
+    Manager::Manager(sf::RenderTarget& target):Widget(MANAGERID, ENABLED|VISIBLE, 0, 0, target.getSize().x, target.getSize().y)
     {
         iFocused = lstFocusable.end();
         pWidgetHovered = NULL;
@@ -85,12 +86,26 @@ namespace UI {
         }
         else
         {
+            if (event.type == event.Resized)
+            {
+                SetWidth(event.size.width);
+                SetHeight(event.size.height);
+            }
             bool bReturn = SpreadEvent(event, this);
             if (!bReturn && event.type == event.MouseButtonPressed)
             {
                 (*iFocused)->SetFocus(false);
                 iFocused = lstFocusable.end();
             }
+            if (event.type == event.MouseButtonReleased && pWidgetPressed != NULL)//Extra precaution in case it got skipped
+            {
+                pWidgetPressed->ParseEvent(event, this);
+            }
+            if (event.type == event.MouseMoved && pWidgetHovered != NULL && !pWidgetHovered->IsPointInside(event.mouseMove.x, event.mouseMove.y))//Extra precaution like before one
+            {
+                pWidgetHovered->ParseEvent(event, this);
+            }
+
             return bReturn;
         }
     }

@@ -26,12 +26,14 @@ namespace UI
             const sf::String GetText() const;
             void SetCharSize(uint32_t dwSize);
             const uint32_t GetCharSize() const;
+            void SetFocus(bool bStatus = true);
 
         protected:
             virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
             virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager);
             virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager);
             virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager);
+            virtual void WinResized(Manager* pManager);
 
         private:
             mutable sf::String sText;

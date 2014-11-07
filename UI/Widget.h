@@ -69,7 +69,7 @@ namespace UI
             const Widget* GetChild(uint32_t dwNeeded) const;
             const uint32_t GetID() const;
 
-            const sf::Vector2f& GetPosition(bool bReal = false) const;//The real coordinates or relative coordinates
+            const sf::Vector2f& GetPosition(bool bReal = true) const;//The real coordinates or relative coordinates
             void MoveTo(sf::Vector2f vPos);
             void MoveTo(float x, float y);
             void UpdateLocation();//Called to update the Physical Coordinates
@@ -90,7 +90,7 @@ namespace UI
             void SetAlignment(HAlign h, VAlign v);
 
             const sf::Color& GetColor(ColorID id) const;
-            void SetColor(sf::Color& color, ColorID id);
+            void SetColor(sf::Color color, ColorID id);
             const uint32_t GetBorderWidth() const;
             void SetBorderWidth(uint32_t dwBorder);
             const float GetCornerRadius() const;
@@ -109,7 +109,7 @@ namespace UI
             void SetEnabled(bool bStatus = true);
             void SetVisible(bool bStatus = true);
             void SetEditable(bool bStatus = true);
-            void SetFocus(bool bStatus = true);
+            virtual void SetFocus(bool bStatus = true);//virtual to help derived classes update stuff when it gets focus - see TextBox class for example
 
             bool ParseEvent(sf::Event event, Manager* pManager);//Checks the event and spreads it to children.
             sf::FloatRect GetBBox(bool bReal = true) const;//get the relative bbox or actual bbox
@@ -123,6 +123,7 @@ namespace UI
             virtual void MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {}
             virtual void MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {}
             virtual void MouseMoved(sf::Event::MouseMoveEvent movEvent, Manager* pManager) {}
+            virtual void WinResized(Manager* pManager) {}//Currently nothing is passed except the manager which is again just in case
 
             virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager) {}
             virtual void KeyReleased(sf::Event::KeyEvent keyEvent, Manager* pManager) {}
@@ -130,6 +131,7 @@ namespace UI
 
             bool SpreadEvent(sf::Event event, Manager* pManager);
             void DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const;
+            void DrawBackground(sf::RenderTarget& target, sf::RenderStates states) const;
             WidgetList lstChildren;
 
         private:
@@ -145,6 +147,7 @@ namespace UI
 
             bool isFlagSet(WidgetMask mask) const;
             void setFlag(WidgetMask mask, bool bStatus);
+            void drawBGBD(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id) const;
     };
 }
 #endif // _WIDGET_H

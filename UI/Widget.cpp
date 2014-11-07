@@ -153,18 +153,19 @@ namespace UI
     void Widget::UpdateLocation()
     {
         if (pParent == NULL) return;
-        vPosReal = vPos;
+        sf::Vector2f vRef = vPos + pParent->GetPosition();
+
         switch(uAlignH)
         {
-            case LEFT:   { vPosReal.x += pParent->GetPosition().x; break; }
-            case MIDDLE: { vPosReal.x  = pParent->GetWidth()/2 - vSize.x/2 + vPosReal.x; break; }
-            case RIGHT:  { vPosReal.x  = pParent->GetWidth()   - vSize.x   + vPosReal.x; break; }//x should be negative in this case else its stupid
+            case LEFT:   {vPosReal.x = vRef.x; break;}
+            case MIDDLE: {vPosReal.x = vRef.x + static_cast<int32_t>(pParent->GetWidth()/2 - vSize.x/2); break;}
+            case RIGHT:  {vPosReal.x = vRef.x + static_cast<int32_t>(pParent->GetWidth()   - vSize.x  ); break;}//x should be negative in this case else its stupid
         }
         switch(uAlignV)
         {
-            case TOP:    { vPosReal.y += pParent->GetPosition(true).y; break; }
-            case CENTER: { vPosReal.x  = pParent->GetHeight()/2 - vSize.y/2 + vPosReal.y; break; }
-            case BOTTOM: { vPosReal.x  = pParent->GetHeight()   - vSize.y   + vPosReal.y; break; }//y should be negative in this case else its stupid
+            case TOP:    {vPosReal.y = vRef.y; break;}
+            case CENTER: {vPosReal.y = vRef.y + static_cast<int32_t>(pParent->GetHeight()/2 - vSize.y/2); break;}
+            case BOTTOM: {vPosReal.y = vRef.y + static_cast<int32_t>(pParent->GetHeight()   - vSize.y  ); break;}//y should be negative in this case else its stupid
         }
     }
 
@@ -233,7 +234,7 @@ namespace UI
         if (id >= MAXID) {return sf::Color::Black;}
         return pColors[id];
     }
-    void Widget::SetColor(sf::Color& color, ColorID id)
+    void Widget::SetColor(sf::Color color, ColorID id)
     {
         if (id >= MAXID) {return;}
         pColors[id] = color;
@@ -276,7 +277,7 @@ namespace UI
         //Keyboard events first - Will only be sent to this widget if it has focus
         if (event.type == event.KeyPressed)
         {
-            this->KeyPressed(event.key, pManager);
+            KeyPressed(event.key, pManager);
             if (event.key.code == sf::Keyboard::Tab)
             {
                 if (event.key.shift)
@@ -291,11 +292,18 @@ namespace UI
         }
         if (event.type == event.KeyReleased)
         {
-            this->KeyReleased(event.key, pManager);
+            KeyReleased(event.key, pManager);
         }
         if (event.type == event.TextEntered)
         {
-            this->TextEntered(event.text, pManager);
+            TextEntered(event.text, pManager);
+        }
+        if (event.type == event.Resized)
+        {
+            UpdateLocation();
+            SpreadEvent(event, pManager);//Spread it
+            WinResized(pManager);
+            return false;
         }
 
         //Mouse Events
@@ -328,12 +336,11 @@ namespace UI
             }
             bFlag = true;
         }
-        else if (event.type == event.MouseButtonReleased && pManager->IsPressed(this, event.mouseButton.button))
+        if (event.type == event.MouseButtonReleased && pManager->IsPressed(this))
         {
-            pManager->SetPressed(NULL, event.mouseButton.button);
             MouseReleased(event.mouseButton, pManager);
+            pManager->SetPressed(NULL, event.mouseButton.button);
         }
-
         if (event.type == event.MouseMoved)
         {
             if (pManager->IsHovered(this) && !IsPointInside(event.mouseMove.x, event.mouseMove.y))
@@ -342,7 +349,7 @@ namespace UI
                 pManager->SetHovered(NULL);
                 return false;
             }
-            else if (IsPointInside(event.mouseMove.x, event.mouseMove.y))
+            if (IsPointInside(event.mouseMove.x, event.mouseMove.y))
             {
                 bFlag = SpreadEvent(event, pManager);
                 if (bFlag) return bFlag;
@@ -400,15 +407,37 @@ namespace UI
 
     void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const
     {
+        drawBGBD(target, states, OUTLINE);
+    }
+    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        drawBGBD(target, states, BACKGROUND);
+    }
+    void Widget::drawBGBD(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id) const
+    {
+        if (id == FOREGROUND || id >= MAXID) return;//Only Border and Background hence the B
         static const uint32_t dwCount = 20;
         static const float fDeltaAngle = 90.0f/(dwCount-1);
         static const float fPI = 3.141592654f;
         static float fCenterX, fCenterY;
 
-        sf::VertexArray vaBorder(sf::TrianglesStrip, dwCount*4*2 + 2);
-        for (uint32_t i = 0; i < dwCount*4*2; i+=2)
+        sf::PrimitiveType prim;
+        uint32_t dwRep;
+        if (id == BACKGROUND)
         {
-            uint32_t dwIndex = i/2;
+            prim = sf::TrianglesFan;
+            dwRep = 1;
+        }
+        else//OUTLINE
+        {
+            prim = sf::TrianglesStrip;
+            dwRep = 2;
+        }
+
+        sf::VertexArray vaBorder(prim, dwCount*4*dwRep + dwRep);//sf::TrianglesStrip, dwCount*4*2 + 2);
+        for (uint32_t i = 0; i < dwCount*4*dwRep; i+=dwRep)
+        {
+            uint32_t dwIndex = i/dwRep;
             uint32_t dwCenterIndex = dwIndex/dwCount;
             switch (dwCenterIndex)
             {
@@ -417,21 +446,36 @@ namespace UI
                 case 2: {fCenterX = fCornerRadius;           fCenterY = 0 - fCornerRadius;       break;}
                 case 3: {fCenterX = vSize.x - fCornerRadius; fCenterY = 0 - fCornerRadius;       break;}
             }
-            vaBorder[i] = sf::Vertex(
+            if (dwRep == 2)
+            {
+                vaBorder[i] = sf::Vertex(
                             sf::Vector2f(
-                                vPos.x + fCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
-                                vPos.y + fCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
-                            GetColor(OUTLINE)
+                                vPosReal.x + fCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
+                                vPosReal.y + fCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                            GetColor(id)
                         );
-            vaBorder[i+1] = sf::Vertex(
+                vaBorder[i+1] = sf::Vertex(
                             sf::Vector2f(
-                                vPos.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
-                                vPos.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
-                            GetColor(OUTLINE)
+                                vPosReal.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
+                                vPosReal.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                            GetColor(id)
                         );
+            }
+            else
+            {
+                vaBorder[i] = sf::Vertex(
+                            sf::Vector2f(
+                                vPosReal.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
+                                vPosReal.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                            GetColor(id)
+                        );
+            }
         }
-        vaBorder[dwCount*4*2] = vaBorder[0];
-        vaBorder[dwCount*4*2+1] = vaBorder[1];
+        vaBorder[dwCount*4*dwRep] = vaBorder[0];
+        if (dwRep == 2)
+        {
+            vaBorder[dwCount*4*dwRep+1] = vaBorder[1];
+        }
         target.draw(vaBorder, states);
     }
 
