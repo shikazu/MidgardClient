@@ -1,6 +1,8 @@
 #ifndef _VIEWS_MAPVIEW_H_
 #define _VIEWS_MAPVIEW_H_
 
+#include <windows.h>
+
 #include <string>
 #include <vector>
 #include <SFML/Window.hpp>
@@ -12,6 +14,10 @@
 #include "../common/ContentPipeline.h"
 #include "../common/FileStream.h"
 
+#include <GL/glew.h>
+#include <GL/glut.h>
+#include <SFML/OpenGL.hpp>
+
 class MapView
 {
 private:
@@ -19,9 +25,13 @@ private:
     CGround *gnd;
 
     std::vector<CSprite*> textures;
+    std::vector<GLuint> vbo_ground;
+    std::vector<sf::Vector3f> ground;
+
+    uint32_t frame;
 
 public:
-    MapView(sf::RenderWindow &window, ContentPipeline &pipeline, std::string mapName);
+    MapView(sf::Window &window, ContentPipeline &pipeline, std::string mapName);
     ~MapView();
 
     void draw();

@@ -40,16 +40,26 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 			<Add option="-m32" />
+			<Add option="-DGLEW_STATIC" />
 			<Add directory="3rdparty/libconfig-1.4.9" />
 			<Add directory="3rdparty/sfml-2.1" />
 			<Add directory="3rdparty/zlib-1.2.3" />
+			<Add directory="3rdparty/glew-1.11.0/include" />
 		</Compiler>
 		<Linker>
+			<Add library="OpenGL32" />
 			<Add library="sfml-window" />
 			<Add library="sfml-system" />
 			<Add library="sfml-graphics" />
+			<Add library="glu32" />
+			<Add library="gdi32" />
+			<Add library="glut32" />
 			<Add directory="3rdparty/sfml-2.1" />
 		</Linker>
+		<Unit filename="3rdparty/glew-1.11.0/include/GL/glew.h" />
+		<Unit filename="3rdparty/glew-1.11.0/src/glew.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="3rdparty/libconfig-1.4.9/grammar.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -233,6 +243,8 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="views/LoginView.cpp" />
 		<Unit filename="views/LoginView.h" />
+		<Unit filename="views/MapView.cpp" />
+		<Unit filename="views/MapView.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

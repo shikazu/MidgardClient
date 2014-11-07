@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
 
 #include <libconfig.h>
 #include <thread>
@@ -33,16 +32,23 @@ int main(int argc, char **argv)
     settings.depthBits = 24;
     settings.stencilBits = 8;
     settings.antialiasingLevel = 4;
-    settings.majorVersion = 3;
+    settings.majorVersion = 2;
     settings.minorVersion = 0;
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Midgard Client - Made by Shikazu", sf::Style::Default, settings);
+    sf::Window window(sf::VideoMode(1280, 720), "Midgard Client - Made by Shikazu", sf::Style::Default, settings);
     window.setVerticalSyncEnabled(true);
-    window.setFramerateLimit(30);
+    //window.setFramerateLimit(30);
 
     ContentPipeline pipeline("data.ini");
 
-    MapView mapView(window, pipeline, "prontera");
+    MapView mapView(window, pipeline, "prt_fild02");
+
+    GLdouble glulookat[9] = {
+            3,0,20,
+            3,4,15,
+            0,10,0};
+
+    GLdouble movementFactor = 0.2f;
 
     while (window.isOpen())
     {
@@ -53,9 +59,122 @@ int main(int argc, char **argv)
             {
                 window.close();
             }
+
+            if (event.type == sf::Event::MouseWheelMoved)
+            {
+                if(event.mouseWheel.delta > 0)
+                {
+                    glulookat[2] += 0.25 * event.mouseWheel.delta;
+                    glulookat[5] += 0.25 * event.mouseWheel.delta;
+                }
+                else if(event.mouseWheel.delta < 0)
+                {
+                    glulookat[2] += 0.25 * event.mouseWheel.delta;
+                    glulookat[5] += 0.25 * event.mouseWheel.delta;
+                }
+            }
+
+            if (event.type == sf::Event::KeyPressed)
+            {
+                    if(sf::Keyboard::Num1 == event.key.code)
+                    {
+                        glulookat[0] += 0.05;
+                    }
+                     if(sf::Keyboard::Num2 == event.key.code)
+                    {
+                        glulookat[1] += 0.05;
+                    }
+                     if(sf::Keyboard::Num3 == event.key.code)
+                    {
+                        glulookat[2] += 0.05;
+                    }
+                     if(sf::Keyboard::Num4 == event.key.code)
+                    {
+                        glulookat[3] += 0.05;
+                    }
+                     if(sf::Keyboard::Num5 == event.key.code)
+                    {
+                        glulookat[4] += 0.05;
+                    }
+                     if(sf::Keyboard::Num6 == event.key.code)
+                    {
+                        glulookat[5] += 0.05;
+                    }
+                     if(sf::Keyboard::Num7 == event.key.code)
+                    {
+                        glulookat[6] += 0.05;
+                    }
+                     if(sf::Keyboard::Num8 == event.key.code)
+                    {
+                        glulookat[7] += 0.05;
+                    }
+
+                    if(sf::Keyboard::W == event.key.code) // Forward
+                    {
+                        glulookat[1] += movementFactor;
+                        glulookat[4] += movementFactor;
+                    }
+                    if(sf::Keyboard::D == event.key.code) // Leftwards
+                    {
+                        glulookat[0] += movementFactor;
+                        glulookat[3] += movementFactor;
+                    }
+                    if(sf::Keyboard::A == event.key.code) // Rightwards
+                    {
+                        glulookat[0] -= movementFactor;
+                        glulookat[3] -= movementFactor;
+                    }
+                    if(sf::Keyboard::S == event.key.code) // Backward
+                    {
+                        glulookat[1] -= movementFactor;
+                        glulookat[4] -= movementFactor;
+                    }
+
+                    if(sf::Keyboard::R == event.key.code) // Zoom Out
+                    {
+                        glulookat[2] += 0.05;
+                    }
+                    if(sf::Keyboard::F == event.key.code) // Zoom In
+                    {
+                        glulookat[2] -= 0.05;
+                    }
+
+                    if(sf::Keyboard::T == event.key.code) // Angle to Ground
+                    {
+                        glulookat[5] += 0.05;
+                    }
+                    if(sf::Keyboard::G == event.key.code) // Angle to Ground
+                    {
+                        glulookat[5] -= 0.05;
+                    }
+
+
+                    // 2 + 5 zoom out
+
+
+                    for(int i=0; i < 9; i++)
+                    {
+                        std::cout << i << " -> " << glulookat[i] << std::endl;
+                    }
+
+
+            }
         }
-        window.clear();
+
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluPerspective(50.0, 1.0, 0, 255.0);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        gluLookAt(glulookat[0], glulookat[1], glulookat[2],
+                  glulookat[3], glulookat[4], glulookat[5],
+                  glulookat[6], glulookat[7], glulookat[8]);
         mapView.draw();
+
+
+
         window.display();
     }
 
