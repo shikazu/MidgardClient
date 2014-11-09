@@ -13,7 +13,7 @@ namespace UI
         uAlignH = LEFT;
         uAlignV = TOP;
         dwBorderWidth = 1;
-        fCornerRadius = 5;
+        fCornerRadius = 0;
         pColors[FOREGROUND] = sf::Color::White;
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
@@ -30,7 +30,7 @@ namespace UI
         uAlignH = LEFT;
         uAlignV = TOP;
         dwBorderWidth = 1;
-        fCornerRadius = 5;
+        fCornerRadius = 0;
         pColors[FOREGROUND] = sf::Color::White;
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
@@ -98,8 +98,8 @@ namespace UI
         {
             if (*iter == pWidget)
             {
-                lstChildren.erase(iter);
                 pWidget->Detach();
+                lstChildren.erase(iter);
                 break;
             }
         }
@@ -343,16 +343,11 @@ namespace UI
         }
         if (event.type == event.MouseMoved)
         {
-            if (pManager->IsHovered(this) && !IsPointInside(event.mouseMove.x, event.mouseMove.y))
-            {
-                MouseLeft(event.mouseMove, pManager);
-                pManager->SetHovered(NULL);
-                return false;
-            }
             if (IsPointInside(event.mouseMove.x, event.mouseMove.y))
             {
                 bFlag = SpreadEvent(event, pManager);
                 if (bFlag) return bFlag;
+
                 if (pManager->IsHovered(this))
                 {
                     MouseMoved(event.mouseMove, pManager);
@@ -360,9 +355,19 @@ namespace UI
                 else
                 {
                     MouseEntered(event.mouseMove, pManager);
+                    if (!pManager->IsHovered(NULL))
+                    {
+                        Widget* pWidget = pManager->GetHovered();
+                        pWidget->ParseEvent(event, pManager);
+                    }
                     pManager->SetHovered(this);
                 }
                 bFlag = true;
+            }
+            else if (pManager->IsHovered(this))
+            {
+                MouseLeft(event.mouseMove, pManager);
+                pManager->SetHovered(NULL);
             }
         }
         //(event.type == event.MouseLeft) should be handled by Manager
@@ -407,38 +412,129 @@ namespace UI
 
     void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const
     {
-        drawBGBD(target, states, OUTLINE);
+        if (fCornerRadius == 0)
+        {
+            drawRegular(target, states, OUTLINE);
+        }
+        else
+        {
+            drawRounded(target, states, OUTLINE);
+        }
+    }
+    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states, sf::Texture &texture) const
+    {
+        states.texture = &texture;
+        if (fCornerRadius == 0)
+        {
+            drawRegular(target, states, OUTLINE, true);
+        }
+        else
+        {
+            drawRounded(target, states, OUTLINE, true);
+        }
     }
     void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states) const
     {
-        drawBGBD(target, states, BACKGROUND);
+        if (fCornerRadius == 0)
+        {
+            drawRegular(target, states, BACKGROUND);
+        }
+        else
+        {
+            drawRounded(target, states, BACKGROUND);
+        }
     }
-    void Widget::drawBGBD(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id) const
+    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states, sf::Texture &texture) const
     {
-        if (id == FOREGROUND || id >= MAXID) return;//Only Border and Background hence the B
-        static const uint32_t dwCount = 20;
-        static const float fDeltaAngle = 90.0f/(dwCount-1);
-        static const float fPI = 3.141592654f;
-        static float fCenterX, fCenterY;
+        states.texture = &texture;
+        if (fCornerRadius == 0)
+        {
+            drawRegular(target, states, BACKGROUND, true);
+        }
+        else
+        {
+            drawRounded(target, states, BACKGROUND, true);
+        }
+    }
+
+    void Widget::drawRegular(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id, bool bUseTexture) const
+    {
+        if (id >= MAXID) return;//dont use this for FOREGROUND
 
         sf::PrimitiveType prim;
-        uint32_t dwRep;
+        uint32_t dwMult;
         if (id == BACKGROUND)
         {
             prim = sf::TrianglesFan;
-            dwRep = 1;
+            dwMult = 1;
+        }
+        else
+        {
+            prim = sf::TrianglesStrip;
+            dwMult = 2;
+        }
+        sf::FloatRect outer = sf::FloatRect(0, 0, vSize.x, vSize.y);
+        sf::FloatRect inner = sf::FloatRect(dwBorderWidth, dwBorderWidth, vSize.x - 2*dwBorderWidth, vSize.y - 2*dwBorderWidth);
+
+        sf::VertexArray vaBorder(prim, 5*dwMult);
+        if (id == BACKGROUND)
+        {
+            vaBorder[0] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left              , vPosReal.y + inner.top)               , GetColor(id));
+            vaBorder[1] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top)               , GetColor(id));
+            vaBorder[2] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top + inner.height), GetColor(id));
+            vaBorder[3] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left              , vPosReal.y + inner.top + inner.height), GetColor(id));
+            vaBorder[4] = vaBorder[0];
+        }
+        else//OUTLINE
+        {
+            vaBorder[0] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left              , vPosReal.y + outer.top)               , GetColor(id));
+            vaBorder[1] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left              , vPosReal.y + inner.top)               , GetColor(id));
+            vaBorder[2] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left + outer.width, vPosReal.y + outer.top)               , GetColor(id));
+            vaBorder[3] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top)               , GetColor(id));
+            vaBorder[4] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left + outer.width, vPosReal.y + outer.top + outer.height), GetColor(id));
+            vaBorder[5] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top + inner.height), GetColor(id));
+            vaBorder[6] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left              , vPosReal.y + outer.top + outer.height), GetColor(id));
+            vaBorder[7] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left              , vPosReal.y + inner.top + inner.height), GetColor(id));
+            vaBorder[8] = vaBorder[0];
+            vaBorder[9] = vaBorder[1];
+        }
+
+        if (bUseTexture)
+        {
+            for (uint32_t i = 0; i < 5*dwMult; i++)
+            {
+                vaBorder[i].texCoords = vaBorder[i].position - vPosReal;
+            }
+        }
+        target.draw(vaBorder, states);
+    }
+
+    void Widget::drawRounded(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id, bool bUseTexture) const
+    {
+        if (id >= MAXID) return;//Dont use this for FOREGROUND
+        static const uint32_t dwSmoothness = 20;
+        static const float fDeltaAngle = 90.0f/(dwSmoothness-1);
+        static const float fDeg2Rad = 3.141592654f / 180.0f;
+
+        sf::PrimitiveType prim;
+        uint32_t dwMult;
+        if (id == BACKGROUND)
+        {
+            prim = sf::TrianglesFan;
+            dwMult = 1;
         }
         else//OUTLINE
         {
             prim = sf::TrianglesStrip;
-            dwRep = 2;
+            dwMult = 2;
         }
-
-        sf::VertexArray vaBorder(prim, dwCount*4*dwRep + dwRep);//sf::TrianglesStrip, dwCount*4*2 + 2);
-        for (uint32_t i = 0; i < dwCount*4*dwRep; i+=dwRep)
+        uint32_t dwMax = 4 * dwMult * dwSmoothness;
+        float fCenterX, fCenterY;
+        sf::VertexArray vaBorder(prim, dwMax + dwMult);
+        for (uint32_t i = 0; i < dwMax; i += dwMult)
         {
-            uint32_t dwIndex = i/dwRep;
-            uint32_t dwCenterIndex = dwIndex/dwCount;
+            uint32_t dwIndex = i/dwMult;
+            uint32_t dwCenterIndex = dwIndex/dwSmoothness;
             switch (dwCenterIndex)
             {
                 case 0: {fCenterX = vSize.x - fCornerRadius; fCenterY = fCornerRadius - vSize.y; break;}
@@ -446,18 +542,18 @@ namespace UI
                 case 2: {fCenterX = fCornerRadius;           fCenterY = 0 - fCornerRadius;       break;}
                 case 3: {fCenterX = vSize.x - fCornerRadius; fCenterY = 0 - fCornerRadius;       break;}
             }
-            if (dwRep == 2)
+            if (dwMult == 2)
             {
                 vaBorder[i] = sf::Vertex(
                             sf::Vector2f(
-                                vPosReal.x + fCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
-                                vPosReal.y + fCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                                vPosReal.x + fCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
+                                vPosReal.y + fCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY),
                             GetColor(id)
                         );
                 vaBorder[i+1] = sf::Vertex(
                             sf::Vector2f(
-                                vPosReal.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
-                                vPosReal.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                                vPosReal.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
+                                vPosReal.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY),
                             GetColor(id)
                         );
             }
@@ -465,16 +561,23 @@ namespace UI
             {
                 vaBorder[i] = sf::Vertex(
                             sf::Vector2f(
-                                vPosReal.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) + fCenterX,
-                                vPosReal.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fPI/180.0) - fCenterY),
+                                vPosReal.x + (fCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
+                                vPosReal.y + (fCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY),
                             GetColor(id)
                         );
             }
         }
-        vaBorder[dwCount*4*dwRep] = vaBorder[0];
-        if (dwRep == 2)
+        vaBorder[dwSmoothness*4*dwMult] = vaBorder[0];
+        if (dwMult == 2)
         {
-            vaBorder[dwCount*4*dwRep+1] = vaBorder[1];
+            vaBorder[dwSmoothness*4*dwMult+1] = vaBorder[1];
+        }
+        if (bUseTexture)
+        {
+            for (uint32_t i = 0; i < dwMax + dwMult; i++)
+            {
+                vaBorder[i].texCoords = vaBorder[i].position - vPosReal;
+            }
         }
         target.draw(vaBorder, states);
     }

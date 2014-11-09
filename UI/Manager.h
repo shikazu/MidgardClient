@@ -18,7 +18,9 @@ namespace UI
             bool IsPressed(Widget* pWidget);
             bool IsPressed(Widget* pWidget, sf::Mouse::Button mbutton);
             void SetPressed(Widget* pWidget, sf::Mouse::Button mbutton);
+
             bool IsHovered(Widget* pWidget);
+            Widget* GetHovered();
             void SetHovered(Widget* pWidget);
 
         private:

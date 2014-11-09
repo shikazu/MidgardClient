@@ -131,7 +131,9 @@ namespace UI
 
             bool SpreadEvent(sf::Event event, Manager* pManager);
             void DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const;
+            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, sf::Texture& texture) const;
             void DrawBackground(sf::RenderTarget& target, sf::RenderStates states) const;
+            void DrawBackground(sf::RenderTarget& target, sf::RenderStates states, sf::Texture& texture) const;
             WidgetList lstChildren;
 
         private:
@@ -147,7 +149,8 @@ namespace UI
 
             bool isFlagSet(WidgetMask mask) const;
             void setFlag(WidgetMask mask, bool bStatus);
-            void drawBGBD(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id) const;
+            void drawRounded(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id, bool bUseTexture = false) const;
+            void drawRegular(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id, bool bUseTexture = false) const;
     };
 }
 #endif // _WIDGET_H

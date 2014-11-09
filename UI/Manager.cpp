@@ -92,7 +92,7 @@ namespace UI {
                 SetHeight(event.size.height);
             }
             bool bReturn = SpreadEvent(event, this);
-            if (!bReturn && event.type == event.MouseButtonPressed)
+            if (!bReturn && event.type == event.MouseButtonPressed && iFocused != lstFocusable.end())
             {
                 (*iFocused)->SetFocus(false);
                 iFocused = lstFocusable.end();
@@ -101,11 +101,11 @@ namespace UI {
             {
                 pWidgetPressed->ParseEvent(event, this);
             }
-            if (event.type == event.MouseMoved && pWidgetHovered != NULL && !pWidgetHovered->IsPointInside(event.mouseMove.x, event.mouseMove.y))//Extra precaution like before one
+            if (!bReturn && event.type == event.MouseMoved && pWidgetHovered != NULL)//Extra precaution like before one
             {
                 pWidgetHovered->ParseEvent(event, this);
+                pWidgetHovered = NULL;
             }
-
             return bReturn;
         }
     }
@@ -127,6 +127,10 @@ namespace UI {
     bool Manager::IsHovered(Widget *pWidget)
     {
         return (pWidget == pWidgetHovered);
+    }
+    Widget* Manager::GetHovered()
+    {
+        return pWidgetHovered;
     }
     void Manager::SetHovered(Widget* pWidget)
     {

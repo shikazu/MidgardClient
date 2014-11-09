@@ -156,8 +156,12 @@ namespace UI
     {
         if (pFont == NULL) return;
         bool bIsBold = ((uStyle & BOLD) != 0); //Flag needed in glyph function
-        dwCursorX = GetPosition().x + GetCornerRadius();//an offset
-        uint32_t dwRight = dwCursorX + GetWidth() - 2*GetCornerRadius();
+
+        uint32_t dwAlign = GetCornerRadius() + GetBorderWidth();
+        if (dwAlign < 5) {dwAlign = 5;}
+
+        dwCursorX = GetPosition().x + dwAlign;//an offset
+        uint32_t dwRight = dwCursorX + GetWidth() - 2*dwAlign;
         if (xSnap >= 0)//meaning its called from the mouse click
         {
             dwCursorC = sText.getSize();
@@ -203,9 +207,10 @@ namespace UI
         float fHspace = static_cast<float>(pFont->getGlyph(L' ', dwCharSize, bIsBold).advance);//For skipping blankspaces
 
         sf::FloatRect rect = GetBBox();//Get the Bounding Box;//Faster method
-        float x = GetCornerRadius();
+        float x = GetCornerRadius() + GetBorderWidth();
+        if (x < 5) {x = 5;}
         float y = (rect.height + dwCharSize)/2.0;//centre aligned text
-        float xMax = rect.left+rect.width - x;
+        float xMax = rect.width - x;
 
         //Create One quad per character
         sf::Uint32 cPrev = 0;
