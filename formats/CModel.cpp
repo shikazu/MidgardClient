@@ -50,7 +50,7 @@ CModel::CModel(FileStream &flstream)
         for (int32_t i = 0; i < lNodeCount; i++)
         {
             Node* pNode = new Node;
-            fetchNode(flstream, pNode, wVersion);
+            fetchNode(flstream, pNode);
             vNodes.push_back(pNode);
         }
     }

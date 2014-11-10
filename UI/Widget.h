@@ -50,15 +50,17 @@ namespace UI
         CLICKABLE = 0x04,
         FOCUSABLE = 0x08,//Forget the spelling
         INFOCUS   = 0x10,
-        EDITABLE  = 0x20//Only needed for Text Widgets but adding it anyways
+        EDITABLE  = 0x20,//Only needed for Text Widgets but adding it anyways
+        DRAGGABLE = 0x40,
+        INDRAG    = 0x80,
     };
 
     ///Widget Class
     class Widget : public sf::Drawable
     {
         public:
-            Widget( uint32_t dwIdent, uint8_t uFlagMod = ENABLED|VISIBLE, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(20,20));
-            Widget( uint32_t dwIdent, uint8_t uFlagMod = ENABLED|VISIBLE, float x = 0, float y = 0, float w = 20,  float h = 20);
+            Widget( uint32_t dwIdent, uint16_t wFlagMod = ENABLED|VISIBLE, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(20,20));
+            Widget( uint32_t dwIdent, uint16_t wFlagMod = ENABLED|VISIBLE, float x = 0, float y = 0, float w = 20,  float h = 20);
             virtual ~Widget();
 
             bool AttachTo(Widget* pWidget);
@@ -81,6 +83,8 @@ namespace UI
             const float GetWidth() const;
             void SetHeight(float h);
             const float GetHeight() const;
+            void SetDragArea(sf::FloatRect newArea);
+            const sf::FloatRect& GetDragArea() const;
 
             const HAlign GetHAlignment() const;
             void SetHAlignment(HAlign h);
@@ -105,11 +109,13 @@ namespace UI
             const bool HasFocus() const;
             const bool IsClickable() const;
             const bool IsFocusable() const;
+            const bool IsDraggable() const;
 
             void SetEnabled(bool bStatus = true);
             void SetVisible(bool bStatus = true);
             void SetEditable(bool bStatus = true);
             virtual void SetFocus(bool bStatus = true);//virtual to help derived classes update stuff when it gets focus - see TextBox class for example
+            void SetDraggable(bool bStatus = true);
 
             bool ParseEvent(sf::Event event, Manager* pManager);//Checks the event and spreads it to children.
             sf::FloatRect GetBBox(bool bReal = true) const;//get the relative bbox or actual bbox
@@ -138,8 +144,10 @@ namespace UI
 
         private:
             uint32_t dwID;
-            uint8_t uFlag;
+            uint16_t wFlag;
             sf::Vector2f vSize, vPos, vPosReal;//vPos = Relative Position & vPosReal = Actual Location in Window
+            sf::FloatRect dragRect;
+            sf::Vector2f vDragRef;
             sf::Color pColors[MAXID];
             uint32_t dwBorderWidth;
             float fCornerRadius;

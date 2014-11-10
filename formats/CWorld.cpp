@@ -34,8 +34,8 @@ CWorld::CWorld(FileStream &flstream)
     //------ WATER --------
     if (wVersion >= 0x0108)
     {
-        flstream(&(water.lType), 4);
-        flstream(&(water.fWaveHeight), 4*3);//Reads all 3 together wave height, speed and pitch
+        flstream.read(&(water.lType), 4);
+        flstream.read(&(water.fWaveHeight), 4*3);//Reads all 3 together wave height, speed and pitch
     }
     else
     {
@@ -46,7 +46,7 @@ CWorld::CWorld(FileStream &flstream)
     }
     if (wVersion >= 0x0109)
     {
-        flstream(&(water.lAnimSpeed), 4);
+        flstream.read(&(water.lAnimSpeed), 4);
     }
     else
     {
@@ -56,8 +56,8 @@ CWorld::CWorld(FileStream &flstream)
     //------ LIGHT --------
     if (wVersion >= 0x0105)
     {
-        flstream(&(light.lLongitude), 4*2);//Reads Longitude and Latitude
-        flstream(&(light.fDiffuseColor), 4*3*2);//Reads both colors
+        flstream.read(&(light.lLongitude), 4*2);//Reads Longitude and Latitude
+        flstream.read(&(light.fDiffuseColor), 4*3*2);//Reads both colors
     }
     else
     {

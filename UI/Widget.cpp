@@ -3,7 +3,7 @@
 
 namespace UI
 {
-    Widget::Widget(uint32_t dwIdent, uint8_t uFlagMod, float x, float y, float w, float h)
+    Widget::Widget(uint32_t dwIdent, uint16_t wFlagMod, float x, float y, float w, float h)
     {
         vPos.x  = x;
         vPos.y  = y;
@@ -17,12 +17,13 @@ namespace UI
         pColors[FOREGROUND] = sf::Color::White;
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
-        uFlag = uFlagMod;
+        wFlag = wFlagMod;
         dwID = dwIdent;
+        dragRect = sf::FloatRect(0, 0, w, h);
         UpdateLocation();
     }
 
-    Widget::Widget(uint32_t dwIdent, uint8_t uFlagMod, sf::Vector2f vPos, sf::Vector2f vSize)
+    Widget::Widget(uint32_t dwIdent, uint16_t wFlagMod, sf::Vector2f vPos, sf::Vector2f vSize)
     {
         this->vPos = vPos;
         this->vSize = vSize;
@@ -34,8 +35,9 @@ namespace UI
         pColors[FOREGROUND] = sf::Color::White;
         pColors[BACKGROUND] = sf::Color::Transparent;
         pColors[OUTLINE] = sf::Color::Black;
-        uFlag = uFlagMod;
+        wFlag = wFlagMod;
         dwID = dwIdent;
+        dragRect = sf::FloatRect(0, 0, vSize.x, vSize.y);
         UpdateLocation();
     }
 
@@ -202,6 +204,14 @@ namespace UI
     {
         return vSize.y;
     }
+    void Widget::SetDragArea(sf::FloatRect newArea)
+    {
+        dragRect = newArea;
+    }
+    const sf::FloatRect& Widget::GetDragArea() const
+    {
+        return dragRect;
+    }
 
     const HAlign Widget::GetHAlignment() const
     {
@@ -265,11 +275,13 @@ namespace UI
     const bool Widget::HasFocus()    const { return isFlagSet(INFOCUS); }
     const bool Widget::IsClickable() const { return isFlagSet(CLICKABLE); }
     const bool Widget::IsFocusable() const { return isFlagSet(FOCUSABLE); }
+    const bool Widget::IsDraggable() const { return isFlagSet(DRAGGABLE); }
 
     void Widget::SetEnabled(  bool bStatus) { setFlag(ENABLED,  bStatus); }
     void Widget::SetVisible(  bool bStatus) { setFlag(VISIBLE,  bStatus); }
     void Widget::SetEditable( bool bStatus) { setFlag(EDITABLE, bStatus); }
     void Widget::SetFocus(    bool bStatus) { setFlag(INFOCUS,  bStatus); }
+    void Widget::SetDraggable(bool bStatus) { setFlag(DRAGGABLE, bStatus);}
 
     bool Widget::ParseEvent(sf::Event event, Manager* pManager)
     {
@@ -313,6 +325,12 @@ namespace UI
             bFlag = SpreadEvent(event, pManager);
             if (bFlag) {return bFlag;}
             MousePressed(event.mouseButton, pManager);
+            if (IsDraggable() && dragRect.contains(event.mouseButton.x - vPosReal.x, event.mouseButton.y - vPosReal.y))
+            {
+                setFlag(INDRAG, true);
+                vDragRef.x = event.mouseButton.x;
+                vDragRef.y = event.mouseButton.y;
+            }
             if (pManager->IsPressed(NULL) && IsClickable())
             {
                 pManager->SetPressed(this, event.mouseButton.button);
@@ -329,6 +347,7 @@ namespace UI
             if (bFlag) {return bFlag;}
 
             MouseReleased(event.mouseButton, pManager);
+            setFlag(INDRAG, false);
             if (pManager->IsPressed(this, event.mouseButton.button))
             {
                 MouseClicked(event.mouseButton, pManager);
@@ -347,7 +366,6 @@ namespace UI
             {
                 bFlag = SpreadEvent(event, pManager);
                 if (bFlag) return bFlag;
-
                 if (pManager->IsHovered(this))
                 {
                     MouseMoved(event.mouseMove, pManager);
@@ -368,6 +386,14 @@ namespace UI
             {
                 MouseLeft(event.mouseMove, pManager);
                 pManager->SetHovered(NULL);
+            }
+            if (isFlagSet(INDRAG))
+            {
+                vPos.x += event.mouseMove.x - vDragRef.x;
+                vPos.y += event.mouseMove.y - vDragRef.y;
+                UpdateLocation();
+                vDragRef.x = event.mouseMove.x;
+                vDragRef.y = event.mouseMove.y;
             }
         }
         //(event.type == event.MouseLeft) should be handled by Manager
@@ -421,20 +447,7 @@ namespace UI
             drawRounded(target, states, OUTLINE, bUseTexture);
         }
     }
-    /*
-    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture &texture) const
-    {
-        states.texture = &texture;
-        if (fCornerRadius == 0)
-        {
-            drawRegular(target, states, OUTLINE, true);
-        }
-        else
-        {
-            drawRounded(target, states, OUTLINE, true);
-        }
-    }
-    */
+
     void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture) const
     {
         if (fCornerRadius == 0)
@@ -446,20 +459,7 @@ namespace UI
             drawRounded(target, states, BACKGROUND, bUseTexture);
         }
     }
-    /*
-    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture &texture) const
-    {
-        states.texture = &texture;
-        if (fCornerRadius == 0)
-        {
-            drawRegular(target, states, BACKGROUND, true);
-        }
-        else
-        {
-            drawRounded(target, states, BACKGROUND, true);
-        }
-    }
-    */
+
     void Widget::drawRegular(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id, bool bUseTexture) const
     {
         if (id >= MAXID) return;//dont use this for FOREGROUND
@@ -588,18 +588,18 @@ namespace UI
 
     bool Widget::isFlagSet(WidgetMask mask) const
     {
-        return ((uFlag & mask) != 0);
+        return ((wFlag & mask) != 0);
     }
 
     void Widget::setFlag(WidgetMask mask, bool bStatus)
     {
         if (bStatus)
         {
-            uFlag = uFlag | mask;
+            wFlag = wFlag | mask;
         }
         else
         {
-            uFlag = uFlag & ~mask;
+            wFlag = wFlag & ~mask;
         }
     }
 }
