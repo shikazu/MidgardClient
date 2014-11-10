@@ -9,8 +9,8 @@ CModel::CModel(FileStream &flstream)
         bValid = false;
         return;
     }
-    uint16_t wVersion;
-    flstream.read(&wVersion, 2);
+
+    wVersion = (flstream.readByte() << 8 ) | flstream.readByte();
 
     flstream.read(&lAnimLength, 4);
     flstream.read(&lShadeType, 4);
@@ -59,6 +59,14 @@ CModel::CModel(FileStream &flstream)
 
 CModel::~CModel()
 {
+    for (uint32_t i = 0; i < vTextures.size(); i++)
+    {
+        delete[] vTextures.at(i);
+    }
+    for (uint32_t i = 0; i < vNodes.size(); i++)
+    {
+        delete[] vNodes.at(i);
+    }
 }
 
 bool CModel::IsValid()
@@ -66,7 +74,7 @@ bool CModel::IsValid()
     return bValid;
 }
 
-void CModel::fetchNode(FileStream &flstream, CModel::Node* pNode, uint16_t wVersion)
+void CModel::fetchNode(FileStream &flstream, CModel::Node* pNode)
 {
     flstream.read(pNode->sName, 40);
     flstream.read(pNode->sParent, 40);
@@ -177,4 +185,21 @@ void CModel::fetchNode(FileStream &flstream, CModel::Node* pNode, uint16_t wVers
             pNode->vRotFrames.push_back(pFrame);
         }
     }
+}
+
+uint32_t CModel::GetNodeCount()
+{
+    return vNodes.size();
+}
+CModel::Node* CModel::GetNode(uint32_t dwIndex)
+{
+    return vNodes.at(dwIndex);
+}
+uint32_t CModel::GetTextureCount()
+{
+    return vTextures.size();
+}
+char* CModel::GetTexture(uint32_t dwIndex)
+{
+    return vTextures.at(dwIndex);
 }

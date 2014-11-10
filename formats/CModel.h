@@ -58,10 +58,15 @@ class CModel///Handler for RSM files
         CModel(FileStream &flstream);
         virtual ~CModel();
 
+        uint32_t GetNodeCount();
+        CModel::Node* GetNode(uint32_t dwIndex);
+        uint32_t GetTextureCount();
+        char* GetTexture(uint32_t dwIndex);
         bool IsValid();
 
     private:
         bool bValid;
+        uint16_t wVersion;
         int32_t lAnimLength;
         int32_t lShadeType;
         uint8_t uAlpha;
@@ -69,7 +74,7 @@ class CModel///Handler for RSM files
         char sNode[40];
         std::vector<Node*> vNodes;
 
-        void fetchNode(FileStream& flstream, CModel::Node* pNode, uint16_t wVersion);
+        void fetchNode(FileStream& flstream, CModel::Node* pNode);
 };
 
 #endif//_CMODEL_H

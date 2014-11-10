@@ -10,7 +10,12 @@ CAltitude::CAltitude(FileStream &flstream)
         return;
     }
 
-    flstream.read(&wVersion, 2);
+    wVersion = (flstream.readByte() << 8 ) | flstream.readByte();
+    if (wVersion != 0x0102)
+    {
+        bValid = false;
+        return;
+    }
     flstream.read(&dwWidth, 4);
     flstream.read(&dwHeight, 4);
     uint32_t dwCellCount = dwWidth * dwHeight;

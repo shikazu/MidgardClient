@@ -410,18 +410,19 @@ namespace UI
         return bFlag;
     }
 
-    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const
+    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture) const
     {
         if (fCornerRadius == 0)
         {
-            drawRegular(target, states, OUTLINE);
+            drawRegular(target, states, OUTLINE, bUseTexture);
         }
         else
         {
-            drawRounded(target, states, OUTLINE);
+            drawRounded(target, states, OUTLINE, bUseTexture);
         }
     }
-    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states, sf::Texture &texture) const
+    /*
+    void Widget::DrawBorder(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture &texture) const
     {
         states.texture = &texture;
         if (fCornerRadius == 0)
@@ -433,18 +434,20 @@ namespace UI
             drawRounded(target, states, OUTLINE, true);
         }
     }
-    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states) const
+    */
+    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture) const
     {
         if (fCornerRadius == 0)
         {
-            drawRegular(target, states, BACKGROUND);
+            drawRegular(target, states, BACKGROUND, bUseTexture);
         }
         else
         {
-            drawRounded(target, states, BACKGROUND);
+            drawRounded(target, states, BACKGROUND, bUseTexture);
         }
     }
-    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states, sf::Texture &texture) const
+    /*
+    void Widget::DrawBackground(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture &texture) const
     {
         states.texture = &texture;
         if (fCornerRadius == 0)
@@ -456,7 +459,7 @@ namespace UI
             drawRounded(target, states, BACKGROUND, true);
         }
     }
-
+    */
     void Widget::drawRegular(sf::RenderTarget& target, sf::RenderStates states, UI::ColorID id, bool bUseTexture) const
     {
         if (id >= MAXID) return;//dont use this for FOREGROUND
@@ -504,6 +507,7 @@ namespace UI
             for (uint32_t i = 0; i < 5*dwMult; i++)
             {
                 vaBorder[i].texCoords = vaBorder[i].position - vPosReal;
+                vaBorder[i].color = sf::Color::White;
             }
         }
         target.draw(vaBorder, states);

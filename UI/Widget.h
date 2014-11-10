@@ -130,10 +130,10 @@ namespace UI
             virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager) {}
 
             bool SpreadEvent(sf::Event event, Manager* pManager);
-            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states) const;
-            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, sf::Texture& texture) const;
-            void DrawBackground(sf::RenderTarget& target, sf::RenderStates states) const;
-            void DrawBackground(sf::RenderTarget& target, sf::RenderStates states, sf::Texture& texture) const;
+            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture = false) const;
+            //void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture& texture) const;
+            void DrawBackground(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture = false) const;
+            //void DrawBackground(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture& texture) const;
             WidgetList lstChildren;
 
         private:

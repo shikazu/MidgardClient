@@ -47,15 +47,10 @@ namespace UI
 
     void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
-        const sf::FloatRect& bBox = GetBBox();
-        sf::VertexArray boundary(sf::TrianglesStrip, 4);
-        boundary[0] = sf::Vertex(sf::Vector2f(bBox.left             , bBox.top              ), sf::Color::White, sf::Vector2f(0, 0));
-        boundary[1] = sf::Vertex(sf::Vector2f(bBox.left             , bBox.top + bBox.height), sf::Color::White, sf::Vector2f(0, bBox.height));
-        boundary[2] = sf::Vertex(sf::Vector2f(bBox.left + bBox.width, bBox.top              ), sf::Color::White, sf::Vector2f(bBox.width, 0));
-        boundary[3] = sf::Vertex(sf::Vector2f(bBox.left + bBox.width, bBox.top + bBox.height), sf::Color::White, sf::Vector2f(bBox.width, bBox.height));
         states.texture = &pTextures[uCurrent];
         states.blendMode = sf::BlendMode::BlendAlpha;
-        target.draw(boundary, states);
+        DrawBorder(target, states, true);
+        DrawBackground(target, states, true);
     }
 
     void Button::MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
