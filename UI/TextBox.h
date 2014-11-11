@@ -34,6 +34,7 @@ namespace UI
             virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager);
             virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager);
             virtual void WinResized(Manager* pManager);
+            virtual void Dragged();
 
         private:
             mutable sf::String sText;

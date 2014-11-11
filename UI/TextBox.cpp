@@ -151,6 +151,12 @@ namespace UI
         bUpdateNeeded = true;
         updateCursorLocation();
     }
+    void TextBox::Dragged()
+    {
+        UpdateLocation();
+        bUpdateNeeded = true;
+        updateCursorLocation();
+    }
 
     void TextBox::updateCursorLocation(int32_t xSnap)
     {

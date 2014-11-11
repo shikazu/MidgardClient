@@ -134,12 +134,11 @@ namespace UI
             virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager) {}
             virtual void KeyReleased(sf::Event::KeyEvent keyEvent, Manager* pManager) {}
             virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager) {}
+            virtual void Dragged();
 
             bool SpreadEvent(sf::Event event, Manager* pManager);
-            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture = false) const;
-            //void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture& texture) const;
+            void DrawBorder(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture = false) const;//Texture should be set already if true
             void DrawBackground(sf::RenderTarget& target, sf::RenderStates states, bool bUseTexture = false) const;
-            //void DrawBackground(sf::RenderTarget& target, sf::RenderStates states, const sf::Texture& texture) const;
             WidgetList lstChildren;
 
         private:

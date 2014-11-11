@@ -373,10 +373,10 @@ namespace UI
                 else
                 {
                     MouseEntered(event.mouseMove, pManager);
-                    if (!pManager->IsHovered(NULL))
+                    if (!pManager->IsHovered(NULL))// && !pManager->IsHovered(pParent))
                     {
                         Widget* pWidget = pManager->GetHovered();
-                        pWidget->ParseEvent(event, pManager);
+                        pWidget->MouseLeft(event.mouseMove, pManager);
                     }
                     pManager->SetHovered(this);
                 }
@@ -391,7 +391,7 @@ namespace UI
             {
                 vPos.x += event.mouseMove.x - vDragRef.x;
                 vPos.y += event.mouseMove.y - vDragRef.y;
-                UpdateLocation();
+                Dragged();//Calls UpdateLocation down across hierarchy
                 vDragRef.x = event.mouseMove.x;
                 vDragRef.y = event.mouseMove.y;
             }
@@ -423,11 +423,21 @@ namespace UI
             }
         }
     }
+    void Widget::Dragged()
+    {
+        UpdateLocation();
+        for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
+        {
+            Widget* pWidget = *iter;
+            pWidget->Dragged();
+        }
+    }
 
     bool Widget::SpreadEvent(sf::Event event, Manager* pManager)
     {
         bool bFlag = false;
         for (WidgetList::reverse_iterator iter = lstChildren.rbegin(); iter != lstChildren.rend(); iter++)//Reverse Order because last one has highest preference since its drawn last
+
         {
             Widget *pWidget = *iter;
             bFlag = pWidget->ParseEvent(event, pManager);

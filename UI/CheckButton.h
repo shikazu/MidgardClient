@@ -16,6 +16,7 @@ namespace UI
             CheckButton(uint32_t dwIdent, float x = 0, float y = 0);//Size is set by the textures like in Button
 
             const bool GetCheckStatus() const;
+            void SetCheckStatus(bool bStatus = true);
             virtual ~CheckButton();
 
         protected:

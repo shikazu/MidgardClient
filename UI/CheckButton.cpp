@@ -37,4 +37,15 @@ namespace UI
     {
         return (uCurrent == ACTIVE);
     }
+    void CheckButton::SetCheckStatus(bool bStatus)
+    {
+        if (bStatus)
+        {
+            uCurrent = ACTIVE;
+        }
+        else
+        {
+            uCurrent = INACTIVE;
+        }
+    }
 }
