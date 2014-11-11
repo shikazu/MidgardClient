@@ -158,7 +158,7 @@ namespace UI
         bool bIsBold = ((uStyle & BOLD) != 0); //Flag needed in glyph function
 
         uint32_t dwAlign = GetCornerRadius() + GetBorderWidth();
-        if (dwAlign < 5) {dwAlign = 5;}
+        if (dwAlign < 3) {dwAlign = 3;}
 
         dwCursorX = GetPosition().x + dwAlign;//an offset
         uint32_t dwRight = dwCursorX + GetWidth() - 2*dwAlign;
@@ -208,7 +208,7 @@ namespace UI
 
         sf::FloatRect rect = GetBBox();//Get the Bounding Box;//Faster method
         float x = GetCornerRadius() + GetBorderWidth();
-        if (x < 5) {x = 5;}
+        if (x < 3) {x = 3;}
         float y = (rect.height + dwCharSize)/2.0;//centre aligned text
         float xMax = rect.width - x;
 

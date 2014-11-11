@@ -23,6 +23,8 @@ namespace UI
             Widget* GetHovered();
             void SetHovered(Widget* pWidget);
 
+            void ClearWidgets();//delete all child widgets
+
         private:
             WidgetList lstFocusable;
             WidgetList::iterator iFocused;

@@ -136,4 +136,15 @@ namespace UI {
     {
         pWidgetHovered = pWidget;
     }
+
+    void Manager::ClearWidgets()
+    {
+        for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
+        {
+            Widget* pWidget = *iter;
+            delete pWidget;
+        }
+        lstChildren.clear();
+        lstFocusable.clear();
+    }
 }

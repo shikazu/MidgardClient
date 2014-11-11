@@ -1,25 +1,18 @@
-#ifndef _VIEWS_LOGINVIEW_H_
-#define _VIEWS_LOGINVIEW_H_
+#ifndef _LOGINVIEW_H
+#define _LOGINVIEW_H
 
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
-#include <vector>
+#include "../UI/Manager.h"
+#include "../common/ContentPipeline.h"
 
-class LoginView
+class LoginView : public sf::View
 {
-private:
-    sf::RenderWindow *window;
-    bool isLoggedIn;
-
-    void draw();
-    bool prepare();
-
-    std::vector<sf::Sprite> sprites;
-    std::vector<sf::Texture> textures;
-
 public:
-    LoginView(sf::RenderWindow *window);
+    LoginView(UI::Manager& mgr, ContentPipeline *pipeline, sf::Font &font, sf::String sUser = "");
+    ~LoginView();
+
+private:
+    //UI::Manager* pManager;
 };
 
-#endif
+#endif//_LOGINVIEW_H
 
