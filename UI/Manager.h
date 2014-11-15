@@ -4,33 +4,40 @@
 
 namespace UI
 {
-    class Manager : public Widget
-    {
-        public:
-            Manager(sf::RenderTarget& target);
-            virtual ~Manager();
+	class Manager : public Widget
+	{
+		public:
+			//Constructors and Destructor
+			Manager(uint32_t dwID, sf::RenderTarget& target);
+			~Manager() {}
 
-            void SwitchFocus(Widget* pWidget);
-            void SwitchFocus(bool bForward = true);
-            void AddFocus(Widget* pWidget, Widget* pBefore = NULL, Widget* pAfter = NULL);
-            bool ParseEvent(sf::Event event, Manager* pManager = NULL);//Manager argument is dummy
+			//Focus Widget Methods
+			void SwitchFocus(Widget* pWidget);
+			void SwitchFocus(bool bForward = true);
+			void AddFocus(Widget* pWidget, Widget* pBefore = NULL, Widget* pAfter = NULL);
+			void RemoveFocus(Widget* pWidget);
+			Widget* GetFocused();
 
-            bool IsPressed(Widget* pWidget);
-            bool IsPressed(Widget* pWidget, sf::Mouse::Button mbutton);
-            void SetPressed(Widget* pWidget, sf::Mouse::Button mbutton);
+			//Pressed Widget Methods
+			bool IsPressed(Widget* pWidget);
+			bool IsPressed(Widget* pWidget, sf::Mouse::Button mbutton);
+			void SetPressed(Widget* pWidget, sf::Mouse::Button mbutton);
+			Widget* GetPressed();
 
-            bool IsHovered(Widget* pWidget);
-            Widget* GetHovered();
-            void SetHovered(Widget* pWidget);
+			//Hovered Widget Methods
+			bool IsHovered(Widget* pWidget);
+			void SetHovered(Widget* pWidget);
+			Widget* GetHovered();
 
-            void ClearWidgets();//delete all child widgets
+			//Miscellaneous Methods
+			bool ParseEvent(sf::Event event, Manager* pManager = NULL);//Manager argument is dummy
 
-        private:
-            WidgetList lstFocusable;
-            WidgetList::iterator iFocused;
-            Widget* pWidgetPressed;
-            Widget* pWidgetHovered;
-            sf::Mouse::Button btnPressed;
-    };
+		private:
+			WidgetList lstFocusable;
+			WidgetList::iterator iFocused;
+			Widget* pWidgetPressed;
+			Widget* pWidgetHovered;
+			sf::Mouse::Button btnPressed;
+	};
 }
-#endif // _MANAGER_H
+#endif//_MANAGER_H

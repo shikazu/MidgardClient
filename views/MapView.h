@@ -11,7 +11,7 @@
 #include "../formats/CGround.h"
 #include "../formats/CActor.h"
 #include "../formats/CSprite.h"
-#include "../common/ContentPipeline.h"
+#include "../common/Globals.h"
 #include "../common/FileStream.h"
 
 #include <GL/glew.h>
@@ -37,4 +37,4 @@ public:
     void draw();
 };
 
-#endif // _VIEWS_MAPVIEW_H_
+#endif//_MAPVIEW_H_

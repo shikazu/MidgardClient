@@ -1,55 +1,61 @@
 #ifndef _TEXTBOX_H
 #define _TEXTBOX_H
-
 #include "Widget.h"
 #include "Manager.h"
 
 namespace UI
 {
 
-    class TextBox : public Widget
-    {
-        public:
-            enum Style
-            {
-                NORMAL = 0x0,
-                BOLD = 0x1,
-                ITALIC = 0x2
-            };
-            TextBox(uint32_t dwIdent, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(50,20));
-            TextBox(uint32_t dwIdent, float x = 0, float y = 0, float w = 50, float h = 20);
-            virtual ~TextBox();
+	class TextBox : public Widget
+	{
+		public:
+			//Enumerations
+			enum Style
+			{
+				NORMAL = 0x0,
+				BOLD = 0x1,
+				ITALIC = 0x2
+			};
 
-            void SetFont(sf::Font& f);
-            void SetPassChar(char c);
-            void SetText(sf::String t);
-            const sf::String GetText() const;
-            void SetCharSize(uint32_t dwSize);
-            const uint32_t GetCharSize() const;
-            void SetFocus(bool bStatus = true);
+			//Constructors and Destructor
+			TextBox(uint32_t dwIdent, uint8_t uStyle = NORMAL, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(50,20));
+			TextBox(uint32_t dwIdent, uint8_t uStyle = NORMAL, float x = 0, float y = 0, float w = 50, float h = 20);
+			~TextBox() {}
 
-        protected:
-            virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-            virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager);
-            virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager);
-            virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager);
-            virtual void WinResized(Manager* pManager);
-            virtual void Dragged();
+			//Methods - Setters
+			void SetFontID(uint32_t dwFontID);
+			void SetPassChar(char c);
+			void SetText(sf::String t);
+			void SetCharSize(uint32_t dwSize);
+			void SetStyle(uint8_t uStyle);
 
-        private:
-            mutable sf::String sText;
-            char cPass;
-            sf::Font* pFont;
-            mutable uint32_t dwCursorC, dwCursorX;//C is wrt character and X is wrt pixels
-            uint32_t dwCharSize;
-            Style uStyle;
+			//Methods - Getters
+			const uint32_t GetFontID() const;
+			const sf::String GetText() const;
+			const uint32_t GetCharSize() const;
+			const uint8_t GetStyle() const;
 
-            mutable sf::VertexArray vaChars;
-            mutable bool bUpdateNeeded;
+		protected:
+			//Overrides
+			virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+			virtual void MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager);
+			virtual void KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager);
+			virtual void TextEntered(sf::Event::TextEvent textEvent, Manager* pManager);
+			virtual void WinResized();
+			virtual void Dragged();
 
-            void updateCursorLocation(int32_t xSnap = -1);
-            void updateVertices() const;
+		private:
+			//Attributes
+			sf::String sText;
+			uint8_t uStyle;
+			char cPass;
+			uint32_t dwFontID, dwStart;//dwStart Represents the Starting Character Index - default is 0
+			uint32_t dwCursorC, dwCursorX;//C is wrt character and X is wrt pixels
+			uint32_t dwCharSize;
+			mutable bool bUpdateNeeded;
 
-    };
+			//Methods
+			void updateCursor(int32_t xSnap = -1);
+	};
 }
-#endif // _TEXTBOX_H
+#endif//_TEXTBOX_H

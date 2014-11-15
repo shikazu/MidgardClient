@@ -48,6 +48,21 @@ ContentPipeline::ContentPipeline(std::string sIniFile)
     }
 }
 
+bool ContentPipeline::getTexture(std::string sFile, sf::Texture *pTexture, bool bGrfFirst)
+{
+    static std::string sPrefix = "data\\texture\\유저인터페이스\\";
+    FileStream stream;
+    if (getFileStream(sPrefix + sFile, stream, bGrfFirst))
+    {
+        sf::Image image;
+        image.loadFromStream(stream);
+        image.createMaskFromColor(sf::Color::Magenta);
+        pTexture->loadFromImage(image);
+        return true;
+    }
+    return false;
+}
+
 bool ContentPipeline::getFileStream(std::string sFile, FileStream &flstream, bool bGrfFirst)
 {
     bool bStatus;

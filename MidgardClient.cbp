@@ -17,6 +17,7 @@
 					<Add directory="widgets" />
 					<Add directory="common" />
 					<Add directory="UI" />
+					<Add directory="views" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -29,6 +30,7 @@
 					<Add directory="widgets" />
 					<Add directory="common" />
 					<Add directory="UI" />
+					<Add directory="views" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -214,8 +216,12 @@
 		<Unit filename="UI/Button.h" />
 		<Unit filename="UI/CheckButton.cpp" />
 		<Unit filename="UI/CheckButton.h" />
+		<Unit filename="UI/Frame.cpp" />
+		<Unit filename="UI/Frame.h" />
 		<Unit filename="UI/Manager.cpp" />
 		<Unit filename="UI/Manager.h" />
+		<Unit filename="UI/MessageBox.cpp" />
+		<Unit filename="UI/MessageBox.h" />
 		<Unit filename="UI/TextBox.cpp" />
 		<Unit filename="UI/TextBox.h" />
 		<Unit filename="UI/Widget.cpp" />
@@ -224,6 +230,7 @@
 		<Unit filename="common/ContentPipeline.h" />
 		<Unit filename="common/FileStream.cpp" />
 		<Unit filename="common/FileStream.h" />
+		<Unit filename="common/Globals.h" />
 		<Unit filename="formats/CActor.cpp" />
 		<Unit filename="formats/CActor.h" />
 		<Unit filename="formats/CAltitude.cpp" />
@@ -241,6 +248,8 @@
 		<Unit filename="formats/CWorld.cpp" />
 		<Unit filename="formats/CWorld.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="views/CharView.cpp" />
+		<Unit filename="views/CharView.h" />
 		<Unit filename="views/LoginView.cpp" />
 		<Unit filename="views/LoginView.h" />
 		<Unit filename="views/MapView.cpp" />

@@ -2,89 +2,114 @@
 
 namespace UI
 {
-    Button::Button(uint32_t dwIdent, sf::Vector2f vPos):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE, vPos, sf::Vector2f(0,0))
-    {
-        uCurrent = INACTIVE;
-        pCallback = NULL;
-    }
+	Button::Button(uint32_t dwIdent, sf::Vector2f vPos):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE|TEXTURED, vPos)
+	{
+		uCurrent = INACTIVE;
+		pCallback = NULL;
+		pTextures[INACTIVE] = pTextures[ACTIVE] = pTextures[PRESSED] = NULL;
+	}
 
-    Button::Button(uint32_t dwIdent, float x, float y):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE, x, y, 0, 0)
-    {
-        uCurrent = INACTIVE;
-        pCallback = NULL;
-    }
+	Button::Button(uint32_t dwIdent, float x, float y):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE|TEXTURED, x, y)
+	{
+		uCurrent = INACTIVE;
+		pCallback = NULL;
+		pTextures[INACTIVE] = pTextures[ACTIVE] = pTextures[PRESSED] = NULL;
+	}
+	void Button::SetCurrentState(State uState)
+	{
+		if (uState >= INVALID) return;
+		uCurrent = uState;
+	}
+	void Button::SetTexture(std::string sFile, State uState)
+	{
+		if (uState >= INVALID) return;
+		if (pTextures[uState] != NULL)
+		{
+			delete pTextures[uState];//Delete old data if any
+		}
+		//Allocate the Texture and Get from Global pipeline (i.e. DataPipe)
+		pTextures[uState] = new sf::Texture();
+		if (!DataPipe->getTexture(sFile, pTextures[uState]))
+		{
+			delete pTextures[uState];
+			return;
+		}
 
-    Button::~Button()
-    {
-    }
+		//Adjust the Width and Height
+		sf::Vector2u vImageSize = pTextures[uState]->getSize();
+		sf::Vector2f vCurSize = GetSize();
+		if (vCurSize.x < vImageSize.x)
+		{
+			vCurSize.x = vImageSize.x;
+		}
+		if (vCurSize.y < vImageSize.y)
+		{
+			vCurSize.y = vImageSize.y;
+		}
+		if (vCurSize != GetSize())
+		{
+			Resize(vCurSize, false);
+		}
+	}
 
-    void Button::SetTexture(FileStream &stream, State uState)
-    {
-        if (uState >= INVALID) return;
-        sf::Image image;
-        image.loadFromStream(stream);
-        image.createMaskFromColor(sf::Color::Magenta);
-        sf::Vector2u vImageSize = image.getSize();
+	void Button::SetCallback(CALLBACK pFunc)
+	{
+		pCallback = pFunc;
+	}
 
-        if (GetWidth()  < vImageSize.x) { SetWidth( vImageSize.x); }
-        if (GetHeight() < vImageSize.y) { SetHeight(vImageSize.y); }
-        sf::IntRect rect(0, 0, GetWidth(), GetHeight());
-        pTextures[uState].loadFromImage(image, rect);
-    }
+	void Button::InvokeCallback(Manager *pManager)
+	{
+		if (pCallback != NULL)
+		{
+			pCallback(this, pManager);
+		}
+	}
 
-    void Button::SetCallback(Callback pFunc)
-    {
-        pCallback = pFunc;
-    }
+	void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
+	{
+		//Sanity Check
+		if (pTextures[uCurrent] == NULL) { return; }
 
-    void Button::InvokeCallback(Manager *pManager)
-    {
-        if (pCallback != NULL)
-        {
-            pCallback(this, pManager);
-        }
-    }
+		//Put the texture , set the blend mode
+		states.texture = pTextures[uCurrent];
+		states.blendMode = sf::BlendMode::BlendAlpha;
 
-    void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        states.texture = &pTextures[uCurrent];
-        states.blendMode = sf::BlendMode::BlendAlpha;
-        DrawBorder(target, states, true);
-        DrawBackground(target, states, true);
-    }
+		//draw the pre-calculated vertices
+		target.draw(GetBackGroundVA(), states);
+	}
 
-    void Button::MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
-    {
-        if (btnEvent.button == sf::Mouse::Left) { uCurrent = PRESSED;}
-    }
+	void Button::MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
+	{
+		if (btnEvent.button == sf::Mouse::Left) { uCurrent = PRESSED;}
+	}
 
-    void Button::MouseReleased(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
-    {
-        if (btnEvent.button != sf::Mouse::Left) { return; }
-        if (IsPointInside(btnEvent.x, btnEvent.y))
-        {
-            uCurrent = ACTIVE;
-        }
-        else
-        {
-            uCurrent = INACTIVE;
-        }
-    }
+	void Button::MouseReleased(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
+	{
+		if (btnEvent.button != sf::Mouse::Left) { return; }
+		if (IsPointInside(btnEvent.x, btnEvent.y))
+		{
+			uCurrent = ACTIVE;
+		}
+		else
+		{
+			uCurrent = INACTIVE;
+		}
+	}
 
-    void Button::MouseClicked(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
-    {
-        if (btnEvent.button == sf::Mouse::Left) { InvokeCallback(pManager); }
-    }
+	void Button::MouseClicked(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
+	{
+		if (btnEvent.button == sf::Mouse::Left) { InvokeCallback(pManager); }
+	}
 
-    void Button::MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
-    {
-        if (!pManager->IsPressed(NULL)) return;
-        uCurrent = ACTIVE;
-    }
+	void Button::MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
+	{
+		if (!pManager->IsPressed(NULL)) return; //If its pressing anything else ignore
+		uCurrent = ACTIVE;
+	}
 
-    void Button::MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
-    {
-        if (!pManager->IsPressed(NULL)) return;
-        uCurrent = INACTIVE;
-    }
+	void Button::MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
+	{
+		if (!pManager->IsPressed(NULL)) return; //If its pressing anything else ignore
+		uCurrent = INACTIVE;
+	}
 }
