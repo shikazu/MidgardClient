@@ -87,12 +87,15 @@ namespace UI
 		}
 	}
 
-	void Widget::DelChild(Widget* pChild, bool bCleanup)
+	void Widget::DelChild(Widget* pChild, Manager* pManager, bool bCleanup)
 	{
 		if (pChild == NULL) { return; }
 		if (bCleanup)
 		{
-			getManager()->RemoveFocus(pChild);
+			if (pManager == NULL) {pManager = getManager();}
+			if (pManager->IsHovered(pChild)) {pManager->SetHovered(NULL);}
+			if (pManager->IsPressed(pChild)) {pManager->SetPressed(NULL);}
+			pManager->RemoveFocus(pChild);
 			delete pChild;
 		}
 		else
@@ -102,13 +105,16 @@ namespace UI
 		lstChildren.remove(pChild);
 	}
 
-	void Widget::DelChildren(bool bCleanup)
+	void Widget::DelChildren(Manager* pManager, bool bCleanup)
 	{
+		if (pManager == NULL) {pManager = getManager();}
 		for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
 		{
 			if (bCleanup)
 			{
-				getManager()->RemoveFocus(*iter);
+				if (pManager->IsHovered(*iter)) {pManager->SetHovered(NULL);}
+				if (pManager->IsPressed(*iter)) {pManager->SetPressed(NULL);}
+				pManager->RemoveFocus(*iter);
 				delete *iter;
 			}
 			else

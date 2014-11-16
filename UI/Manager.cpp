@@ -104,6 +104,10 @@ namespace UI {
 	{
 		return ((pWidget == pWidgetPressed) && (mbutton == btnPressed));
 	}
+	void Manager::SetPressed(Widget* pWidget)
+	{
+		pWidgetPressed = pWidget;
+	}
 	void Manager::SetPressed(Widget* pWidget, sf::Mouse::Button mbutton)
 	{
 		if (pWidgetPressed != NULL && pWidget != NULL) return;//If button is already set and not trying to unset it

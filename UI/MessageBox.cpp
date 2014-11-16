@@ -136,6 +136,6 @@ namespace UI
 		}
 
 		//Close the MessageBox - delete it essentially
-		pManager->DelChild(pBox);
+		pManager->DelChild(pBox, pManager);
 	}
 }

@@ -34,7 +34,7 @@ namespace LoginView
 
 	void Create(UI::Manager &mgr)
 	{
-		mgr.DelChildren();
+		mgr.DelChildren(&mgr);
 
 		//Window Frame
 		pFrame = new UI::Frame(LOGIN, 0, 0);
@@ -45,25 +45,24 @@ namespace LoginView
 
 		//Username Input
 		UI::TextBox* pUser = new UI::TextBox(USERIN, UI::BOLD, 90, 29, 127, 18);
+		pFrame->AddChild(pUser);
 		pUser->SetColor(sf::Color::Blue, UI::FOREGROUND);
 		pUser->SetStyle(uStyle);
 		pUser->SetFontID(dwFontID);
 		pUser->SetCharSize(dwCharSize);
 		pUser->SetCornerRadius(1);
 		pUser->SetText(userName);
-		pFrame->AddChild(pUser);
 		mgr.AddFocus(pUser);
-		mgr.SwitchFocus(pUser);
 
 		//Password Input
 		UI::TextBox* pPass = new UI::TextBox(PASSIN, UI::BOLD, 90, 61, 127, 18);
+		pFrame->AddChild(pPass);
 		pPass->SetColor(sf::Color::Blue, UI::FOREGROUND);
 		pPass->SetStyle(uStyle);
 		pPass->SetFontID(dwFontID);
 		pPass->SetCharSize(dwCharSize);
 		pPass->SetCornerRadius(1);
 		pPass->SetPassChar('*');
-		pFrame->AddChild(pPass);
 		mgr.AddFocus(pPass);
 
 		//Save User CheckButton
@@ -91,6 +90,7 @@ namespace LoginView
 		pExit->SetCallback(LoginView::HandleExit);
 		pFrame->AddChild(pExit);
 
+		mgr.SwitchFocus(pUser);
 		bLoggedIn = false;
 		bExitGame = false;
 	}
@@ -109,8 +109,8 @@ namespace LoginView
 		UI::CheckButton* pCheck = (UI::CheckButton*)(pFrame->GetChild(SAVECHK));
 		bSaveUser = pCheck->IsChecked();
 
-		pManager->DelChild(pFrame);
-		pManager->SetHovered(NULL);//To avoid crashes
+		pManager->DelChild(pFrame, pManager);
+//		pManager->SetHovered(NULL);//To avoid crashes
 	}
 
 	void HandleExit(UI::Widget* pButton, UI::Manager* pManager)

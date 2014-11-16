@@ -21,6 +21,7 @@ namespace UI
 			//Pressed Widget Methods
 			bool IsPressed(Widget* pWidget);
 			bool IsPressed(Widget* pWidget, sf::Mouse::Button mbutton);
+			void SetPressed(Widget* pWidget);
 			void SetPressed(Widget* pWidget, sf::Mouse::Button mbutton);
 			Widget* GetPressed();
 

@@ -7,8 +7,8 @@
 
 namespace CharView
 {
-	Init();
-	Create();
+	void Init();
+	void Create();
 };
 
 #endif//_CHARVIEW_H

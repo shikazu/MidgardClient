@@ -89,8 +89,8 @@ namespace UI
 			bool Attach(Widget* pWinParent);//Assign Parent Widget
 			void Detach();//Unset Parent Widget
 			void AddChild(Widget* pChild, Widget* pBefore = NULL, Widget* pAfter = NULL);//Add Child Widget
-			void DelChild(Widget* pChild, bool bCleanup = true);//Remove Child Widget - Optionally delete the Widget itself
-			void DelChildren(bool bCleanup = true);
+			void DelChild(Widget* pChild, Manager* pManager = NULL, bool bCleanup = true);//Remove Child Widget - Optionally delete the Widget itself
+			void DelChildren(Manager* pManager = NULL, bool bCleanup = true);
 
 			//Hierarchy Methods - Getters
 			Widget* GetParent() const;

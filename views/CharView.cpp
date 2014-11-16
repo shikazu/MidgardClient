@@ -1,10 +1,10 @@
 #include "CharView.h"
 
-CharView::Init()
+void CharView::Init()
 {
 }
 
-CharView::Create()
+void CharView::Create()
 {
 }
 
