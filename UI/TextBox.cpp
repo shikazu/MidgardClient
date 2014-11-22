@@ -1,7 +1,7 @@
 #include "TextBox.h"
 namespace UI
 {
-	TextBox::TextBox(uint32_t dwIdent, uint8_t uStyle, sf::Vector2f vPos, sf::Vector2f vSize):Widget(dwIdent, ENABLED|VISIBLE|FOCUSABLE|EDITABLE, vPos, vSize)
+	TextBox::TextBox(uint32_t dwIdent, uint8_t uStyle, sf::Vector2i vPos, sf::Vector2u vSize):Widget(dwIdent, ENABLED|VISIBLE|FOCUSABLE|EDITABLE, vPos, vSize)
 	{
 		sText = "";
 		cPass = 0;
@@ -13,7 +13,7 @@ namespace UI
 		updateCursor();
 	}
 
-	TextBox::TextBox(uint32_t dwIdent, uint8_t uStyle, float x, float y, float w, float h):Widget(dwIdent, ENABLED|VISIBLE|FOCUSABLE|EDITABLE, x, y, w, h)
+	TextBox::TextBox(uint32_t dwIdent, uint8_t uStyle, int32_t x, int32_t y, uint32_t w, uint32_t h):Widget(dwIdent, ENABLED|VISIBLE|FOCUSABLE|EDITABLE, x, y, w, h)
 	{
 		sText = "";
 		cPass = 0;
@@ -55,6 +55,8 @@ namespace UI
 	void TextBox::SetStyle(uint8_t uStyle)
 	{
 		this->uStyle = uStyle;
+		bUpdateNeeded = true;
+		updateCursor();
 	}
 
 	const uint32_t TextBox::GetFontID() const
@@ -79,6 +81,11 @@ namespace UI
 
 	void TextBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
+		//sf::Transform t;
+		//t.translate(GetPosition());
+		//states.transform = t;
+		states.transform = GetTransform();
+
 		//Draw the Background - unless its transparent
 		if (GetColor(BACKGROUND).a != 0)
 		{
@@ -88,25 +95,22 @@ namespace UI
 		//Update vertices if needed and Draw the text
 		if (bUpdateNeeded)
 		{
-			sf::Vector2f vTextPos = sf::Vector2f(0, (GetHeight() + dwCharSize)/2);
+			sf::Vector2i vTextPos = sf::Vector2i(0, (GetHeight() + dwCharSize)/2);
 			uint32_t dwXMax = GetWidth() - XLEFT;
 			uint32_t dwNum = 1;
 			UpdateTextVA(dwFontID, sText, uStyle, dwCharSize, dwXMax, dwNum, dwStart, vTextPos, cPass);
 			bUpdateNeeded = false;
 		}
 		states.texture = &(GetFont(dwFontID).getTexture(dwCharSize));
-		//states.blendMode = sf::BlendMode::BlendAlpha;
 		target.draw(GetTextVA(), states);
 
 		//Draw the Cursor
 		if (IsFocused() && IsEditable())
 		{
-			sf::Vertex vaCursor[] =
-			{
-				sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y + GetBorderWidth()), GetColor(FOREGROUND)),
-				sf::Vertex(sf::Vector2f(dwCursorX, GetPosition().y + GetHeight() - GetBorderWidth()), GetColor(FOREGROUND))
-			};
-			target.draw(vaCursor, 2, sf::Lines);
+			sf::VertexArray vaCursor(sf::Lines, 2);
+			vaCursor[0] = sf::Vertex(sf::Vector2f(dwCursorX, GetBorderWidth()), GetColor(FOREGROUND));
+			vaCursor[1] = sf::Vertex(sf::Vector2f(dwCursorX, GetHeight() - GetBorderWidth()), GetColor(FOREGROUND));
+			target.draw(vaCursor, states);
 		}
 
 		//Finally Draw the Border
@@ -118,7 +122,7 @@ namespace UI
 
 	void TextBox::MousePressed(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
 	{
-		updateCursor(btnEvent.x);
+		updateCursor(btnEvent.x - GetX());
 	}
 	void TextBox::KeyPressed(sf::Event::KeyEvent keyEvent, Manager* pManager)
 	{
@@ -160,6 +164,9 @@ namespace UI
 				updateCursor();
 				break;
 			}
+			default:
+			{
+			}
 		}
 	}
 
@@ -195,10 +202,13 @@ namespace UI
 		//Initial Position & Bounding value
 		float x = GetCornerRadius() + GetBorderWidth();
 		if (x < XLEFT) { x = XLEFT; }
-		float xMax = GetWidth() - x;
+		float xMax = static_cast<float>(GetWidth()) - x;
 
 		//Change Cursor to maximum value in case mouse click was used
-		if (xSnap >= 0) { dwCursorC = sText.getSize(); }
+		if (xSnap >= 0)
+		{
+			dwCursorC = sText.getSize();
+		}
 
 		//Move Character By Character
 		uint32_t i = dwStart;
@@ -226,7 +236,7 @@ namespace UI
 				dwCursorC = i;
 				break;
 			}
-			if (xSnap >= 0 && x + GetX() >= xSnap)//When mouse is clicked snap to that
+			if (xSnap >= 0 && x >= xSnap)//When mouse is clicked snap to that
 			{
 				dwCursorC = i;
 				break;
@@ -234,13 +244,13 @@ namespace UI
 			if (i == dwCursorC) break;//For when the cursor is after the last character
 			cPrev = cNow;
 
-			if (xSnap >= 0 && (x + GetX() + (fAdvance - fKerning)/2) >= xSnap)
+			if (xSnap >= 0 && (x + (fAdvance - fKerning)/2) >= xSnap)
 			{
 				dwCursorC = i;
 				break;
 			}
 			x += fAdvance;
 		}
-		dwCursorX = x + GetX();
+		dwCursorX = x;
 	}
 }

@@ -19,7 +19,7 @@ namespace LoginView
 	///Button Callbacks
 	void HandleLogin(UI::Widget* pButton, UI::Manager* pManager);
 	void HandleExit(UI::Widget* pButton, UI::Manager* pManager);
-	void HandleMsgBox(UI::Widget* pWidget, UI::Manager* pManager);//pWidget is the messagebox
+	void HandleExitBox(UI::Widget* pWidget, UI::Manager* pManager);//pWidget is the messagebox
 
 	///Member Access Functions
 	sf::String& GetUserName();

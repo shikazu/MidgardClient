@@ -18,8 +18,8 @@ namespace UI
 			};
 
 			//Constructors and Destructor
-			Button(uint32_t dwIdent, sf::Vector2f vPos = sf::Vector2f(0,0));
-			Button(uint32_t dwIdent, float x = 0, float y = 0);//Size is set by texture
+			Button(uint32_t dwIdent, sf::Vector2i vPos = sf::Vector2i(0,0));
+			Button(uint32_t dwIdent, int32_t x = 0, int32_t y = 0);//Size is set by texture
 			~Button() {}
 
 			//Other Methods

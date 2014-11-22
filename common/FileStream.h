@@ -26,6 +26,7 @@ class FileStream : public sf::InputStream
         void load(char* data, uint32_t dwLength);
         void seek(sf::Int64 offset, uint8_t from);
         uint8_t readByte();
+        //void readColor(sf::Color& color);
         void clear();
 
     //private:

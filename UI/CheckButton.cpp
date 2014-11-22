@@ -2,11 +2,11 @@
 
 namespace UI
 {
-	CheckButton::CheckButton(uint32_t dwIdent, sf::Vector2f vPos):Button(dwIdent, vPos)
+	CheckButton::CheckButton(uint32_t dwIdent, sf::Vector2i vPos):Button(dwIdent, vPos)
 	{
 	}
 
-	CheckButton::CheckButton(uint32_t dwIdent, float x, float y):Button(dwIdent, x, y)
+	CheckButton::CheckButton(uint32_t dwIdent, int32_t x, int32_t y):Button(dwIdent, x, y)
 	{
 	}
 
@@ -39,5 +39,25 @@ namespace UI
 		{
 			uCurrent = INACTIVE;
 		}
+	}
+
+	void CheckButton::MouseReleased(sf::Event::MouseButtonEvent btnEvent, Manager* pManager)
+	{
+		if (btnEvent.button == sf::Mouse::Left && !IsPointInside(btnEvent.x, btnEvent.y))
+		{
+			GetMouseCursor().SetState(CRS_DEFAULT);
+		}
+	}
+
+	void CheckButton::MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
+	{
+		if (!pManager->IsPressed(NULL)) return; //If its pressing anything else ignore
+		GetMouseCursor().SetState(CRS_BUTTON);
+	}
+
+	void CheckButton::MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
+	{
+		if (!pManager->IsPressed(NULL)) return; //If its pressing anything else ignore
+		GetMouseCursor().SetState(CRS_DEFAULT);
 	}
 }

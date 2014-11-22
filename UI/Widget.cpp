@@ -4,7 +4,7 @@
 namespace UI
 {
 	///Constructors + Destructor
-	Widget::Widget(uint32_t dwID, uint16_t wFlag, sf::Vector2f vPos, sf::Vector2f vSize)
+	Widget::Widget(uint32_t dwID, uint16_t wFlag, sf::Vector2i vPos, sf::Vector2u vSize)
 	{
 		this->dwID = dwID;
 		this->wFlag = wFlag;
@@ -20,9 +20,10 @@ namespace UI
 		this->vaText = sf::VertexArray(sf::Triangles);
 		this->pColor[FOREGROUND] = this->pColor[BACKGROUND] = this->pColor[OUTLINE] = sf::Color::Transparent;
 		UpdateLocation();
+		updateVertices();
 	}
 
-	Widget::Widget(uint32_t dwID, uint16_t wFlag, float x, float y, float w,  float h)
+	Widget::Widget(uint32_t dwID, uint16_t wFlag, int32_t x, int32_t y, uint32_t w,  uint32_t h)
 	{
 		this->dwID = dwID;
 		this->wFlag = wFlag;
@@ -40,6 +41,7 @@ namespace UI
 		this->vaText = sf::VertexArray(sf::Triangles);
 		this->pColor[FOREGROUND] = this->pColor[BACKGROUND] = this->pColor[OUTLINE] = sf::Color::Transparent;
 		UpdateLocation();
+		updateVertices();
 	}
 
 	Widget::~Widget()
@@ -68,6 +70,7 @@ namespace UI
 		{
 			lstChildren.push_back(std::move(pChild));
 			pChild->Attach(this);
+			pChild->UpdateLocation();
 			return;
 		}
 		for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
@@ -76,12 +79,14 @@ namespace UI
 			{
 				lstChildren.insert(++iter, std::move(pChild));
 				pChild->Attach(this);
+				pChild->UpdateLocation();
 				break;
 			}
 			if (*iter == pAfter)
 			{
 				lstChildren.insert(iter, std::move(pChild));
 				pChild->Attach(this);
+				pChild->UpdateLocation();
 				break;
 			}
 		}
@@ -101,6 +106,7 @@ namespace UI
 		else
 		{
 			pChild->Detach();
+			pChild->UpdateLocation();
 		}
 		lstChildren.remove(pChild);
 	}
@@ -151,7 +157,7 @@ namespace UI
 		return dwID;
 	}
 
-	void Widget::MoveTo(sf::Vector2f vPos, bool bIsOffset)
+	void Widget::MoveTo(sf::Vector2i vPos, bool bIsOffset)
 	{
 		if (bIsOffset)
 		{
@@ -164,7 +170,7 @@ namespace UI
 		UpdateLocation();
 	}
 
-	void Widget::MoveTo(float x, float y, bool bIsOffset)
+	void Widget::MoveTo(int32_t x, int32_t y, bool bIsOffset)
 	{
 		if (bIsOffset)
 		{
@@ -179,7 +185,7 @@ namespace UI
 		UpdateLocation();
 	}
 
-	void Widget::Resize(sf::Vector2f vSize, bool bIsOffset)
+	void Widget::Resize(sf::Vector2u vSize, bool bIsOffset)
 	{
 		if (bIsOffset)
 		{
@@ -190,9 +196,10 @@ namespace UI
 			this->vSize = vSize;
 		}
 		UpdateLocation();
+		updateVertices();
 	}
 
-	void Widget::Resize(float w, float h, bool bIsOffset)
+	void Widget::Resize(uint32_t w, uint32_t h, bool bIsOffset)
 	{
 		if (bIsOffset)
 		{
@@ -205,18 +212,21 @@ namespace UI
 			vSize.y  = h;
 		}
 		UpdateLocation();
+		updateVertices();
 	}
 
-	void Widget::SetWidth(float w)
+	void Widget::SetWidth(uint32_t w)
 	{
 		vSize.x = w;
 		UpdateLocation();
+		updateVertices();
 	}
 
-	void Widget::SetHeight(float h)
+	void Widget::SetHeight(uint32_t h)
 	{
 		vSize.y = h;
 		UpdateLocation();
+		updateVertices();
 	}
 
 	void Widget::SetDragArea(sf::FloatRect rArea)
@@ -232,7 +242,7 @@ namespace UI
 		rDrag.height = h;
 	}
 
-	const sf::Vector2f& Widget::GetPosition(bool bReal) const
+	const sf::Vector2i& Widget::GetPosition(bool bReal) const
 	{
 		if (bReal)
 		{
@@ -244,7 +254,7 @@ namespace UI
 		}
 	}
 
-	const float Widget::GetX(bool bReal) const
+	const int32_t Widget::GetX(bool bReal) const
 	{
 		if (bReal)
 		{
@@ -256,7 +266,7 @@ namespace UI
 		}
 	}
 
-	const float Widget::GetY(bool bReal) const
+	const int32_t Widget::GetY(bool bReal) const
 	{
 		if (bReal)
 		{
@@ -268,17 +278,17 @@ namespace UI
 		}
 	}
 
-	const sf::Vector2f& Widget::GetSize() const
+	const sf::Vector2u& Widget::GetSize() const
 	{
 		return vSize;
 	}
 
-	const float Widget::GetWidth() const
+	const uint32_t Widget::GetWidth() const
 	{
 		return vSize.x;
 	}
 
-	const float Widget::GetHeight() const
+	const uint32_t Widget::GetHeight() const
 	{
 		return vSize.y;
 	}
@@ -337,7 +347,7 @@ namespace UI
 	void Widget::SetDraggable(bool bStatus) { setFlag(DRAGGABLE,  bStatus); }
 	void Widget::SetFocused(  bool bStatus) { setFlag(FOCUSED  ,  bStatus); }
 	void Widget::SetDragged(  bool bStatus) { setFlag(DRAGGED  ,  bStatus); }
-	void Widget::SetTextured( bool bStatus) { setFlag(TEXTURED ,  bStatus); UpdateLocation();}
+	void Widget::SetTextured( bool bStatus) { setFlag(TEXTURED ,  bStatus); UpdateLocation(); updateVertices();}
 
 	const bool Widget::IsEnabled()   const 	{ return isFlagSet(ENABLED  ); }
 	const bool Widget::IsVisible()   const 	{ return isFlagSet(VISIBLE  ); }
@@ -354,18 +364,21 @@ namespace UI
 		if (cid >= MAX_ID) { return; }
 		pColor[cid] = color;
 		UpdateLocation();
+		updateVertices();
 	}
 
 	void Widget::SetBorderWidth(uint32_t dwBorder)
 	{
 		dwBorderWidth = dwBorder;
 		UpdateLocation();
+		updateVertices();
 	}
 
 	void Widget::SetCornerRadius(uint32_t dwCorner)
 	{
 		dwCornerRadius = dwCorner;
 		UpdateLocation();
+		updateVertices();
 	}
 
 	const sf::Color& Widget::GetColor(ColorID cid) const
@@ -391,14 +404,15 @@ namespace UI
 
 	void Widget::UpdateLocation()
 	{
-		sf::Vector2f vRef;
-		sf::Vector2f vSizeDiff;
+		sf::Vector2i vRef;
+		sf::Vector2u vSizeDiff;
+		sf::Vector2i vPrevious = vPosReal;
 
 		//First update the Physical Position
 		if (pWinParent == NULL)
 		{
 			vRef = vPos;
-			vSizeDiff = sf::Vector2f(0, 0);
+			vSizeDiff = sf::Vector2u(0, 0);
 		}
 		else
 		{
@@ -420,8 +434,8 @@ namespace UI
 			case BOTTOM: {vPosReal.y = vRef.y + (int32_t)(vSizeDiff.y  ); break;}
 		}
 
-		//Now update the vertex arrays
-		updateVertices();
+		//Now update the Transform
+		trPos.translate(vPosReal.x-vPrevious.x, vPosReal.y-vPrevious.y);
 
 		//Repeat for all children
 		for (WidgetList::iterator iter = lstChildren.begin(); iter != lstChildren.end(); iter++)
@@ -537,12 +551,12 @@ namespace UI
 				}
 				else //Mouse Entry/Leave Detection
 				{
-					MouseEntered(event.mouseMove, pManager);
 					if (!pManager->IsHovered(NULL))
 					{
 						pManager->GetHovered()->MouseLeft(event.mouseMove, pManager);
 					}
 					pManager->SetHovered(this);
+					MouseEntered(event.mouseMove, pManager);
 				}
 				bFlag = true;
 			}
@@ -611,7 +625,7 @@ namespace UI
 		return vaText;
 	}
 
-	void Widget::UpdateTextVA(uint32_t dwFontIndex, const sf::String &text, uint8_t uStyle, uint32_t dwCharSize, uint32_t dwTextWidth, uint32_t dwNumLines, uint32_t dwStartIndex, const sf::Vector2f& vTextPos, char cPass) const
+	void Widget::UpdateTextVA(uint32_t dwFontIndex, const sf::String &text, uint8_t uStyle, uint32_t dwCharSize, uint32_t dwTextWidth, uint32_t dwNumLines, uint32_t dwStartIndex, const sf::Vector2i& vTextPos, char cPass) const
 	{
 		//Sanity Check
 		vaText.clear();
@@ -623,7 +637,7 @@ namespace UI
 		float fSpace = static_cast<float>(GetFont(dwFontIndex).getGlyph(L' ', dwCharSize, bIsBold).advance);//For skipping blankspaces
 
 		//Boundaries for x. For testing y, we will use the dwNumLines itself
-		float xMin = vTextPos.x;
+		float xMin = static_cast<float>(vTextPos.x);
 		if (xMin < XLEFT)
 		{
 			xMin = XLEFT;
@@ -646,7 +660,7 @@ namespace UI
 
 		//Setup Initial Position
 		float x = xMin;
-		float y = vTextPos.y;//(vSize.y + dwCharSize)/2.0;//Center Alignment
+		float y = static_cast<float>(vTextPos.y);//(vSize.y + dwCharSize)/2.0;//Center Alignment
 		float yDelta = GetFont(dwFontIndex).getLineSpacing(dwCharSize);
 
 		//Create One quad per character
@@ -734,15 +748,20 @@ namespace UI
 			// Add a quad for the current character
 			x += fKerning;
 
-			vaText.append(sf::Vertex(sf::Vector2f(vPosReal.x + x + x1 - fItalic * y1, vPosReal.y + y + y1), color, sf::Vector2f(u1, v1)));
-			vaText.append(sf::Vertex(sf::Vector2f(vPosReal.x + x + x2 - fItalic * y1, vPosReal.y + y + y1), color, sf::Vector2f(u2, v1)));
-			vaText.append(sf::Vertex(sf::Vector2f(vPosReal.x + x + x1 - fItalic * y2, vPosReal.y + y + y2), color, sf::Vector2f(u1, v2)));
-			vaText.append(sf::Vertex(sf::Vector2f(vPosReal.x + x + x1 - fItalic * y2, vPosReal.y + y + y2), color, sf::Vector2f(u1, v2)));
-			vaText.append(sf::Vertex(sf::Vector2f(vPosReal.x + x + x2 - fItalic * y1, vPosReal.y + y + y1), color, sf::Vector2f(u2, v1)));
-			vaText.append(sf::Vertex(sf::Vector2f(vPosReal.x + x + x2 - fItalic * y2, vPosReal.y + y + y2), color, sf::Vector2f(u2, v2)));
+			vaText.append(sf::Vertex(sf::Vector2f(x + x1 - fItalic * y1, y + y1), color, sf::Vector2f(u1, v1)));
+			vaText.append(sf::Vertex(sf::Vector2f(x + x2 - fItalic * y1, y + y1), color, sf::Vector2f(u2, v1)));
+			vaText.append(sf::Vertex(sf::Vector2f(x + x1 - fItalic * y2, y + y2), color, sf::Vector2f(u1, v2)));
+			vaText.append(sf::Vertex(sf::Vector2f(x + x1 - fItalic * y2, y + y2), color, sf::Vector2f(u1, v2)));
+			vaText.append(sf::Vertex(sf::Vector2f(x + x2 - fItalic * y1, y + y1), color, sf::Vector2f(u2, v1)));
+			vaText.append(sf::Vertex(sf::Vector2f(x + x2 - fItalic * y2, y + y2), color, sf::Vector2f(u2, v2)));
 
 			x += glyph.advance;
 		}
+	}
+
+	const sf::Transform& Widget::GetTransform() const
+	{
+		return trPos;
 	}
 
 	///Private Methods
@@ -845,16 +864,16 @@ namespace UI
 			{
 				vertArray[i] = 	sf::Vertex(
 													sf::Vector2f(
-														vPosReal.x + dwCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
-														vPosReal.y + dwCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY
+														dwCornerRadius * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
+														dwCornerRadius * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY
 													),
 													color
 												);
 				i++;
 				vertArray[i] =	sf::Vertex(
 													sf::Vector2f(
-														vPosReal.x + (dwCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
-														vPosReal.y + (dwCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY
+														(dwCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
+														(dwCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY
 													),
 													color
 												);
@@ -863,8 +882,8 @@ namespace UI
 			{
 				vertArray[i] =	sf::Vertex(
 													sf::Vector2f(
-														vPosReal.x + (dwCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
-														vPosReal.y + (dwCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY
+														(dwCornerRadius-dwBorderWidth) * cos(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) + fCenterX,
+														(dwCornerRadius-dwBorderWidth) * sin(fDeltaAngle * (dwIndex-dwCenterIndex) * fDeg2Rad) - fCenterY
 													),
 													color
 												);
@@ -883,7 +902,7 @@ namespace UI
 		{
 			for (uint32_t i = 0; i < (dwMax + dwMult); i++)
 			{
-				vertArray[i].texCoords = vertArray[i].position - vPosReal;
+				vertArray[i].texCoords = vertArray[i].position;
 			}
 		}
 	}
@@ -917,23 +936,23 @@ namespace UI
 		//Fill the Array with points and color
 		if (cid == BACKGROUND)
 		{
-			vertArray[0] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left			  , vPosReal.y + inner.top)			   , color);
-			vertArray[1] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top)			   , color);
-			vertArray[2] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top + inner.height), color);
-			vertArray[3] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left			  , vPosReal.y + inner.top + inner.height), color);
+			vertArray[0] = sf::Vertex(sf::Vector2f(inner.left              , inner.top               ), color);
+			vertArray[1] = sf::Vertex(sf::Vector2f(inner.left + inner.width, inner.top               ), color);
+			vertArray[2] = sf::Vertex(sf::Vector2f(inner.left + inner.width, inner.top + inner.height), color);
+			vertArray[3] = sf::Vertex(sf::Vector2f(inner.left              , inner.top + inner.height), color);
 			vertArray[4] = vertArray[0];
 		}
 		else
 		{
 			sf::FloatRect outer = sf::FloatRect(0, 0, vSize.x, vSize.y);
-			vertArray[0] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left			  , vPosReal.y + outer.top)			   , color);
-			vertArray[1] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left			  , vPosReal.y + inner.top)			   , color);
-			vertArray[2] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left + outer.width, vPosReal.y + outer.top)			   , color);
-			vertArray[3] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top)			   , color);
-			vertArray[4] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left + outer.width, vPosReal.y + outer.top + outer.height), color);
-			vertArray[5] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left + inner.width, vPosReal.y + inner.top + inner.height), color);
-			vertArray[6] = sf::Vertex(sf::Vector2f(vPosReal.x + outer.left			  , vPosReal.y + outer.top + outer.height), color);
-			vertArray[7] = sf::Vertex(sf::Vector2f(vPosReal.x + inner.left			  , vPosReal.y + inner.top + inner.height), color);
+			vertArray[0] = sf::Vertex(sf::Vector2f(outer.left              , outer.top)               , color);
+			vertArray[1] = sf::Vertex(sf::Vector2f(inner.left              , inner.top)               , color);
+			vertArray[2] = sf::Vertex(sf::Vector2f(outer.left + outer.width, outer.top)               , color);
+			vertArray[3] = sf::Vertex(sf::Vector2f(inner.left + inner.width, inner.top)               , color);
+			vertArray[4] = sf::Vertex(sf::Vector2f(outer.left + outer.width, outer.top + outer.height), color);
+			vertArray[5] = sf::Vertex(sf::Vector2f(inner.left + inner.width, inner.top + inner.height), color);
+			vertArray[6] = sf::Vertex(sf::Vector2f(outer.left              , outer.top + outer.height), color);
+			vertArray[7] = sf::Vertex(sf::Vector2f(inner.left              , inner.top + inner.height), color);
 			vertArray[8] = vertArray[0];
 			vertArray[9] = vertArray[1];
 		}
@@ -943,7 +962,7 @@ namespace UI
 		{
 			for (uint32_t i = 0; i < (5 * dwMult); i++)
 			{
-				vertArray[i].texCoords = vertArray[i].position - vPosReal;
+				vertArray[i].texCoords = vertArray[i].position;
 			}
 		}
 	}

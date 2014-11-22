@@ -2,11 +2,11 @@
 
 namespace UI
 {
-	Frame::Frame(uint32_t dwIdent, float x, float y, float w, float h):Widget(dwIdent, ENABLED|VISIBLE|DRAGGABLE|CLICKABLE, x, y, w, h)
+	Frame::Frame(uint32_t dwIdent, int32_t x, int32_t y, uint32_t w, uint32_t h):Widget(dwIdent, ENABLED|VISIBLE|DRAGGABLE|CLICKABLE, x, y, w, h)
 	{
 		pTexture = NULL;
 	}
-	Frame::Frame(uint32_t dwIdent, sf::Vector2f vPos, sf::Vector2f vSize):Widget(dwIdent, ENABLED|VISIBLE|DRAGGABLE|CLICKABLE, vPos, vSize)
+	Frame::Frame(uint32_t dwIdent, sf::Vector2i vPos, sf::Vector2u vSize):Widget(dwIdent, ENABLED|VISIBLE|DRAGGABLE|CLICKABLE, vPos, vSize)
 	{
 		pTexture = NULL;
 	}
@@ -25,7 +25,7 @@ namespace UI
 			delete pTexture;//Delete old data if any
 		}
 		pTexture = new sf::Texture();
-		if (!DataPipe->getTexture(sFile, pTexture))
+		if (!GetPipe().getTexture(sFile, pTexture))
 		{
 			delete pTexture;
 			SetTextured(false);
@@ -35,7 +35,7 @@ namespace UI
 		SetTextured(true);
 		//Adjust the Width and Height
 		sf::Vector2u vImageSize = pTexture->getSize();
-		sf::Vector2f vCurSize = GetSize();
+		sf::Vector2u vCurSize = GetSize();
 		if (vCurSize.x < vImageSize.x)
 		{
 			vCurSize.x = vImageSize.x;
@@ -52,6 +52,11 @@ namespace UI
 
 	void Frame::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
+		//sf::Transform t;
+		//t.translate(GetPosition());
+		//states.transform = t;
+		states.transform = GetTransform();
+
 		//Setup Texture and blendmode if defined
 		if (pTexture != NULL)
 		{

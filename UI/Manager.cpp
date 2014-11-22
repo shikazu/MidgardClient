@@ -20,6 +20,7 @@ namespace UI {
 			iFocused = lstFocusable.end();
 			return;
 		}
+
 		for (WidgetList::iterator iter = lstFocusable.begin(); iter != lstFocusable.end(); iter++)
 		{
 			if (*iter == pWidget)
@@ -82,6 +83,7 @@ namespace UI {
 	{
 		if (pWidget == NULL) return;
 		lstFocusable.remove(pWidget);
+		if (*iFocused == pWidget) {iFocused = lstFocusable.end();}
 	}
 
 	Widget* Manager::GetFocused()
@@ -168,8 +170,8 @@ namespace UI {
 			{
 				pWidgetHovered->ParseEvent(event, this);
 				pWidgetHovered = NULL;
+				GetMouseCursor().SetState(CRS_DEFAULT);
 			}
-
 			return bReturn;
 		}
 	}

@@ -1,38 +1,10 @@
 #include "UI/Manager.h"
 #include "views/LoginView.h"
+#include "views/CharView.h"
+#include "UI/PlayerFrame.h"
+#include "render/Player.h"
+
 #include <iostream>
-
-///Max Number of Fonts available
-#define FONTCOUNT 2
-
-struct FontData
-{
-	sf::Font font;
-	FileStream stream;
-};
-
-const sf::Font& GetFont(uint32_t dwFontID)
-{
-	static FontData pFonts[FONTCOUNT];
-	static bool bInit = false;
-	if (bInit == false)
-	{
-		char *sFont[FONTCOUNT] = {"GistLight.otf", "AlexandriaFLF.ttf"};
-		for (uint32_t i = 0; i < FONTCOUNT; i++)
-		{
-			if (!DataPipe->getFileStream(sFont[i], pFonts[i].stream))
-			{
-				continue;
-			}
-			if (!pFonts[i].font.loadFromStream(pFonts[i].stream))
-			{
-				continue;
-			}
-		}
-		bInit = true;
-	}
-	return pFonts[dwFontID].font;
-}
 
 void MainMachine(sf::RenderWindow& window, UI::Manager& manager, sf::View& view);
 void EventLoop(sf::RenderWindow& window, UI::Manager& manager, sf::View& view);
@@ -40,9 +12,6 @@ void RenderBackground(sf::RenderWindow& window, sf::View& view);
 
 int main(int argc, char** argv)
 {
-	//Initialize the DataPipe
-	DataPipe = new ContentPipeline("data.ini");
-
 	//Settings
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
@@ -57,16 +26,13 @@ int main(int argc, char** argv)
 	window.setFramerateLimit(30);
 	sf::View view({0, 0, 800, 600});
 	window.setView(view);
+	window.setMouseCursorVisible(false);
 
 	//Manager
 	UI::Manager manager(MAIN_MANAGER, window);
 
 	//LoginView
 	LoginView::Init();
-	//LoginView::userName.clear();
-	//LoginView::passWord.clear();
-	//LoginView::dwFontID = 0;
-	//LoginView::dwCharSize = 10;
 
 	//Main Loop
 	while(window.isOpen())
@@ -81,6 +47,7 @@ int main(int argc, char** argv)
 		window.clear();
 		RenderBackground(window, view);
 		window.draw(manager);
+		window.draw(GetMouseCursor());
 		window.display();
 	}
 	return 0;
@@ -94,6 +61,7 @@ void EventLoop(sf::RenderWindow& window, UI::Manager& manager, sf::View& view)
 		if (event.type == event.Closed)
 		{
 			window.close();
+			exit(0);
 		}
 		if (event.type == event.Resized)
 		{
@@ -102,6 +70,7 @@ void EventLoop(sf::RenderWindow& window, UI::Manager& manager, sf::View& view)
 			window.setView(view);
 		}
 		manager.ParseEvent(event);
+		GetMouseCursor().CheckMouse(event);
 	}
 }
 
@@ -119,10 +88,13 @@ void RenderBackground(sf::RenderWindow& window, sf::View& view)
 		{
 			for (uint8_t j = 0; j < 3; j++)
 			{
-				std::ostringstream oss;
-				oss << "t_배경" << j+1 << "-" << i+1 << ".bmp";
+				char sFile[16];
+				sprintf(sFile, "t_배경%d-%d.bmp", j+1, i+1);
+				//std::ostringstream oss;
+				//oss << "t_배경" << j+1 << "-" << i+1 << ".bmp";
 				sf::Texture tsplice;
-				DataPipe->getTexture(oss.str(), &tsplice);
+				//GetPipe().getTexture(oss.str(), &tsplice);
+				GetPipe().getTexture(sFile, &tsplice);
 				sf::Sprite sprite(tsplice);
 				sprite.setPosition(i*256, j*256);
 				rt.draw(sprite);
@@ -155,6 +127,7 @@ void MainMachine(sf::RenderWindow& window, UI::Manager& manager, sf::View& view)
 			if (LoginView::IsExitPressed())
 			{
 				std::cout << "Now Exiting the Game\n";
+				window.close();
 				exit(0);
 			}
 			if (LoginView::IsLoggedIn())
@@ -163,6 +136,34 @@ void MainMachine(sf::RenderWindow& window, UI::Manager& manager, sf::View& view)
 				uState++;
 			}
 			break;
+		}
+		case 2:
+		{
+			CharView::Create(manager);
+			uState++;
+			break;
+		}
+		case 3:
+		{
+			if (CharView::IsCancelled())
+			{
+				uState = 0;
+				break;
+			}
+			if (CharView::IsDelPressed())
+			{
+				uState+=5;
+				break;
+			}
+			if (CharView::IsOkPressed())
+			{
+				uState++;
+				break;
+			}
+		}
+		case 4:
+		{
+
 		}
 	}
 }

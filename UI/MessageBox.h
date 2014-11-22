@@ -19,8 +19,8 @@ namespace UI
 	{
 		public:
 			//Constructors and Destructor -  callback is triggered when one of the buttons have been clicked
-			MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText = "", uint8_t uButtons = MSG_OK, sf::Vector2f vPos = sf::Vector2f(0,0));
-			MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText = "", uint8_t uButtons = MSG_OK, float x = 0, float y = 0);
+			MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText = "", uint8_t uButtons = MSG_OK, sf::Vector2i vPos = sf::Vector2i(0,0));
+			MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText = "", uint8_t uButtons = MSG_OK, int32_t x = 0, int32_t y = 0);
 			~MessageBox();
 
 			//Methods

@@ -81,8 +81,8 @@ namespace UI
 	{
 		public:
 			//Constructors and Destructor
-			Widget(uint32_t dwID, uint16_t wFlag = ENABLED|VISIBLE, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(0,0));
-			Widget(uint32_t dwID, uint16_t wFlag = ENABLED|VISIBLE, float x = 0, float y = 0, float w = 0,  float h = 0);
+			Widget(uint32_t dwID, uint16_t wFlag = ENABLED|VISIBLE, sf::Vector2i vPos = sf::Vector2i(0,0), sf::Vector2u vSize = sf::Vector2u(0,0));
+			Widget(uint32_t dwID, uint16_t wFlag = ENABLED|VISIBLE, int32_t x = 0, int32_t y = 0, uint32_t w = 0,  uint32_t h = 0);
 			virtual ~Widget();
 
 			//Hierarchy Methods - Setters
@@ -101,25 +101,25 @@ namespace UI
 			const uint32_t GetID() const;
 
 			//Geometry Methods - Setters
-			void MoveTo(sf::Vector2f vPos, bool bIsOffset = false);//Sets the position to value send (can be relative to current value). Only Widget position relative to parent can be set.
-			void MoveTo(float x, float y, bool bIsOffset = false);
+			void MoveTo(sf::Vector2i vPos, bool bIsOffset = false);//Sets the position to value send (can be relative to current value). Only Widget position relative to parent can be set.
+			void MoveTo(int32_t x, int32_t y, bool bIsOffset = false);
 
-			void Resize(sf::Vector2f vSize, bool bIsOffset = false);//Sets the Width and Height to value send (can be relative to current value)
-			void Resize(float w, float h, bool bIsOffset = false);
-			void SetWidth(float w);
-			void SetHeight(float h);
+			void Resize(sf::Vector2u vSize, bool bIsOffset = false);//Sets the Width and Height to value send (can be relative to current value)
+			void Resize(uint32_t w, uint32_t h, bool bIsOffset = false);
+			void SetWidth(uint32_t w);
+			void SetHeight(uint32_t h);
 
 			void SetDragArea(sf::FloatRect rArea);//Area where mouse drag is detected. Relative to the current widget i.e. 0,0 represents top left
 			void SetDragArea(float x, float y, float w, float h);
 
 			//Geometry Methods - Getters (Self Explanatory)
-			const sf::Vector2f& GetPosition(bool bReal = true) const;
-			const float GetX(bool bReal = true) const;
-			const float GetY(bool bReal = true) const;
+			const sf::Vector2i& GetPosition(bool bReal = true) const;
+			const int32_t GetX(bool bReal = true) const;
+			const int32_t GetY(bool bReal = true) const;
 
-			const sf::Vector2f& GetSize() const;
-			const float GetWidth() const;
-			const float GetHeight() const;
+			const sf::Vector2u& GetSize() const;
+			const uint32_t GetWidth() const;
+			const uint32_t GetHeight() const;
 
 			const sf::FloatRect GetBBox(bool bReal = true) const;//Get the Bounding Box of the Widget
 			const sf::FloatRect& GetDragArea() const;//Get the Draggable Area of the Widget
@@ -193,14 +193,17 @@ namespace UI
 			const sf::VertexArray& GetBorderVA() const;
 			const sf::VertexArray& GetBackGroundVA() const;
 			const sf::VertexArray& GetTextVA() const;
-			void UpdateTextVA(uint32_t dwFontIndex, const sf::String &text, uint8_t uStyle, uint32_t dwCharSize, uint32_t dwTextWidth, uint32_t dwNumLines = 1, uint32_t dwStartIndex = 0, const sf::Vector2f& vTextPos = sf::Vector2f(0,0), char cPass = 0) const;//Font Index to get the Font from Global Font Array
+			void UpdateTextVA(uint32_t dwFontIndex, const sf::String &text, uint8_t uStyle, uint32_t dwCharSize, uint32_t dwTextWidth, uint32_t dwNumLines = 1, uint32_t dwStartIndex = 0, const sf::Vector2i& vTextPos = sf::Vector2i(0,0), char cPass = 0) const;//Font Index to get the Font from Global Font Array
+			const sf::Transform& GetTransform() const;
 
 		private:
 			//Attributes
 			uint32_t dwID;
 			uint16_t wFlag;//Combination of WFlag values
-			sf::Vector2f vSize, vDrag; //vSize = Size of Widget, vDrag = Reference Point for Drag implementation
-			sf::Vector2f vPos, vPosReal;//vPos = Relative Position w.r.t. Parent, vPosReal = Actual Position in Window
+			sf::Vector2u vSize; //vSize = Size of Widget
+			sf::Vector2i vDrag; //vDrag = Reference Point for Drag implementation
+			sf::Vector2i vPos, vPosReal;//vPos = Relative Position w.r.t. Parent, vPosReal = Actual Position in Window
+			sf::Transform trPos;
 			sf::FloatRect rDrag;
 			sf::Color pColor[MAX_ID];
 			uint32_t dwBorderWidth, dwCornerRadius;//Self Explanatory

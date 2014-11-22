@@ -1,5 +1,4 @@
 #include "MapView.h"
-
 #include <iostream>
 #include <thread>
 
@@ -31,10 +30,10 @@ MapView::MapView(sf::Window &window, ContentPipeline &pipeline, std::string mapN
         {
             for(float y = 0; y < this->gnd->GetHeight(); y++)
             {
-                this->ground.push_back(sf::Vector3f(x - 0.5,y - 0.5,this->gnd->GetCell(x,y)->fHeight[0] * 0.05));
-                this->ground.push_back(sf::Vector3f(x - 0.5,y + 0.5,this->gnd->GetCell(x,y)->fHeight[2] * 0.05));
-                this->ground.push_back(sf::Vector3f(x + 0.5,y + 0.5,this->gnd->GetCell(x,y)->fHeight[3] * 0.05));
-                this->ground.push_back(sf::Vector3f(x + 0.5,y - 0.5,this->gnd->GetCell(x,y)->fHeight[1] * 0.05));
+                this->ground.push_back(sf::Vector3f(x - 0.5,y - 0.5,this->gnd->GetCell(x,y).fHeight[0] * 0.05));
+                this->ground.push_back(sf::Vector3f(x - 0.5,y + 0.5,this->gnd->GetCell(x,y).fHeight[2] * 0.05));
+                this->ground.push_back(sf::Vector3f(x + 0.5,y + 0.5,this->gnd->GetCell(x,y).fHeight[3] * 0.05));
+                this->ground.push_back(sf::Vector3f(x + 0.5,y - 0.5,this->gnd->GetCell(x,y).fHeight[1] * 0.05));
 
                 /*this->ground.push_back(sf::Vector3f(x - 0.5,y - 0.5,1)); // left-lower
                 this->ground.push_back(sf::Vector3f(x - 0.5,y + 0.5,1)); // left-upper

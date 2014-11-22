@@ -9,17 +9,9 @@ namespace UI
 	class TextBox : public Widget
 	{
 		public:
-			//Enumerations
-			enum Style
-			{
-				NORMAL = 0x0,
-				BOLD = 0x1,
-				ITALIC = 0x2
-			};
-
 			//Constructors and Destructor
-			TextBox(uint32_t dwIdent, uint8_t uStyle = NORMAL, sf::Vector2f vPos = sf::Vector2f(0,0), sf::Vector2f vSize = sf::Vector2f(50,20));
-			TextBox(uint32_t dwIdent, uint8_t uStyle = NORMAL, float x = 0, float y = 0, float w = 50, float h = 20);
+			TextBox(uint32_t dwIdent, uint8_t uStyle = REGULAR, sf::Vector2i vPos = sf::Vector2i(0,0), sf::Vector2u vSize = sf::Vector2u(50,20));
+			TextBox(uint32_t dwIdent, uint8_t uStyle = REGULAR, int32_t x = 0, int32_t y = 0, uint32_t w = 50, uint32_t h = 20);
 			~TextBox() {}
 
 			//Methods - Setters

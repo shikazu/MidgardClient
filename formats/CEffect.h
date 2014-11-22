@@ -5,52 +5,59 @@
 
 class CEffect///Handler for STR files used for creating Effects
 {
-    public:
-        struct Frame //Animation KeyFrame
-        {
-            uint32_t dwFrameNum;
-            uint32_t dwFrameType;
-            float fX;
-            float fY;
-            float fU;
-            float fV;
-            float fUS;
-            float fVS;
-            float fU2;
-            float fV2;
-            float fUS2;
-            float fVS2;
-            float fAX[4];//Vertice coordinates
-            float fAY[4];//Vertice coordinates
-            float fAniFrame;
-            uint32_t dwAniType;
-            float fAniDelta;
-            float fRotation;
-            uint32_t dwRGBA;//should be converted to color
-            uint32_t dwSrcBlend;
-            uint32_t dwDstBlend;
-            uint32_t dwMtPreset;
-        };
+	public:
+		struct Frame //Animation KeyFrame
+		{
+			uint32_t dwFrameNum;
+			uint32_t dwFrameType;
+			float x;
+			float y;
+			float u;
+			float v;
+			float us;
+			float vs;
+			float u2;
+			float v2;
+			float us2;
+			float vs2;
+			float ax[4];//Vertice coordinates
+			float ay[4];//Vertice coordinates
+			float fAniFrame;
+			uint32_t dwAniType;
+			float fAniDelta;
+			float fRotation;
+			uint32_t dwRGBA;//should be converted to color
+			uint32_t dwSrcBlend;
+			uint32_t dwDstBlend;
+			uint32_t dwMtPreset;
+		};
 
-        struct Layer
-        {
-            std::vector<char*> vImages;
-            std::vector<CEffect::Frame*> vFrames;
-        };
+		struct Layer
+		{
+			std::vector<char*> vImages;
+			std::vector<Frame> vFrames;
+		};
 
-        CEffect(FileStream &flstream);
-        virtual ~CEffect();
+		CEffect(sf::String sFile);
+		CEffect(FileStream &flstream);
+		virtual ~CEffect();
 
-        Layer* GetLayer(uint32_t dwIndex);
-        uint32_t GetLayerCount();
-        bool IsValid();
+		const Layer& GetLayer(uint32_t dwLayer) const;
+		const Frame& GetFrame(uint32_t dwLayer, uint32_t dwFrame) const;
+		const char*  GetImageName(uint32_t dwLayer, uint32_t dwImage) const;
 
-    private:
-        bool bValid;
-        uint32_t dwVersion;
-        std::vector<Layer*> vLayers;
+		const uint32_t GetLayerCount() const;
+		const uint32_t GetFrameCount(uint32_t dwLayer) const;
+		const uint32_t GetImageCount(uint32_t dwLayer) const;
+		const bool IsValid() const;
 
-        void fetchLayer(FileStream &flstream, CEffect::Layer* pLayer);
+	private:
+		bool bValid;
+		uint32_t dwVersion;
+		std::vector<Layer> vLayers;
+
+		void construct(FileStream &flstream);
+		void fetchLayer(FileStream &flstream, Layer &layer);
 };
 
 #endif//_CEFFECT_H

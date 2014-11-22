@@ -2,7 +2,7 @@
 
 namespace UI
 {
-	MessageBox::MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText, uint8_t uButtons, sf::Vector2f vPos):Frame(MSGBOX_FRAM, vPos)
+	MessageBox::MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText, uint8_t uButtons, sf::Vector2i vPos):Frame(MSGBOX_FRAM, vPos)
 	{
 		pManager->AddChild(this);
 		this->pCallback = callback;
@@ -11,7 +11,7 @@ namespace UI
 		this->construct(pManager, uStyle, sText, uButtons);
 	}
 
-	MessageBox::MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText, uint8_t uButtons, float x, float y):Frame(MSGBOX_FRAM, x, y)
+	MessageBox::MessageBox(Manager *pManager, uint32_t dwFontID, uint8_t uStyle, uint32_t dwCharSize, CALLBACK callback, sf::String sText, uint8_t uButtons, int32_t x, int32_t y):Frame(MSGBOX_FRAM, x, y)
 	{
 		pManager->AddChild(this);
 		this->pCallback = callback;
@@ -41,7 +41,7 @@ namespace UI
 		SetDragArea(0, 0, GetWidth(), 20);
 
 		//Now for the Buttons
-		float x = -4;
+		int32_t x = -4;
 		if ((uButtons & MSG_CANCEL) != 0)
 		{
 			UI::Button *pButton = new UI::Button(MSGBOX_NBTN, x, -4);
@@ -69,7 +69,7 @@ namespace UI
 		selected = MSG_NONE;
 
 		//Add the Text
-		sf::Vector2f vTextPos = sf::Vector2f(20, GetHeight()/2);
+		sf::Vector2i vTextPos = sf::Vector2i(20, GetHeight()/2);
 		SetColor(sf::Color::Blue, FOREGROUND);
 		UpdateTextVA(dwFontID, sText, uStyle, dwCharSize, GetWidth(), 5, 0, vTextPos);
 	}
@@ -80,6 +80,10 @@ namespace UI
 		Frame::draw(target, states);
 
 		//Draw Text
+		//sf::Transform t;
+		//t.translate(GetPosition());
+		//states.transform = t;
+		states.transform = GetTransform();
 		states.texture = &(GetFont(dwFontID).getTexture(dwCharSize));
 		states.blendMode = sf::BlendMode::BlendAlpha;
 		target.draw(GetTextVA(), states);
@@ -137,5 +141,6 @@ namespace UI
 
 		//Close the MessageBox - delete it essentially
 		pManager->DelChild(pBox, pManager);
+		GetMouseCursor().SetState(CRS_DEFAULT);
 	}
 }

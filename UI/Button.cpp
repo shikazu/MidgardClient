@@ -1,20 +1,22 @@
 #include "Button.h"
+#include "../common/Globals.h"
 
 namespace UI
 {
-	Button::Button(uint32_t dwIdent, sf::Vector2f vPos):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE|TEXTURED, vPos)
+	Button::Button(uint32_t dwIdent, sf::Vector2i vPos):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE|TEXTURED, vPos)
 	{
 		uCurrent = INACTIVE;
 		pCallback = NULL;
 		pTextures[INACTIVE] = pTextures[ACTIVE] = pTextures[PRESSED] = NULL;
 	}
 
-	Button::Button(uint32_t dwIdent, float x, float y):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE|TEXTURED, x, y)
+	Button::Button(uint32_t dwIdent, int32_t x, int32_t y):Widget(dwIdent, ENABLED|VISIBLE|CLICKABLE|TEXTURED, x, y)
 	{
 		uCurrent = INACTIVE;
 		pCallback = NULL;
 		pTextures[INACTIVE] = pTextures[ACTIVE] = pTextures[PRESSED] = NULL;
 	}
+
 	void Button::SetCurrentState(State uState)
 	{
 		if (uState >= INVALID) return;
@@ -29,7 +31,7 @@ namespace UI
 		}
 		//Allocate the Texture and Get from Global pipeline (i.e. DataPipe)
 		pTextures[uState] = new sf::Texture();
-		if (!DataPipe->getTexture(sFile, pTextures[uState]))
+		if (!GetPipe().getTexture(sFile, pTextures[uState]))
 		{
 			delete pTextures[uState];
 			return;
@@ -37,7 +39,7 @@ namespace UI
 
 		//Adjust the Width and Height
 		sf::Vector2u vImageSize = pTextures[uState]->getSize();
-		sf::Vector2f vCurSize = GetSize();
+		sf::Vector2u vCurSize = GetSize();
 		if (vCurSize.x < vImageSize.x)
 		{
 			vCurSize.x = vImageSize.x;
@@ -67,11 +69,29 @@ namespace UI
 
 	void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	{
-		//Sanity Check
-		if (pTextures[uCurrent] == NULL) { return; }
+		//sf::Transform t;
+		//t.translate(GetPosition());
+		//states.transform = t;
+		states.transform = GetTransform();
 
-		//Put the texture , set the blend mode
-		states.texture = pTextures[uCurrent];
+		//Put the texture
+		if (pTextures[uCurrent] == NULL)
+		{
+			if (uCurrent != INACTIVE && pTextures[INACTIVE] != NULL)
+			{
+				states.texture = pTextures[INACTIVE];
+			}
+			else
+			{
+				return;
+			}
+		}
+		else
+		{
+			states.texture = pTextures[uCurrent];
+		}
+
+		//set the blend mode
 		states.blendMode = sf::BlendMode::BlendAlpha;
 
 		//draw the pre-calculated vertices
@@ -93,6 +113,7 @@ namespace UI
 		else
 		{
 			uCurrent = INACTIVE;
+			GetMouseCursor().SetState(CRS_DEFAULT);
 		}
 	}
 
@@ -105,11 +126,13 @@ namespace UI
 	{
 		if (!pManager->IsPressed(NULL)) return; //If its pressing anything else ignore
 		uCurrent = ACTIVE;
+		GetMouseCursor().SetState(CRS_BUTTON);
 	}
 
 	void Button::MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager* pManager)
 	{
 		if (!pManager->IsPressed(NULL)) return; //If its pressing anything else ignore
 		uCurrent = INACTIVE;
+		GetMouseCursor().SetState(CRS_DEFAULT);
 	}
 }
