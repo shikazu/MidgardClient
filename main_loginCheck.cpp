@@ -1,9 +1,7 @@
 #include "UI/Manager.h"
 #include "views/LoginView.h"
 #include "views/CharView.h"
-#include "UI/PlayerFrame.h"
-#include "render/Player.h"
-
+#include "common/LuaDB.h"
 #include <iostream>
 
 void MainMachine(sf::RenderWindow& window, UI::Manager& manager, sf::View& view);
@@ -90,10 +88,7 @@ void RenderBackground(sf::RenderWindow& window, sf::View& view)
 			{
 				char sFile[16];
 				sprintf(sFile, "t_배경%d-%d.bmp", j+1, i+1);
-				//std::ostringstream oss;
-				//oss << "t_배경" << j+1 << "-" << i+1 << ".bmp";
 				sf::Texture tsplice;
-				//GetPipe().getTexture(oss.str(), &tsplice);
 				GetPipe().getTexture(sFile, &tsplice);
 				sf::Sprite sprite(tsplice);
 				sprite.setPosition(i*256, j*256);

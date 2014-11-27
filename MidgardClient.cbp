@@ -6,21 +6,6 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="bin/Debug/MidgardClient" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-g" />
-					<Add option="-DSFML_STATIC" />
-					<Add directory="widgets" />
-					<Add directory="common" />
-					<Add directory="UI" />
-					<Add directory="views" />
-					<Add directory="render" />
-				</Compiler>
-			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/MidgardClient" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
@@ -28,14 +13,24 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="widgets" />
+					<Add option="-std=c++11" />
+					<Add directory="3rdparty/sfml-2.1" />
+					<Add directory="3rdparty/libconfig-1.4.9" />
+					<Add directory="3rdparty/glut-3.7.6/include" />
+					<Add directory="3rdparty/lua-5.1.5/src" />
 					<Add directory="common" />
-					<Add directory="UI" />
-					<Add directory="views" />
-					<Add directory="render" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="3rdparty\sfml-2.1\libsfml-audio.a" />
+					<Add library="3rdparty\sfml-2.1\libsfml-graphics.a" />
+					<Add library="3rdparty\sfml-2.1\libsfml-main.a" />
+					<Add library="3rdparty\sfml-2.1\libsfml-network.a" />
+					<Add library="3rdparty\sfml-2.1\libsfml-system.a" />
+					<Add library="3rdparty\sfml-2.1\libsfml-window.a" />
+					<Add library="3rdparty\glut-3.7.6\glut32.lib" />
+					<Add directory="3rdparty/sfml-2.1" />
+					<Add directory="3rdparty/glut-3.7.6" />
 				</Linker>
 			</Target>
 		</Build>
@@ -86,6 +81,147 @@
 		</Unit>
 		<Unit filename="3rdparty/libconfig-1.4.9/strbuf.h" />
 		<Unit filename="3rdparty/libconfig-1.4.9/wincompat.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lapi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lapi.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lauxlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lauxlib.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lbaselib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lcode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lcode.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/ldblib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ldebug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ldebug.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/ldo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ldo.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/ldump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lfunc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lfunc.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lgc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lgc.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/linit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/liolib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/llex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/llex.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/llimits.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lmathlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lmem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lmem.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/loadlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lobject.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lobject.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lopcodes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lopcodes.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/loslib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lparser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lparser.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lstate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lstate.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lstring.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lstring.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ltable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ltable.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/ltablib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ltm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/ltm.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lua.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lua.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/luaconf.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lualib.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lundump.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lundump.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lvm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lvm.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/lzio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.1.5/src/lzio.h" />
+		<Unit filename="3rdparty/lua-5.1.5/src/print.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="3rdparty/lua-5.2.3/src/lapi.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lauxlib.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lcode.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lctype.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/ldebug.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/ldo.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lfunc.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lgc.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/llex.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/llimits.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lmem.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lobject.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lopcodes.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lparser.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lstate.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lstring.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/ltable.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/ltm.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lua.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lua.hpp" />
+		<Unit filename="3rdparty/lua-5.2.3/src/luaconf.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lualib.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lundump.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lvm.h" />
+		<Unit filename="3rdparty/lua-5.2.3/src/lzio.h" />
 		<Unit filename="3rdparty/sfml-2.1/SFML/Audio.hpp" />
 		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/Export.hpp" />
 		<Unit filename="3rdparty/sfml-2.1/SFML/Audio/Listener.hpp" />
@@ -238,6 +374,8 @@
 		<Unit filename="common/GameCursor.h" />
 		<Unit filename="common/Globals.cpp" />
 		<Unit filename="common/Globals.h" />
+		<Unit filename="common/LuaDB.cpp" />
+		<Unit filename="common/LuaDB.h" />
 		<Unit filename="common/Structs.h" />
 		<Unit filename="formats/CActor.cpp" />
 		<Unit filename="formats/CActor.h" />

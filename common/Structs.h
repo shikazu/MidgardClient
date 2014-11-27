@@ -27,7 +27,7 @@ struct CHARACTER_INFO_NEO_UNION
 	int16_t shAccessory3;
 	int16_t shHeadPalette;
 	int16_t shBodyPalette;
-	uint8_t sName[24];
+	char sName[24];
 	uint8_t uStr;
 	uint8_t uAgi;
 	uint8_t uVit;

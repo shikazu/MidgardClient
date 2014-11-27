@@ -2,6 +2,7 @@
 #include "../common/FileStream.h"
 #include "../UI/CheckButton.h"
 #include "../UI/TextBox.h"
+#include <iostream>
 
 namespace LoginView
 {
@@ -112,7 +113,9 @@ namespace LoginView
 	{
 		UI::Button* pExit = (UI::Button*)pButton;
 		pExit->SetCurrentState(pExit->INACTIVE);
-		new UI::MessageBox(pManager, dwFontID, uStyle, dwCharSize, LoginView::HandleExitBox, "Do you want to Exit the game?", UI::MSG_OK|UI::MSG_CANCEL, pButton->GetParent()->GetX(), pButton->GetParent()->GetY() - 120);
+		char *pMsg = GetMsg(17);
+		new UI::MessageBox(pManager, dwFontID, uStyle, dwCharSize, LoginView::HandleExitBox, pMsg, UI::MSG_OK|UI::MSG_CANCEL, pButton->GetParent()->GetX(), pButton->GetParent()->GetY() - 120);//"Do you want to Exit the game?"
+		delete[] pMsg;
 		GetMouseCursor().SetState(CRS_DEFAULT);
 	}
 

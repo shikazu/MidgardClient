@@ -4,6 +4,7 @@
 #include "../UI/TextBox.h"
 #include "../UI/PlayerFrame.h"
 #include <iostream>
+#include <cstring>
 
 namespace CharView
 {
@@ -22,6 +23,26 @@ namespace CharView
 
 	void Create(UI::Manager &mgr)
 	{
+		//Dummy values for test
+		CHARACTER_INFO_NEO_UNION cinuDummy;
+		cinuDummy.lRobe = 0;
+		cinuDummy.shAccessory  = 1;
+		cinuDummy.shAccessory2 = 2;
+		cinuDummy.shAccessory3 = 3;
+		cinuDummy.shHead = 1;
+		cinuDummy.shJob = 10;
+		strcpy(cinuDummy.sName, "TestName");
+		cinuDummy.uLuk = 3;
+		cinuDummy.uDex = 4;
+		cinuDummy.uInt = 5;
+		cinuDummy.uStr = 5;
+		cinuDummy.uAgi = 4;
+		cinuDummy.uVit = 3;
+		cinuDummy.shLevel = 3;
+		cinuDummy.lExp = 23913;
+		cinuDummy.lHP = 3000;
+		cinuDummy.shSP = 230;
+
 		pFrame = new UI::Frame(CV_FRAME, 0, 0);
 		pFrame->SetTexture("login_interface\\win_select2.bmp");
 		pFrame->SetAlign(UI::CENTER, UI::MIDDLE);
@@ -79,7 +100,7 @@ namespace CharView
 
 		//Labels - Character Stats & Other Info
 		uint32_t dwX = 60;
-		uint32_t dwY = -150;
+		uint32_t dwY = -140;
 		uint32_t dwID = CV_NAMELBL;
 		UI::TextBox* pText;
 		for (uint32_t i = 0; i < 7; i++, dwY += 16, dwID++)
@@ -92,11 +113,39 @@ namespace CharView
 			pText->SetCharSize(10);
       pText->SetFocusable(false);
       pText->SetEditable(false);
+      switch (i)
+      {
+      	case 0 : {pText->SetText(cinuDummy.sName); break;}
+      	case 1 : {
+      		char sName[40];
+					GetDB().GetJobName(cinuDummy.shJob, 1, sName);
+					pText->SetText(sName);
+					break;
+				}
+				case 6 : {
+					pText->SetText("Map Name here");
+					break;
+				}
+				default: {
+					int32_t lValue;
+					switch (i)
+					{
+						case 2 : {lValue = cinuDummy.shLevel; break;}
+						case 3 : {lValue = cinuDummy.lExp;    break;}
+						case 4 : {lValue = cinuDummy.lHP;     break;}
+						default: {lValue = cinuDummy.shSP;    break;}//case 5
+					}
+					char sText[10];
+					sprintf(sText, "%d", lValue);
+					pText->SetText(sText);
+					break;
+				}
+      }
 			pFrame->AddChild(pText);
 		}
 		pText->SetWidth(240);//for the MAP
 
-		dwY  = -150;
+		dwY  = -140;
 		dwX += 143;
 		dwID = CV_STRLBL;
 		for (uint32_t i = 0; i < 6; i++, dwY += 16, dwID++)
@@ -109,34 +158,41 @@ namespace CharView
 			pText->SetCharSize(10);
       pText->SetFocusable(false);
       pText->SetEditable(false);
+      uint8_t uStat;
+      switch (i)
+      {
+      	case 0 : {uStat = cinuDummy.uStr; break;}
+      	case 1 : {uStat = cinuDummy.uAgi; break;}
+      	case 2 : {uStat = cinuDummy.uVit; break;}
+      	case 3 : {uStat = cinuDummy.uInt; break;}
+      	case 4 : {uStat = cinuDummy.uDex; break;}
+      	default: {uStat = cinuDummy.uLuk; break;}
+      }
+      char stat[4];
+      sprintf(stat, "%d", uStat);
+      pText->SetText(stat);
 			pFrame->AddChild(pText);
 		}
 
 		//GetPipe().getTexture("box_select.bmp", &selectTexture);
-		std::cout << pFrame->GetPosition().x << std::endl;
+
 		for (uint32_t i = 0; i < dwMaxFrame; i++)//Total Number of sets of 3
 		{
 			sf::Vector2i vPos(56, 41);
 			for (uint32_t j = 0; j < 3; j++)
 			{
-				UI::PlayerFrame* pSprFrame = new UI::PlayerFrame(CV_SPRFRAME+i*3+j, vPos, new Player());//player is for dummy test
-				std::cout << j << " : " << pSprFrame->GetPosition().x <<std::endl;
+				UI::PlayerFrame* pSprFrame = new UI::PlayerFrame(CV_SPRFRAME+i*3+j, vPos, new Player(&cinuDummy));//player is for dummy test
 				pSprFrame->SetTexture("login_interface\\box_select.bmp");
 				if (i != dwFrame)
 				{
 					pSprFrame->SetVisible(false);
 				}
 				pFrame->AddChild(pSprFrame);
-				std::cout << j << " : " << pSprFrame->GetPosition().x <<std::endl;
 				players[i*3 + j] = pSprFrame;
 				vPos.x += 163;
 			}
 		}
 		players[dwSelected]->Select();
-    //Sprites - Player Renders
-//		players[0] = new Player();
-//		players[0]->SetPosition()
-//		players[1] = new Player();
 
 		//Status Flags
 		bSwitchToMap = false;
@@ -148,6 +204,7 @@ namespace CharView
 	{
 		pManager->DelChild(pFrame, pManager);
 		bSwitchToMap = true;
+		GetMouseCursor().SetState(CRS_DEFAULT);
 	}
 
 	void HandleCancel(UI::Widget* pButton, UI::Manager* pManager)

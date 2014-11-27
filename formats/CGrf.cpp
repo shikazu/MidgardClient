@@ -107,16 +107,16 @@ uint8_t CGrf::Open(const std::string& sFile)
 	vItems.reserve(dwFileCount);
 	for (uint32_t i = 0; i < dwFileCount; i++)
 	{
-		FileTableItem* pItem = new FileTableItem;
-		getItem(pItem, tblstream);
-		vItems.push_back(pItem);
+		FileTableItem item;//* pItem = new FileTableItem;
+		getItem(item, tblstream);
+		vItems.push_back(std::move(item));
 	}
 	//And we are done
 	bOpen = true;
 	return 0;
 }
 
-void CGrf::getItem(CGrf::FileTableItem *pItem, std::stringstream& tblstream)
+void CGrf::getItem(CGrf::FileTableItem &item, std::stringstream &tblstream)
 {
 	if (pVersion[1] == 0x01)
 	{
@@ -127,10 +127,10 @@ void CGrf::getItem(CGrf::FileTableItem *pItem, std::stringstream& tblstream)
 		tblstream.read(pBuffer, dwLength-6);
 		DES::DecodeFilename((unsigned char*)&pBuffer[0], dwLength);
 
-		pItem->dwCycle = 0;
+		item.dwCycle = 0;
 		pBuffer[dwLength] = 0;
-		pItem->sFile = new char[strlen(pBuffer) + 1];
-		strcpy(pItem->sFile, pBuffer);
+		item.sFile = new char[strlen(pBuffer) + 1];
+		strcpy(item.sFile, pBuffer);
 
 		uint32_t dw1, dw2, dw3;
 		tblstream.seekg(4, tblstream.cur);
@@ -138,34 +138,34 @@ void CGrf::getItem(CGrf::FileTableItem *pItem, std::stringstream& tblstream)
 		tblstream.read((char*)&dw2, 4);
 		tblstream.read((char*)&dw3, 4);
 
-		pItem->dwCompressed  = dw1 - dw3 - 0x02CB;
-		pItem->dwCompressedAligned = dw2 - 0x92CB;
-		pItem->dwUncompressed = dw3;
+		item.dwCompressed  = dw1 - dw3 - 0x02CB;
+		item.dwCompressedAligned = dw2 - 0x92CB;
+		item.dwUncompressed = dw3;
 
-		tblstream.read((char*)&(pItem->uFlags), 1);
-		tblstream.read((char*)&(pItem->dwOffset), 4);
+		tblstream.read((char*)&(item.uFlags),   1);
+		tblstream.read((char*)&(item.dwOffset), 4);
 
 		//Setup For Decryption
 		static const char *pSuffix[] = {".act", ".gat", ".gnd", ".str"};
-		if (pItem->uFlags == NONE)
+		if (item.uFlags == NONE)
 		{
-			pItem->uFlags = MIXCRYPT;
+			item.uFlags = MIXCRYPT;
 		}
 		else
 		{
 			bool a = true;
 			for (uint8_t i = 0; i < 4; i++)
 			{
-				if (strcmp(strrchr(pItem->sFile, '.'), pSuffix[i]) == 0) {
+				if (strcmp(strrchr(item.sFile, '.'), pSuffix[i]) == 0) {
 					a = false;
 					break;
 				}
 			}
 			if (a)
 			{
-				uint32_t dwCount = 1, dwLength = pItem->dwCompressed, lop = 10;
+				uint32_t dwCount = 1, dwLength = item.dwCompressed, lop = 10;
 				for (; dwLength >= lop; lop *= 10, dwCount++);
-				pItem->dwCycle = dwCount;
+				item.dwCycle = dwCount;
 			}
 		}
 	}
@@ -178,22 +178,22 @@ void CGrf::getItem(CGrf::FileTableItem *pItem, std::stringstream& tblstream)
 			pBuffer[dwIndex++] = tblstream.get();
 		}while (pBuffer[dwIndex-1] != '\0');
 
-		pItem->dwCycle = 0;
-		pItem->sFile = new char[strlen(pBuffer) + 1];
-		strcpy(pItem->sFile, pBuffer);
+		item.dwCycle = 0;
+		item.sFile = new char[strlen(pBuffer) + 1];
+		strcpy(item.sFile, pBuffer);
 
-		tblstream.read((char*)&(pItem->dwCompressed), 4);
-		tblstream.read((char*)&(pItem->dwCompressedAligned), 4);
-		tblstream.read((char*)&(pItem->dwUncompressed), 4);
-		tblstream.read((char*)&(pItem->uFlags), 1);
-		tblstream.read((char*)&(pItem->dwOffset), 4);
+		tblstream.read((char*)&(item.dwCompressed), 4);
+		tblstream.read((char*)&(item.dwCompressedAligned), 4);
+		tblstream.read((char*)&(item.dwUncompressed), 4);
+		tblstream.read((char*)&(item.uFlags), 1);
+		tblstream.read((char*)&(item.dwOffset), 4);
 
 		//Setup for decryption
-		if (pItem->uFlags == DES)
+		if (item.uFlags == DES)
 		{
-			uint32_t dwCount = 1, dwLength = pItem->dwCompressed, lop = 10;
+			uint32_t dwCount = 1, dwLength = item.dwCompressed, lop = 10;
 			for (; dwLength >= lop; lop *= 10, dwCount++);
-			pItem->dwCycle = dwCount;
+			item.dwCycle = dwCount;
 		}
 	}
 }
@@ -202,7 +202,7 @@ bool CGrf::Exists(const std::string &sFile)
 {
 	for( uint32_t i = 0; i < vItems.size(); i++)
 	{
-		if (strcmp(vItems.at(i)->sFile, sFile.c_str()) == 0)
+		if (strcmp(vItems.at(i).sFile, sFile.c_str()) == 0)
 		{
 			return true;
 		}
@@ -217,21 +217,21 @@ bool CGrf::GetContents(const std::string &sFile, FileStream &flstream)
 	//Search for File
 	for (uint32_t i = 0; i < vItems.size(); i++)
 	{
-		if (strcmp(vItems.at(i)->sFile, sFile.c_str()) != 0) continue;
-		FileTableItem* pItem = vItems.at(i);
+		if (strcmp(vItems.at(i).sFile, sFile.c_str()) != 0) continue;
+		FileTableItem item = vItems.at(i);
 
-		unsigned char *pCompressed   = new unsigned char[pItem->dwCompressedAligned + 1024];
-		unsigned char *pUncompressed = new unsigned char[pItem->dwUncompressed + 1024];
+		unsigned char *pCompressed   = new unsigned char[item.dwCompressedAligned + 1024];
+		unsigned char *pUncompressed = new unsigned char[item.dwUncompressed + 1024];
 
-		stream.seekg(pItem->dwOffset + 46);
-		stream.read((char*)pCompressed, pItem->dwCompressedAligned);
-		if (pItem->uFlags == DES || pItem->uFlags == UNKN || pVersion[1] == 0x01)
+		stream.seekg(item.dwOffset + 46);
+		stream.read((char*)pCompressed, item.dwCompressedAligned);
+		if (item.uFlags == DES || item.uFlags == UNKN || pVersion[1] == 0x01)
 		{   //DES encoded data
-			DES::Decode(pCompressed, pItem->dwCompressedAligned, pItem->dwCycle);
+			DES::Decode(pCompressed, item.dwCompressedAligned, item.dwCycle);
 		}
-		unsigned long ulUnComp = pItem->dwUncompressed;
-		int32_t r = uncompress(pUncompressed, &ulUnComp, pCompressed, pItem->dwCompressedAligned);
-		if (r != Z_OK || ulUnComp != pItem->dwUncompressed)
+		unsigned long ulUnComp = item.dwUncompressed;
+		int32_t r = uncompress(pUncompressed, &ulUnComp, pCompressed, item.dwCompressedAligned);
+		if (r != Z_OK || ulUnComp != item.dwUncompressed)
 		{
 			//Report Error based on value of r
 			delete[] pUncompressed;

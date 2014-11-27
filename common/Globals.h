@@ -3,6 +3,7 @@
 #include "ContentPipeline.h"
 #include "FileStream.h"
 #include "GameCursor.h"
+#include "LuaDB.h"
 
 ///Constants
 namespace S
@@ -22,21 +23,20 @@ namespace S
 	const char *const MAN = "³²";
 }
 
-///Global Pipeline Pointer
-ContentPipeline &GetPipe();
+///Global Pipeline Reference
+ContentPipeline& GetPipe();
 
-///Get the Mouse Cursor Reference
+///Global Lua DB reference
+LuaDB& GetDB();
+
+///Get the Message String based on index
+char* GetMsg(uint32_t dwIndex);
+
+///Global Mouse Cursor Reference
 GameCursor& GetMouseCursor();
 
 ///Get the Font by providing the Font Index
 const sf::Font& GetFont(uint32_t dwFontID);
-
-///String Directories
-const sf::String GetRobeName(uint32_t dwRobe);
-const sf::String GetHeadgearName(uint32_t dwGear);
-const sf::String GetJobName(uint32_t dwJob);
-const sf::String GetJobPrefix(uint32_t dwJob);
-
 
 ///Widget IDs
 

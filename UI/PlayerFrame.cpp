@@ -48,22 +48,32 @@ namespace UI
   {
   	if (player != NULL)
 		{
-			//sf::Transform trOriginal = states.transform;//backup
 			sf::Transform trPlayer = GetTransform();
 			trPlayer.translate(68, 118);
-			/*)	1, 0, GetPosition(false).x + 68,
-															0, 1, GetPosition(false).y + 118,
-															0, 0 ,1
-														);
-			states.transform *= trPlayer;
-			*/
 			states.transform = trPlayer;
 			target.draw(*player, states);
-			//states.transform = trOriginal;//Restore the original
 		}
 		if (pSelected == this)
 		{
 			Frame::draw(target, states);//Draw the Texture - The Select image
 		}
+  }
+
+  void PlayerFrame::MouseClicked(sf::Event::MouseButtonEvent btnEvent, Manager *pManager)
+  {
+  	if (btnEvent.button == sf::Mouse::Left)
+		{
+			pSelected = this;
+		}
+  }
+
+  void PlayerFrame::MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager *pManager)
+  {
+		GetMouseCursor().SetState(CRS_BUTTON);
+  }
+
+  void PlayerFrame::MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager *pManager)
+  {
+		GetMouseCursor().SetState(CRS_DEFAULT);
   }
 }

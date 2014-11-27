@@ -12,11 +12,28 @@ namespace PC
 		BODY,
 		HEAD,
 		HG_LOWER,
-		HG_MID,
+		HG_MIDDLE,
 		HG_UPPER,
 		WEAPON,
 		SHIELD,
 		COUNT,//Keep this last it specifies the count of sprite layers - Currently Head + Body + 3 Headgears + 1 Garment + 1 Weapon + 1Shield
+	};
+
+	enum ActDesc
+	{
+		IDLE = 0,
+		WALK,
+		SIT,
+		PICKING,
+		AFTER_HIT,
+		ATTACK_MOVE,
+		HIT,
+		HIT2,//no animation
+		DEAD,
+		STAND,
+		ATTACK_BARE,
+		ATTACK_WEAPON,
+		CASTING
 	};
 }
 

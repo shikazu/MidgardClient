@@ -1,7 +1,7 @@
 #ifndef _PLAYERFRAME_H
 #define _PLAYERFRAME_H
 
-#include <Frame.h>
+#include "Frame.h"
 #include "../render/Player.h"
 
 namespace UI
@@ -20,6 +20,9 @@ namespace UI
 
 		protected:
 			virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+			virtual void MouseClicked(sf::Event::MouseButtonEvent btnEvent, Manager *pManager);
+			virtual void MouseEntered(sf::Event::MouseMoveEvent movEvent, Manager *pManager);
+			virtual void MouseLeft(sf::Event::MouseMoveEvent movEvent, Manager *pManager);
 
 		private:
 			Player* player;

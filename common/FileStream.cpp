@@ -87,6 +87,11 @@ void FileStream::load(char* data, uint32_t dwLength)
     pStream->write(data, dwLength);
 }
 
+bool FileStream::atEnd()
+{
+	return (pStream->tellg() == getSize());
+}
+
 void FileStream::clear()
 {
     delete pStream;

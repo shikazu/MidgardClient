@@ -40,8 +40,8 @@ class CGrf {
 		char pVersion[4];
 		bool bOpen;
 		std::ifstream stream;
-		std::vector<CGrf::FileTableItem*> vItems;
+		std::vector<FileTableItem> vItems;
 
-		void getItem(CGrf::FileTableItem *pItem, std::stringstream& tblstream);
+		void getItem(FileTableItem &item, std::stringstream &tblstream);
 };
 #endif//_CGRF_H_
